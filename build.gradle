@@ -148,6 +148,10 @@ subprojects { subproject ->
             implementation "org.mapstruct:mapstruct:${mapStructVersion}"
             annotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
 
+            // https://mvnrepository.com/artifact/org.hibernate/hibernate-spatial
+            implementation group: 'org.hibernate', name: 'hibernate-spatial', version: '5.6.0.Final'
+
+
             developmentOnly 'org.springframework.boot:spring-boot-devtools'
             testImplementation 'org.springframework.boot:spring-boot-starter-test'
             testImplementation 'io.projectreactor:reactor-test'

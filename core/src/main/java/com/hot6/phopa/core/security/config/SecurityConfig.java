@@ -37,7 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //                .userInfoEndpoint()
 //                .userService(principalOauth2UserService) //oauth 로그인 완료 이후 후처리
 //                ;
-        http.anyRequest().permitAll();
+        http.authorizeRequests().anyRequest().permitAll();
         //spring security 권한 상관없도록 주석 처리.
     }
 }
