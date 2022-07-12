@@ -46,7 +46,7 @@ FLUSH PRIVILEGES;
     baseline-on-migrate: true
     baseline-version: 1
     locations: classpath:db/migration/schema
-    url: jdbc:mysql://localhost:3306/phopa
+    url: jdbc:mysql://localhost:3306/hot6
     schemas: test
     user: root
     password: <your password>
