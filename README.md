@@ -40,7 +40,7 @@ FLUSH PRIVILEGES;
 
 - project 내 mysql password 적용 필요
  - flyway/src/main/resources/application.yml
-  - ```
+  ```
   flyway:
     enabled: true
     baseline-on-migrate: true
@@ -50,19 +50,20 @@ FLUSH PRIVILEGES;
     schemas: test
     user: root
     password: <your password>
-    ```
+    
+  ```
     
 - flyway/build.gradle
-  - ```
+  ```
   // default flyway configuration : local
     flyway {
         url = 'jdbc:mysql://localhost:3306/hot6?'
         user = 'root'
         password = '<your password>'
     }
-    ```
+  ```
 - api/src/main/resources/application.yml
-  - ```
+  ```
   datasource:
     url: jdbc:mysql://localhost:3306/hot6
     username: root
@@ -71,10 +72,10 @@ FLUSH PRIVILEGES;
     ```
     
  - admin/src/main/resources/application.yml
-  - ```
+  ```
   datasource:
     url: jdbc:mysql://localhost:3306/hot6
     username: root
     password: <your password>
     driver-class-name: com.mysql.cj.jdbc.Driver
-    ```
+  ```
