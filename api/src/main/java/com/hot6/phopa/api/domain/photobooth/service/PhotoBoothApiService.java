@@ -16,6 +16,7 @@ public class PhotoBoothApiService {
 
     private final PhotoBoothMapper photoBoothMapper;
     public List<PhotoBoothDTO> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance) {
-        return photoBoothMapper.toDtoList(photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance));
+        //추후 mapper 사용하도록 변경
+        return PhotoBoothDTO.toDtoList(photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance));
     }
 }

@@ -14,7 +14,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @DynamicUpdate
-@ToString
 @Table(name = "photo_booth")
 public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
     @Id
