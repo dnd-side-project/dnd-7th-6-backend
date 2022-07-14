@@ -1,0 +1,1 @@
+INSERT INTO hot6.review (id, photo_booth_id, title, content, created_at, updated_at) VALUES (1, 1, 'review test', 'review test', now(), now());

@@ -10,17 +10,16 @@ import org.locationtech.jts.geom.Point;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor(staticName = "of")
+@AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
 public class PhotoBoothDTO {
     private Long id;
-    private String name;
-    private Double latitude;
-    private Double longitude;
 
-    public static List<PhotoBoothDTO> toDtoList(List<PhotoBoothEntity> photoBoothEntityList) {
-        return photoBoothEntityList.stream().map(photoBoothEntity -> PhotoBoothDTO.of(photoBoothEntity.getId(), photoBoothEntity.getName(), photoBoothEntity.getPoint().getX(), photoBoothEntity.getPoint().getY())).collect(Collectors.toList());
-    }
+    private String name;
+
+    private Double latitude;
+
+    private Double longitude;
 }
