@@ -6,15 +6,11 @@ import com.hot6.phopa.core.common.utils.Location;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothRepository;
 import lombok.RequiredArgsConstructor;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

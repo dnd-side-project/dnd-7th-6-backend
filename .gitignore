@@ -119,6 +119,8 @@ gradle-app.setting
 
 .idea
 
+**/generated/**
+
 
 
 # End of https://www.gitignore.io/api/java,macos,gradle,intellij
