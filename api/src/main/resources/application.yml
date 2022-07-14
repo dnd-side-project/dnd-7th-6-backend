@@ -65,3 +65,25 @@ server:
     min-spare-threads: 50
     accept-count: 50
     uri-encoding: UTF-8
+
+## AWS Setting
+aws:
+  s3:
+    key:
+      access: AKIATERC7HEQPDZWSRUR
+      secret: 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
+    client:
+      region: ap-northeast-2
+    bucket:
+      name: hot6
+    image:
+      url:
+#        prefix: https://cdn-####
+cloud:
+  aws:
+    stack:
+      auto: false
+    region:
+      static: ap-northeast-2
+    credentials:
+      secret-key:
