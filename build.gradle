@@ -1,7 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.6.6'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10" //querydsl
     id 'io.franzbecker.gradle-lombok' version '5.0.0'
     id 'java'
     id 'java-library'
@@ -13,7 +12,6 @@ plugins {
 ext {
     set('springCloudVersion', '2021.0.1')
     set('lombokVersion', '5.0.0')
-    set('querydslVersion', '5.0.0')
     set('awsJavaSdkVersion', '1.12.186')
     set('apacheCommonsVersion', '3.12.0')
     set('springdocOpenapiUIVersion', '1.6.6')
@@ -151,8 +149,7 @@ subprojects { subproject ->
 
             // for hibernate-spatial
             implementation group: 'org.hibernate', name: 'hibernate-spatial', version: '5.6.0.Final'
-            // for querydsl
-            implementation 'com.querydsl:querydsl-jpa'
+
 
 
             developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -166,18 +163,4 @@ subprojects { subproject ->
 }
 
 
-def querydslDir = "$buildDir/generated/querydsl"
 
-querydsl {
-    jpa = true
-    querydslSourcesDir = querydslDir
-}
-sourceSets {
-    main.java.srcDir querydslDir
-}
-configurations {
-    querydsl.extendsFrom compileClasspath
-}
-compileQuerydsl {
-    options.annotationProcessorPath = configurations.querydsl
-}
