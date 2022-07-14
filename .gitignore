@@ -115,10 +115,13 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 ### Gradle Patch ###
-**/build/
+**/build/**
 
 .idea
 
 
 
 # End of https://www.gitignore.io/api/java,macos,gradle,intellij
+api/src/main/generated/com/hot6/phopa/api/domain/photobooth/model/mapper/PhotoBoothApiMapperImpl.java
+api/src/main/generated/com/hot6/phopa/api/domain/review/model/mapper/ReviewApiMapperImpl.java
+api/src/main/generated/com/hot6/phopa/api/domain/review/model/mapper/ReviewTagApiMapperImpl.java
