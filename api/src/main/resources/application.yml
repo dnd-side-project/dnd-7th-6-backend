@@ -67,18 +67,6 @@ server:
     uri-encoding: UTF-8
 
 ## AWS Setting
-aws:
-  s3:
-    key:
-      access: AKIATERC7HEQPDZWSRUR
-      secret: 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
-    client:
-      region: ap-northeast-2
-    bucket:
-      name: hot6
-    image:
-      url:
-#        prefix: https://cdn-####
 cloud:
   aws:
     stack:
@@ -86,4 +74,11 @@ cloud:
     region:
       static: ap-northeast-2
     credentials:
-      secret-key:
+      access-key: AKIATERC7HEQPDZWSRUR
+      secret-key: 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
+    s3:
+      bucket: hot6
+      upload:
+        path.review: public/review
+      cdn:
+        url: https://hot6.s3.ap-northeast-2.amazonaws.com

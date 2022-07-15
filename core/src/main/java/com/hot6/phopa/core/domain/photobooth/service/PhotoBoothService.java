@@ -1,6 +1,9 @@
 package com.hot6.phopa.core.domain.photobooth.service;
 
 import com.hot6.phopa.core.common.enumeration.Direction;
+import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.common.exception.SilentAdminErrorException;
+import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.utils.GeometryUtil;
 import com.hot6.phopa.core.common.utils.Location;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
@@ -55,5 +58,9 @@ public class PhotoBoothService {
 
         List<PhotoBoothEntity> photoBoothEntityList = query.getResultList();
         return photoBoothEntityList;
+    }
+
+    public PhotoBoothEntity getPhotoBooth(Long photoBoothId) {
+        return photoBoothRepository.findById(photoBoothId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
 }
