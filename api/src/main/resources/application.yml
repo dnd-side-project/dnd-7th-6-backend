@@ -65,3 +65,20 @@ server:
     min-spare-threads: 50
     accept-count: 50
     uri-encoding: UTF-8
+
+## AWS Setting
+cloud:
+  aws:
+    stack:
+      auto: false
+    region:
+      static: ap-northeast-2
+    credentials:
+      access-key: AKIATERC7HEQPDZWSRUR
+      secret-key: 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
+    s3:
+      bucket: hot6
+      upload:
+        path.review: public/review
+      cdn:
+        url: https://hot6.s3.ap-northeast-2.amazonaws.com

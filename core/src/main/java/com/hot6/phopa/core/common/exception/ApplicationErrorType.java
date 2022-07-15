@@ -21,12 +21,16 @@ public enum ApplicationErrorType {
     CLIENT_ABORT(HttpStatus.BAD_REQUEST, -10005, "try.again"),
     ALREADY_ACCOUNT(HttpStatus.BAD_REQUEST, -10006, "이미 가입된 이메일입니다. 일반 로그인해주세요"),
 
-    JSON_PARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, -10007 , "json 파싱에 실패했습니다."),
+    JSON_PARSING_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, -10007, "json 파싱에 실패했습니다."),
 
     /**
      * Maintenance Mode (-99999)
      */
-    MAINTENANCE_MODE_IS_ON(HttpStatus.SERVICE_UNAVAILABLE, -99999, "maintenance.mode");
+    MAINTENANCE_MODE_IS_ON(HttpStatus.SERVICE_UNAVAILABLE, -99999, "maintenance.mode"),
+    FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, -10008, "s3 파일업로드 실패"),
+    CANNOT_BE_DELETED(HttpStatus.INTERNAL_SERVER_ERROR, -10008, "s3 파일제거 실패"),
+    FILE_DOWNLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, -10008, "s3 파일 다운로드 실패"),
+    COULDNT_FIND_ANY_DATA(HttpStatus.INTERNAL_SERVER_ERROR, -10009, "cannot found any data");
 
 
     @Getter

@@ -7,8 +7,6 @@ import lombok.Setter;
 @Setter
 public class ReviewDTO {
     protected Long id;
-
     protected String title;
-
     protected String content;
 }
