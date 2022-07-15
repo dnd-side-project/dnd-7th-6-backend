@@ -5,6 +5,7 @@
 - Gradle 7+
 - flyway 6.5.7
 - mapstruct 1.4.2.Final
+- querydsl 1.0.10
 - hibernate-spatial
 - mysql 
 - aws s3 (구성예정)
