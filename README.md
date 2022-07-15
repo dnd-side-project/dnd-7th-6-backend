@@ -8,7 +8,7 @@
 - querydsl 1.0.10
 - hibernate-spatial
 - mysql 
-- aws s3 (구성예정)
+- aws s3
 - Spring Security
 - ...
 
