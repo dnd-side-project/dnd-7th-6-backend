@@ -7,7 +7,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -34,5 +34,8 @@ public class ReviewEntity extends BaseTimeEntity implements Serializable {
     private PhotoBoothEntity photoBooth;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "review", orphanRemoval = true)
-    private List<ReviewTagEntity> reviewTagList;
+    private Set<ReviewTagEntity> reviewTagSet;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "review", orphanRemoval = true)
+    private Set<ReviewImageEntity> reviewImageSet;
 }
