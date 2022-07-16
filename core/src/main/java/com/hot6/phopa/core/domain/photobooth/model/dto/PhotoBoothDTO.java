@@ -19,6 +19,10 @@ public class PhotoBoothDTO {
 
     private String name;
 
+    private String jibunAddress;
+
+    private String roadAddress;
+
     private Double latitude;
 
     private Double longitude;
