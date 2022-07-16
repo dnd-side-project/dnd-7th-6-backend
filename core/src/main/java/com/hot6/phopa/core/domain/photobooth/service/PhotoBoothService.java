@@ -10,6 +10,7 @@ import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
+import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,7 +55,7 @@ public class PhotoBoothService {
         }
 
         String pointFormat = String.format("'LINESTRING(%f %f, %f %f)')", x1, y1, x2, y2);
-        Query query = em.createNativeQuery("SELECT distinct p.id as id, p.name as name, p.point as point, p.created_at as created_at, p.updated_at as updated_at "
+        Query query = em.createNativeQuery("SELECT distinct p.id as id, p.name as name, p.jibun_address as jibun_address, p.road_address as road_address, p.point as point, p.created_at as created_at, p.updated_at as updated_at "
                         + "FROM photo_booth AS p " + tagJoinStr
                         + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) " + tagWhereStr, PhotoBoothEntity.class);
 
@@ -66,7 +67,10 @@ public class PhotoBoothService {
         return photoBoothRepository.findById(photoBoothId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
 
-    public String kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance) {
-        return kakaoMapService.getLocation(keyword, latitude, longitude, distance);
+    public List<PhotoBoothEntity> kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance) {
+        List<PhotoBoothEntity> photoBoothEntityList = kakaoMapService.crawlingPhotoBoothData(keyword, latitude, longitude, distance);
+        Set<Point> crawlingPointSet = photoBoothEntityList.stream().map(PhotoBoothEntity::getPoint).collect(Collectors.toSet());
+        Set<Point> alreadyPointSet = photoBoothRepository.findByPointSet(crawlingPointSet).stream().map(PhotoBoothEntity::getPoint).collect(Collectors.toSet());
+        return photoBoothRepository.saveAll(photoBoothEntityList.stream().filter(photoBoothEntity -> alreadyPointSet.contains(photoBoothEntity.getPoint()) == false).collect(Collectors.toList()));
     }
 }

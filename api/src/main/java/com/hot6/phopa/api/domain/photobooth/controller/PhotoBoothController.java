@@ -1,9 +1,7 @@
 package com.hot6.phopa.api.domain.photobooth.controller;
 
-import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothApiResponse;
 import com.hot6.phopa.api.domain.photobooth.service.PhotoBoothApiService;
-import com.hot6.phopa.core.domain.photobooth.model.dto.PhotoBoothDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +31,7 @@ public class PhotoBoothController {
     }
 
     @GetMapping("/kakao-map-test")
-    public String kakaoMapTest(
+    public List<PhotoBoothApiResponse> kakaoMapTest(
             @RequestParam String keyword,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double longitude,

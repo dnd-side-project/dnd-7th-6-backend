@@ -19,7 +19,7 @@ public class PhotoBoothApiService {
         return photoBoothMapper.toDtoList(photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, tagIdSet));
     }
 
-    public String kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance) {
-        return photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance);
+    public List<PhotoBoothApiResponse> kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance) {
+        return photoBoothMapper.toDtoList(photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance));
     }
 }
