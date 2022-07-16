@@ -27,6 +27,12 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "jibun_address")
+    private String jibunAddress;
+
+    @Column(name = "road_address")
+    private String roadAddress;
+
     @Column(name = "point")
     private Point point;
 
