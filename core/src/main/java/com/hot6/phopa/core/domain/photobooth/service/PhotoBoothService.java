@@ -2,10 +2,10 @@ package com.hot6.phopa.core.domain.photobooth.service;
 
 import com.hot6.phopa.core.common.enumeration.Direction;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
-import com.hot6.phopa.core.common.exception.SilentAdminErrorException;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.utils.GeometryUtil;
 import com.hot6.phopa.core.common.utils.Location;
+import com.hot6.phopa.core.domain.map.service.KakaoMapService;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +27,8 @@ public class PhotoBoothService {
     private final EntityManager em;
 
     private final PhotoBoothRepository photoBoothRepository;
+
+    private final KakaoMapService kakaoMapService;
 
     @Transactional(readOnly = true)
     //    distance 1 = 1km
@@ -62,5 +64,9 @@ public class PhotoBoothService {
 
     public PhotoBoothEntity getPhotoBooth(Long photoBoothId) {
         return photoBoothRepository.findById(photoBoothId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
+    }
+
+    public String kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance) {
+        return kakaoMapService.getLocation(keyword, latitude, longitude, distance);
     }
 }

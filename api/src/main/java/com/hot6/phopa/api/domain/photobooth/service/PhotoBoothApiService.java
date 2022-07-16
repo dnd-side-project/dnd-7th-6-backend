@@ -1,6 +1,5 @@
 package com.hot6.phopa.api.domain.photobooth.service;
 
-import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothApiResponse;
 import com.hot6.phopa.api.domain.photobooth.model.mapper.PhotoBoothApiMapper;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
@@ -15,9 +14,12 @@ import java.util.Set;
 public class PhotoBoothApiService {
 
     private final PhotoBoothService photoBoothService;
-
     private final PhotoBoothApiMapper photoBoothMapper;
     public List<PhotoBoothApiResponse> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Set<Long> tagIdSet) {
         return photoBoothMapper.toDtoList(photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, tagIdSet));
+    }
+
+    public String kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance) {
+        return photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance);
     }
 }

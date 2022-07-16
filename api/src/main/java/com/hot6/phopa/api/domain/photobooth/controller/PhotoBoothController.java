@@ -31,4 +31,14 @@ public class PhotoBoothController {
             ){
         return photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, tagIdSet);
     }
+
+    @GetMapping("/kakao-map-test")
+    public String kakaoMapTest(
+            @RequestParam String keyword,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude,
+            @RequestParam(required = false) Double distance
+    ){
+        return photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance);
+    }
 }
