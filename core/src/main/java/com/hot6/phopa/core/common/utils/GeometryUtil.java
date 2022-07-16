@@ -1,5 +1,9 @@
 package com.hot6.phopa.core.common.utils;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+
 /**
  * Haversine Formula
  * φ2 = asin( sin φ1 ⋅ cos δ + cos φ1 ⋅ sin δ ⋅ cos θ )
@@ -41,5 +45,9 @@ public class GeometryUtil {
 
     private static Double normalizeLongitude(Double longitude) {
         return (longitude + 540) % 360 - 180;
+    }
+    public static Point createPoint(double lat, double lon) {
+        GeometryFactory gf = new GeometryFactory();
+        return gf.createPoint(new Coordinate(lat, lon));
     }
 }

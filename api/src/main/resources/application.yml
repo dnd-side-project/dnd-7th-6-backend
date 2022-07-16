@@ -82,3 +82,11 @@ cloud:
         path.review: public/review
       cdn:
         url: https://hot6.s3.ap-northeast-2.amazonaws.com
+
+
+## KAKAO MAP Setting
+kakao:
+  map:
+    api-key: KakaoAK 6ca56bb0bca430acc20c5155bc2befe5
+    host: https://dapi.kakao.com
+    path.keyword-search: /v2/local/search/keyword.json
