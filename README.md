@@ -81,3 +81,7 @@ FLUSH PRIVILEGES;
       password: <your password>
       driver-class-name: com.mysql.cj.jdbc.Driver
     ```
+## 4. 아키텍처
+![image](https://user-images.githubusercontent.com/69445946/179416416-ae520270-145d-4285-81ec-24d54cdde8fd.png)
+
+![image](https://user-images.githubusercontent.com/69445946/179416410-2a2d909a-9666-4932-a461-fac11d902f00.png)
