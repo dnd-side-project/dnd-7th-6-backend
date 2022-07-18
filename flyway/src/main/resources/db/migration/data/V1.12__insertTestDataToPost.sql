@@ -1,0 +1,1 @@
+INSERT INTO hot6.post (id, title, content, created_at, updated_at) VALUES (1, 'post test', 'post test', now(), now());
