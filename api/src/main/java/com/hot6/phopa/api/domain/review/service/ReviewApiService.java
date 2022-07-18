@@ -11,8 +11,8 @@ import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewTagEntity;
-import com.hot6.phopa.core.domain.review.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.review.service.ReviewService;
+import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -22,7 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
