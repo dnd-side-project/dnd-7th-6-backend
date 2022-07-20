@@ -11,6 +11,7 @@
 - aws s3
 - Spring Security
 - KAKAO MAP API V2
+- jenkins
 - ...
 
 ## 2. 개발 환경 구성
