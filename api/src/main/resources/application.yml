@@ -37,7 +37,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/hot6
     username: root
-    password: 
+    password: hot61234!@#
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true

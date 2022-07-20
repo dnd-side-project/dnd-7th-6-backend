@@ -1,4 +1,4 @@
-package com.hot6.phopa.core.domain.review.model.dto;
+package com.hot6.phopa.core.domain.tag.model.dto;
 
 import lombok.Getter;
 import lombok.Setter;

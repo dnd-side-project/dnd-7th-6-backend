@@ -1,9 +1,8 @@
-package com.hot6.phopa.core.domain.review.model.entity;
+package com.hot6.phopa.core.domain.tag.model.entity;
 
 import com.hot6.phopa.core.common.model.entity.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
-import org.locationtech.jts.geom.Point;
 
 import javax.persistence.*;
 import java.io.Serializable;
