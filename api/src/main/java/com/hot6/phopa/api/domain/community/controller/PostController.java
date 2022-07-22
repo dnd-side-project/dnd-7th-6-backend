@@ -34,4 +34,12 @@ public class PostController {
     ) {
         return postService.createReview(postCreateRequest, postImageList);
     }
+
+    @PostMapping("/{postId}/like/{userId}")
+    public void like(
+            @PathVariable Long postId,
+            @PathVariable Long userId
+    ){
+        postService.like(postId, userId);
+    }
 }
