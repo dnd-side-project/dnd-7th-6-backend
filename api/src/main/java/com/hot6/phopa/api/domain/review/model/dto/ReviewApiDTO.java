@@ -4,6 +4,7 @@ import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.domain.review.model.dto.ReviewDTO;
 import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
+import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class ReviewApiDTO {
     public static class ReviewApiResponse extends ReviewDTO {
         Set<ReviewTagApiResponse> reviewTagSet;
         Set<ReviewImageResponse> reviewImageSet;
+        UserDTO user;
     }
 
     @Getter
@@ -31,11 +33,13 @@ public class ReviewApiDTO {
         private String content;
         private List<Long> tagIdList;
         private Long photoBoothId;
+        private Long userId;
 
         public void validCheck() {
             Optional.ofNullable(this.getTitle()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
             Optional.ofNullable(this.getContent()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
             Optional.ofNullable(this.getPhotoBoothId()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
+            Optional.ofNullable(this.getUserId()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
         }
     }
 

@@ -5,6 +5,7 @@ import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewCreateReque
 import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.service.S3UploadService;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
@@ -13,6 +14,8 @@ import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewTagEntity;
 import com.hot6.phopa.core.domain.review.service.ReviewService;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
+import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
+import com.hot6.phopa.core.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,6 +44,8 @@ public class ReviewApiService {
 
     private final S3UploadService s3UploadService;
 
+    private final UserService userService;
+
     @Value("${cloud.aws.s3.upload.path.review}")
     private String reviewPath;
 
@@ -53,10 +58,14 @@ public class ReviewApiService {
     public ReviewApiResponse createReview(ReviewCreateRequest reviewCreateRequest, List<MultipartFile> reviewImageList) {
         reviewCreateRequest.validCheck();
         fileInvalidCheck(reviewImageList);
+        UserEntity userEntity = userService.findById(reviewCreateRequest.getUserId());
         PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(reviewCreateRequest.getPhotoBoothId());
         ReviewEntity reviewEntity = ReviewEntity.builder()
                 .title(reviewCreateRequest.getTitle())
                 .content(reviewCreateRequest.getContent())
+                .likeCount(0)
+                .status(Status.ACTIVE)
+                .user(userEntity)
                 .photoBooth(photoBoothEntity)
                 .build();
         if (CollectionUtils.isNotEmpty(reviewCreateRequest.getTagIdList())) {

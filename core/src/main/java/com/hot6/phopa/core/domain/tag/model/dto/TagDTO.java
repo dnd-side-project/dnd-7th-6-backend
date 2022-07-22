@@ -7,6 +7,7 @@ import lombok.Setter;
 @Setter
 public class TagDTO {
     protected Long id;
-
     protected String tag;
+    protected Integer reviewCount;
+    protected Integer postCount;
 }

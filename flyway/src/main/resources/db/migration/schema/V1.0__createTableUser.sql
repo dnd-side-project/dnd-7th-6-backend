@@ -16,4 +16,4 @@ CREATE TABLE `user` (
                         PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='유저 테이블';
 
-INSERT INTO hot6.user (id, email, upwd, status, user_role, provider, provider_id, created_at, updated_at) VALUES (1, 'test@email.com', '$2a$10$LafyKLETOREPaKeToizc/OXGng1rkgvA5Jq2J7rVL.7tgdGHrdPtm', 'ACTIVE', 'USER', 'IFSELF',  null, now(), now());
+INSERT INTO hot6.user (id, email, upwd, status, user_role, provider, provider_id, created_at, updated_at) VALUES (1, 'test@email.com', '$2a$10$LafyKLETOREPaKeToizc/OXGng1rkgvA5Jq2J7rVL.7tgdGHrdPtm', 'ACTIVE', 'USER', 'ITSELF',  null, now(), now());
