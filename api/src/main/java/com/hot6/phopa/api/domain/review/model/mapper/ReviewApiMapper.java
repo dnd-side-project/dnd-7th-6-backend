@@ -1,10 +1,12 @@
 package com.hot6.phopa.api.domain.review.model.mapper;
 
+import com.hot6.phopa.api.domain.review.model.dto.PostApiDTO.PostApiResponse;
+import com.hot6.phopa.api.domain.review.model.dto.PostApiDTO.PostImageResponse;
+import com.hot6.phopa.api.domain.review.model.dto.PostApiDTO.PostTagApiResponse;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewImageResponse;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewTagApiResponse;
-import com.hot6.phopa.core.domain.review.model.dto.ReviewImageDTO;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewTagEntity;

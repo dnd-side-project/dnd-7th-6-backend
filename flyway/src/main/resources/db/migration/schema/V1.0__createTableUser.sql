@@ -4,7 +4,7 @@
 DROP TABLE IF EXISTS `user`;
 SET character_set_client = utf8mb4;
 CREATE TABLE `user` (
-                        `user_id` bigint NOT NULL AUTO_INCREMENT COMMENT '회원 번호',
+                        `id` bigint NOT NULL AUTO_INCREMENT COMMENT '회원 번호',
                         `email` varchar(100) NOT NULL UNIQUE COMMENT '회원 이메일',
                         `upwd` varchar(100) NOT NULL COMMENT '회원 비밀번호',
                         `status` varchar(30) NOT NULL DEFAULT 'ACTIVE' COMMENT '회원 상태',
@@ -13,5 +13,7 @@ CREATE TABLE `user` (
                         `provider_id` varchar(100) NULL COMMENT 'provider 고유 id',
                         `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
                         `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
-                        PRIMARY KEY (`user_id`)
+                        PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='유저 테이블';
+
+INSERT INTO hot6.user (id, email, upwd, status, user_role, provider, provider_id, created_at, updated_at) VALUES (1, 'test@email.com', '$2a$10$LafyKLETOREPaKeToizc/OXGng1rkgvA5Jq2J7rVL.7tgdGHrdPtm', 'ACTIVE', 'USER', 'ITSELF',  null, now(), now());

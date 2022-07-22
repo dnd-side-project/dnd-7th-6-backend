@@ -23,4 +23,10 @@ public class TagEntity extends BaseTimeEntity implements Serializable {
 
     @Column(name = "tag")
     private String tag;
+
+    @Column(name = "review_count")
+    private Integer reviewCount;
+
+    @Column(name = "post_count")
+    private Integer postCount;
 }

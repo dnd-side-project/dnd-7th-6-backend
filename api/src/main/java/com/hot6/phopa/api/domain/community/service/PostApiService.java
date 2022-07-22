@@ -1,19 +1,21 @@
-package com.hot6.phopa.api.domain.review.service;
+package com.hot6.phopa.api.domain.community.service;
 
+import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
 import com.hot6.phopa.api.domain.review.model.dto.PostApiDTO.PostApiResponse;
-import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
-import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewCreateRequest;
-import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
+import com.hot6.phopa.api.domain.review.model.dto.PostApiDTO.PostCreateRequest;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.service.S3UploadService;
+import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
+import com.hot6.phopa.core.domain.community.model.entity.PostImageEntity;
+import com.hot6.phopa.core.domain.community.model.entity.PostTagEntity;
+import com.hot6.phopa.core.domain.community.service.PostService;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewTagEntity;
-import com.hot6.phopa.core.domain.review.service.ReviewService;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.tag.service.TagService;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
@@ -36,13 +38,11 @@ import java.util.Set;
 @Transactional
 @RequiredArgsConstructor
 @Slf4j
-public class ReviewApiService {
+public class PostApiService {
 
-    private final ReviewService reviewService;
+    private final PostService postService;
 
-    private final PhotoBoothService photoBoothService;
-
-    private final ReviewApiMapper reviewMapper;
+    private final PostApiMapper postApiMapper;
 
     private final S3UploadService s3UploadService;
 
@@ -54,47 +54,45 @@ public class ReviewApiService {
     private String reviewPath;
 
     @Transactional(readOnly = true)
-    public List<ReviewApiResponse> getReview(long photoBoothId) {
-        List<ReviewEntity> reviewEntityList = reviewService.getReview(photoBoothId);
-        return reviewMapper.toDtoList(reviewEntityList);
+    public List<PostApiResponse> getPost() {
+        List<PostEntity> postEntityList = postService.getAllPost();
+        return postApiMapper.toDtoList(postEntityList);
     }
 
-    public ReviewApiResponse createReview(ReviewCreateRequest reviewCreateRequest, List<MultipartFile> reviewImageList) {
-        reviewCreateRequest.validCheck();
-        fileInvalidCheck(reviewImageList);
-        UserEntity userEntity = userService.findById(reviewCreateRequest.getUserId());
-        PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(reviewCreateRequest.getPhotoBoothId());
-        ReviewEntity reviewEntity = ReviewEntity.builder()
-                .title(reviewCreateRequest.getTitle())
-                .content(reviewCreateRequest.getContent())
+    public PostApiResponse createReview(PostCreateRequest postCreateRequest, List<MultipartFile> postImageList) {
+        postCreateRequest.validCheck();
+        fileInvalidCheck(postImageList);
+        UserEntity userEntity = userService.findById(postCreateRequest.getUserId());
+        PostEntity postEntity = PostEntity.builder()
+                .title(postCreateRequest.getTitle())
+                .content(postCreateRequest.getContent())
                 .likeCount(0)
                 .status(Status.ACTIVE)
                 .user(userEntity)
-                .photoBooth(photoBoothEntity)
                 .build();
-        if (CollectionUtils.isNotEmpty(reviewCreateRequest.getTagIdList())) {
-            Set<ReviewTagEntity> reviewTagEntitySet = new HashSet<>();
-            List<TagEntity> tagEntityList = tagService.getTagList(reviewCreateRequest.getTagIdList());
+        if (CollectionUtils.isNotEmpty(postCreateRequest.getTagIdList())) {
+            Set<PostTagEntity> postTagEntitySet = new HashSet<>();
+            List<TagEntity> tagEntityList = tagService.getTagList(postCreateRequest.getTagIdList());
             for (TagEntity tagEntity : tagEntityList) {
-                reviewTagEntitySet.add(
-                        ReviewTagEntity.builder()
-                                .review(reviewEntity)
+                postTagEntitySet.add(
+                        PostTagEntity.builder()
+                                .post(postEntity)
                                 .tag(tagEntity)
                                 .build()
                 );
             }
-            reviewEntity.setReviewTagSet(reviewTagEntitySet);
+            postEntity.setPostTagSet(postTagEntitySet);
         }
 
-        if (CollectionUtils.isNotEmpty(reviewImageList)) {
-            Set<ReviewImageEntity> reviewImageEntitySet = new HashSet<>();
+        if (CollectionUtils.isNotEmpty(postImageList)) {
+            Set<PostImageEntity> postImageEntitySet = new HashSet<>();
             int index = 1;
             try {
-                for (MultipartFile reviewImage : reviewImageList) {
+                for (MultipartFile reviewImage : postImageList) {
                     String imageUrl = s3UploadService.uploadFiles(reviewImage, reviewPath);
-                    reviewImageEntitySet.add(
-                            ReviewImageEntity.builder()
-                                    .review(reviewEntity)
+                    postImageEntitySet.add(
+                            PostImageEntity.builder()
+                                    .post(postEntity)
                                     .imageUrl(imageUrl)
                                     .imageOrder(index++).
                                     build()
@@ -103,10 +101,10 @@ public class ReviewApiService {
             } catch (Exception e) {
                 log.error(e.getMessage());
             }
-            reviewEntity.setReviewImageSet(reviewImageEntitySet);
+            postEntity.setPostImageSet(postImageEntitySet);
         }
 
-        return reviewMapper.toDto(reviewService.createReview(reviewEntity));
+        return postApiMapper.toDto(postService.createPost(postEntity));
     }
 
     public void fileInvalidCheck(List<MultipartFile> imageList) {

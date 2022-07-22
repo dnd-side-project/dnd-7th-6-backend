@@ -20,6 +20,5 @@ public class ReviewService {
     public List<ReviewEntity> getReview(long photoBoothId) {
         return reviewRepository.findByPhotoBoothId(photoBoothId);
     }
-    public List<TagEntity> getTagList(List<Long> tagIdList) {return tagRepository.findAllById(tagIdList);}
     public ReviewEntity createReview(ReviewEntity reviewEntity) {return reviewRepository.save(reviewEntity);}
 }
