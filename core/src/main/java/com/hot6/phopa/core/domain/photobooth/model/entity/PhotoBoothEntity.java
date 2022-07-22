@@ -2,6 +2,7 @@ package com.hot6.phopa.core.domain.photobooth.model.entity;
 
 import com.google.common.collect.Lists;
 import com.hot6.phopa.core.common.model.entity.BaseTimeEntity;
+import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -35,6 +36,13 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
 
     @Column(name = "point")
     private Point point;
+
+    @Column(name = "like_count")
+    private Integer likeCount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "photoBooth", orphanRemoval = true)
     private List<ReviewEntity> reviewEntityList;

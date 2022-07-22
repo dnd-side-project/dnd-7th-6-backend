@@ -3,6 +3,7 @@ package com.hot6.phopa.core.domain.photobooth.service;
 import com.hot6.phopa.core.common.enumeration.Direction;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
+import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.utils.GeometryUtil;
 import com.hot6.phopa.core.common.utils.Location;
 import com.hot6.phopa.core.domain.map.service.KakaoMapService;
@@ -33,7 +34,7 @@ public class PhotoBoothService {
 
     @Transactional(readOnly = true)
     //    distance 1 = 1km
-    public List<PhotoBoothEntity> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Set<Long> tagIdSet) {
+    public List<PhotoBoothEntity> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet) {
         Location northEast = GeometryUtil
                 .calculate(latitude, longitude, distance, Direction.NORTHEAST.getBearing());
         Location southWest = GeometryUtil
@@ -55,9 +56,9 @@ public class PhotoBoothService {
         }
 
         String pointFormat = String.format("'LINESTRING(%f %f, %f %f)')", x1, y1, x2, y2);
-        Query query = em.createNativeQuery("SELECT distinct p.id as id, p.name as name, p.jibun_address as jibun_address, p.road_address as road_address, p.point as point, p.created_at as created_at, p.updated_at as updated_at "
+        Query query = em.createNativeQuery("SELECT distinct p.id as id, p.name as name, p.jibun_address as jibun_address, p.road_address as road_address, p.point as point, p.like_count as like_count, p.status as status, p.created_at as created_at, p.updated_at as updated_at "
                         + "FROM photo_booth AS p " + tagJoinStr
-                        + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) " + tagWhereStr, PhotoBoothEntity.class);
+                        + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) and status ='" + status + "'" + tagWhereStr, PhotoBoothEntity.class);
 
         List<PhotoBoothEntity> photoBoothEntityList = query.getResultList();
         return photoBoothEntityList;

@@ -15,7 +15,7 @@ public class CommunityService {
     private final CommunityRepository communityRepository;
 
     public List<PostEntity> getAllPost() {
-
+        return null;
     }
 
 }

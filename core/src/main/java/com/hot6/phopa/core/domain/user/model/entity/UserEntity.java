@@ -19,7 +19,7 @@ import java.io.Serializable;
 public class UserEntity extends BaseTimeEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id", columnDefinition = "회원 번호")
+    @Column(name = "id", columnDefinition = "회원 번호")
     private Long id;
 
     @Column(name = "email", unique = true, columnDefinition = "회원 이메일")

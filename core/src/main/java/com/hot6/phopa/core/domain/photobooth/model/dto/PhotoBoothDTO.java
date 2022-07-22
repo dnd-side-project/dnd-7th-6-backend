@@ -1,5 +1,6 @@
 package com.hot6.phopa.core.domain.photobooth.model.dto;
 
+import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,4 +27,8 @@ public class PhotoBoothDTO {
     private Double latitude;
 
     private Double longitude;
+
+    private Integer PhotoBooth;
+
+    private Status status;
 }

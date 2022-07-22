@@ -1,5 +1,6 @@
 package com.hot6.phopa.core.domain.map.service;
 
+import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.utils.GeometryUtil;
 import com.hot6.phopa.core.domain.map.client.KakaoFeignClient;
 import com.hot6.phopa.core.domain.map.model.dto.KakaoMapResponse.KeyWordSearchResponse;
@@ -45,6 +46,8 @@ public class KakaoMapService {
                             .jibunAddress(document.getAddress_name())
                             .roadAddress(document.getRoad_address_name())
                             .point(GeometryUtil.createPoint(Double.valueOf(document.getY()), Double.valueOf(document.getX())))
+                            .likeCount(0)
+                            .status(Status.ACTIVE)
                             .build()
             );
         }
