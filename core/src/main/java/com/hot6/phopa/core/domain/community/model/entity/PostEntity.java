@@ -42,8 +42,8 @@ public class PostEntity extends BaseTimeEntity implements Serializable {
     private UserEntity user;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "post", orphanRemoval = true)
-    private Set<PostTagEntity> postTagEntitySet;
+    private Set<PostTagEntity> postTagSet;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "post", orphanRemoval = true)
-    private Set<PostImageEntity> postImageEntitySet;
+    private Set<PostImageEntity> postImageSet;
 }

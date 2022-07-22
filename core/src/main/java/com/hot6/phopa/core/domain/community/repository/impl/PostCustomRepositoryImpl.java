@@ -1,8 +1,7 @@
 package com.hot6.phopa.core.domain.community.repository.impl;
 
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
-import com.hot6.phopa.core.domain.community.repository.CommnunityCustomRepository;
-import com.hot6.phopa.core.domain.tag.model.entity.QTagEntity;
+import com.hot6.phopa.core.domain.community.repository.PostCustomRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
@@ -15,10 +14,10 @@ import static com.hot6.phopa.core.domain.community.model.entity.QPostTagEntity.p
 import static com.hot6.phopa.core.domain.tag.model.entity.QTagEntity.*;
 
 @Repository
-public class CommunityCustomRepositoryImpl extends QuerydslRepositorySupport implements CommnunityCustomRepository {
+public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implements PostCustomRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
-    public CommunityCustomRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
+    public PostCustomRepositoryImpl(JPAQueryFactory jpaQueryFactory) {
         super(PostEntity.class);
         this.jpaQueryFactory = jpaQueryFactory;
     }
@@ -27,8 +26,8 @@ public class CommunityCustomRepositoryImpl extends QuerydslRepositorySupport imp
     @Override
     public List<PostEntity> findAll() {
         return from(postEntity)
-                .leftJoin(postEntity.postImageEntitySet, postImageEntity).fetchJoin()
-                .leftJoin(postEntity.postTagEntitySet, postTagEntity).fetchJoin()
+                .leftJoin(postEntity.postImageSet, postImageEntity).fetchJoin()
+                .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
                 .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
                 .distinct()
                 .fetch();
