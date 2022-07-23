@@ -5,10 +5,7 @@ import com.hot6.phopa.api.domain.photobooth.service.PhotoBoothApiService;
 import com.hot6.phopa.core.common.model.type.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
@@ -40,5 +37,13 @@ public class PhotoBoothController {
             @RequestParam(required = false) Double distance
     ){
         return photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance);
+    }
+
+    @PostMapping("/{photoBoothId}/like/{userId}")
+    public void like(
+            @PathVariable Long photoBoothId,
+            @PathVariable Long userId
+    ){
+        photoBoothService.like(photoBoothId, userId);
     }
 }

@@ -46,4 +46,8 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "photoBooth", orphanRemoval = true)
     private List<ReviewEntity> reviewEntityList;
+
+    public void updateLikeCount(int count) {
+        this.likeCount += count;
+    }
 }
