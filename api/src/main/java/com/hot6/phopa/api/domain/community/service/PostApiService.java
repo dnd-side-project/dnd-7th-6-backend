@@ -9,13 +9,9 @@ import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.service.S3UploadService;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostImageEntity;
+import com.hot6.phopa.core.domain.community.model.entity.PostLikeEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostTagEntity;
 import com.hot6.phopa.core.domain.community.service.PostService;
-import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
-import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
-import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
-import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
-import com.hot6.phopa.core.domain.review.model.entity.ReviewTagEntity;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.tag.service.TagService;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
@@ -114,6 +110,23 @@ public class PostApiService {
                     throw new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST);
                 }
             }
+        }
+    }
+
+    public void like(Long postId, Long userId) {
+        PostEntity postEntity = postService.getPostById(postId);
+        UserEntity userEntity = userService.findById(userId);
+        PostLikeEntity postLikeEntity = postService.getPostLikeByPostIdAndUserId(postId, userId);
+        if (postLikeEntity != null){
+            postService.deletePostLike(postLikeEntity);
+            postEntity.updateLikeCount(-1);
+        } else {
+            postLikeEntity = PostLikeEntity.builder()
+                    .post(postEntity)
+                    .user(userEntity)
+                    .build();
+            postService.createReviewLikeEntity(postLikeEntity);
+            postEntity.updateLikeCount(1);
         }
     }
 }

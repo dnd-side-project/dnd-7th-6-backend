@@ -1,15 +1,20 @@
 package com.hot6.phopa.core.security.config;
 
+import com.hot6.phopa.core.common.exception.ApplicationErrorException;
+import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
-
 public class PrincipleDetail implements UserDetails, OAuth2User {
 
     private final UserEntity user;
@@ -68,5 +73,20 @@ public class PrincipleDetail implements UserDetails, OAuth2User {
     public String getName() {
         //필수 override 항목이나 미사용으로 null 반환
         return null;
+    }
+
+    public static PrincipleDetail get() {
+        PrincipleDetail userDetailDto = null;
+        try {
+            if ( SecurityContextHolder.getContext().getAuthentication() != null ) {
+                userDetailDto =  (PrincipleDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            }
+//          request.getAttribute("user_session");
+        } catch (Throwable e) {
+            throw new ApplicationErrorException(ApplicationErrorType.INTERNAL_ERROR);
+//            log.debug("", e);
+        }
+
+        return userDetailDto;
     }
 }

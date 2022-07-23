@@ -1,6 +1,6 @@
 package com.hot6.phopa.core.domain.tag.service;
 
-import com.hot6.phopa.core.domain.review.repository.TagRepository;
+import com.hot6.phopa.core.domain.tag.repository.TagRepository;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -8,6 +8,8 @@ import com.hot6.phopa.core.common.utils.GeometryUtil;
 import com.hot6.phopa.core.common.utils.Location;
 import com.hot6.phopa.core.domain.map.service.KakaoMapService;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
+import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothLikeEntity;
+import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothLikeRepository;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -31,6 +33,8 @@ public class PhotoBoothService {
     private final PhotoBoothRepository photoBoothRepository;
 
     private final KakaoMapService kakaoMapService;
+
+    private final PhotoBoothLikeRepository photoBoothLikeRepository;
 
     @Transactional(readOnly = true)
     //    distance 1 = 1km
@@ -64,6 +68,7 @@ public class PhotoBoothService {
         return photoBoothEntityList;
     }
 
+    @Transactional(readOnly = true)
     public PhotoBoothEntity getPhotoBooth(Long photoBoothId) {
         return photoBoothRepository.findById(photoBoothId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
@@ -73,5 +78,23 @@ public class PhotoBoothService {
         Set<Point> crawlingPointSet = photoBoothEntityList.stream().map(PhotoBoothEntity::getPoint).collect(Collectors.toSet());
         Set<Point> alreadyPointSet = photoBoothRepository.findByPointSet(crawlingPointSet).stream().map(PhotoBoothEntity::getPoint).collect(Collectors.toSet());
         return photoBoothRepository.saveAll(photoBoothEntityList.stream().filter(photoBoothEntity -> alreadyPointSet.contains(photoBoothEntity.getPoint()) == false).collect(Collectors.toList()));
+    }
+
+    @Transactional(readOnly = true)
+    public PhotoBoothEntity getPhotoBoothById(Long photoBoothId) {
+        return photoBoothRepository.findById(photoBoothId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
+    }
+
+    public PhotoBoothLikeEntity createReviewLikeEntity(PhotoBoothLikeEntity photoBoothLikeEntity) {
+        return photoBoothLikeRepository.save(photoBoothLikeEntity);
+    }
+
+    public void deletePhotoBoothLikeEntity(PhotoBoothLikeEntity photoBoothLikeEntity) {
+        photoBoothLikeRepository.delete(photoBoothLikeEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public PhotoBoothLikeEntity getPhotoBoothLikeByPhotoBoothIdAndUserId(Long photoBoothId, Long userId) {
+        return photoBoothLikeRepository.findOneByPhotoBoothIdAndUserId(photoBoothId, userId);
     }
 }

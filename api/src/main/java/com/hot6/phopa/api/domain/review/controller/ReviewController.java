@@ -1,8 +1,5 @@
 package com.hot6.phopa.api.domain.review.controller;
 
-import com.hot6.phopa.api.domain.review.model.dto.PostApiDTO.PostApiResponse;
-import com.hot6.phopa.api.domain.review.model.dto.PostApiDTO.PostCreateRequest;
-import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewCreateRequest;
 import com.hot6.phopa.api.domain.review.service.ReviewApiService;
@@ -38,4 +35,13 @@ public class ReviewController {
     ) {
         return reviewService.createReview(reviewCreateRequest, reviewImageList);
     }
+
+    @PostMapping("/{reviewId}/like/{userId}")
+    public void like(
+           @PathVariable Long reviewId,
+           @PathVariable Long userId
+    ){
+        reviewService.like(reviewId, userId);
+    }
+
 }

@@ -1,6 +1,5 @@
 package com.hot6.phopa.api.domain.review.service;
 
-import com.hot6.phopa.api.domain.review.model.dto.PostApiDTO.PostApiResponse;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewCreateRequest;
 import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
@@ -12,6 +11,7 @@ import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
+import com.hot6.phopa.core.domain.review.model.entity.ReviewLikeEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewTagEntity;
 import com.hot6.phopa.core.domain.review.service.ReviewService;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
@@ -116,6 +116,23 @@ public class ReviewApiService {
                     throw new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST);
                 }
             }
+        }
+    }
+
+    public void like(Long reviewId, Long userId) {
+        ReviewEntity reviewEntity = reviewService.getReviewById(reviewId);
+        UserEntity userEntity = userService.findById(userId);
+        ReviewLikeEntity reviewLikeEntity = reviewService.getReviewLikeByReviewIdAndUserId(reviewId, userId);
+        if (reviewLikeEntity != null) {
+            reviewService.deleteReviewLike(reviewLikeEntity);
+            reviewEntity.updateLikeCount(-1);
+        } else {
+            reviewLikeEntity = ReviewLikeEntity.builder()
+                    .review(reviewEntity)
+                    .user(userEntity)
+                    .build();
+            reviewService.createReviewLikeEntity(reviewLikeEntity);
+            reviewEntity.updateLikeCount(1);
         }
     }
 }

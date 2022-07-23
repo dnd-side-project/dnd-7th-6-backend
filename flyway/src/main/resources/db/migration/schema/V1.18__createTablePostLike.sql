@@ -13,3 +13,5 @@ CREATE TABLE `post_like` (
   FOREIGN KEY (post_id) REFERENCES post(id) ON DELETE CASCADE,
   FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='포스트 좋아요 테이블';
+create unique index post_like_post_id_user_id_uindex
+    on post_like (post_id, user_id);
