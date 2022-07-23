@@ -116,11 +116,17 @@ public class PostApiService {
     public void like(Long postId, Long userId) {
         PostEntity postEntity = postService.getPostById(postId);
         UserEntity userEntity = userService.findById(userId);
-        PostLikeEntity postLikeEntity = PostLikeEntity.builder()
-                .post(postEntity)
-                .user(userEntity)
-                .build();
-        postService.createReviewLikeEntity(postLikeEntity);
-        postEntity.updateLikeCount();
+        PostLikeEntity postLikeEntity = postService.getPostLikeByPostIdAndUserId(postId, userId);
+        if (postLikeEntity != null){
+            postService.deletePostLike(postLikeEntity);
+            postEntity.updateLikeCount(-1);
+        } else {
+            postLikeEntity = PostLikeEntity.builder()
+                    .post(postEntity)
+                    .user(userEntity)
+                    .build();
+            postService.createReviewLikeEntity(postLikeEntity);
+            postEntity.updateLikeCount(1);
+        }
     }
 }

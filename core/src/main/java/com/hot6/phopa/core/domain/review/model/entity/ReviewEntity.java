@@ -52,7 +52,7 @@ public class ReviewEntity extends BaseTimeEntity implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "review", orphanRemoval = true)
     private Set<ReviewImageEntity> reviewImageSet;
 
-    public void updateLikeCount() {
-        this.likeCount += 1;
+    public void updateLikeCount(int count) {
+        this.likeCount += count;
     }
 }

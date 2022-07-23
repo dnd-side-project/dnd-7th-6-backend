@@ -122,11 +122,17 @@ public class ReviewApiService {
     public void like(Long reviewId, Long userId) {
         ReviewEntity reviewEntity = reviewService.getReviewById(reviewId);
         UserEntity userEntity = userService.findById(userId);
-        ReviewLikeEntity reviewLikeEntity = ReviewLikeEntity.builder()
-                .review(reviewEntity)
-                .user(userEntity)
-                .build();
-        reviewService.createReviewLikeEntity(reviewLikeEntity);
-        reviewEntity.updateLikeCount();
+        ReviewLikeEntity reviewLikeEntity = reviewService.getReviewLikeByReviewIdAndUserId(reviewId, userId);
+        if (reviewLikeEntity != null) {
+            reviewService.deleteReviewLike(reviewLikeEntity);
+            reviewEntity.updateLikeCount(-1);
+        } else {
+            reviewLikeEntity = ReviewLikeEntity.builder()
+                    .review(reviewEntity)
+                    .user(userEntity)
+                    .build();
+            reviewService.createReviewLikeEntity(reviewLikeEntity);
+            reviewEntity.updateLikeCount(1);
+        }
     }
 }

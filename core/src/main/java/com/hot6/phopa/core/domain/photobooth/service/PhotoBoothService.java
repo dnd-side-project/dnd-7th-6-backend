@@ -68,6 +68,7 @@ public class PhotoBoothService {
         return photoBoothEntityList;
     }
 
+    @Transactional(readOnly = true)
     public PhotoBoothEntity getPhotoBooth(Long photoBoothId) {
         return photoBoothRepository.findById(photoBoothId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
@@ -79,6 +80,7 @@ public class PhotoBoothService {
         return photoBoothRepository.saveAll(photoBoothEntityList.stream().filter(photoBoothEntity -> alreadyPointSet.contains(photoBoothEntity.getPoint()) == false).collect(Collectors.toList()));
     }
 
+    @Transactional(readOnly = true)
     public PhotoBoothEntity getPhotoBoothById(Long photoBoothId) {
         return photoBoothRepository.findById(photoBoothId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
@@ -91,6 +93,7 @@ public class PhotoBoothService {
         photoBoothLikeRepository.delete(photoBoothLikeEntity);
     }
 
+    @Transactional(readOnly = true)
     public PhotoBoothLikeEntity getPhotoBoothLikeByPhotoBoothIdAndUserId(Long photoBoothId, Long userId) {
         return photoBoothLikeRepository.findOneByPhotoBoothIdAndUserId(photoBoothId, userId);
     }

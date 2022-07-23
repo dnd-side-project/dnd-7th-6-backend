@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReviewLikeRepository extends JpaRepository<ReviewLikeEntity, Long> {
+    ReviewLikeEntity findOneByReviewIdAndUserId(Long reviewId, Long userId);
 }

@@ -23,6 +23,7 @@ public class ReviewService {
 
     private final ReviewLikeRepository reviewLikeRepository;
 
+    @Transactional(readOnly = true)
     public List<ReviewEntity> getReview(long photoBoothId) {
         return reviewRepository.findByPhotoBoothId(photoBoothId);
     }
@@ -31,11 +32,21 @@ public class ReviewService {
         return reviewRepository.save(reviewEntity);
     }
 
+    @Transactional(readOnly = true)
     public ReviewEntity getReviewById(Long reviewId) {
         return reviewRepository.findById(reviewId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
 
     public ReviewLikeEntity createReviewLikeEntity(ReviewLikeEntity reviewLikeEntity) {
         return reviewLikeRepository.save(reviewLikeEntity);
+    }
+
+    public void deleteReviewLike(ReviewLikeEntity reviewLikeEntity) {
+        reviewLikeRepository.delete(reviewLikeEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewLikeEntity getReviewLikeByReviewIdAndUserId(Long reviewId, Long userId) {
+        return reviewLikeRepository.findOneByReviewIdAndUserId(reviewId, userId);
     }
 }
