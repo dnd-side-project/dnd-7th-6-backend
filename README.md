@@ -84,7 +84,9 @@ FLUSH PRIVILEGES;
     ```
 ## 4. 아키텍처
 ![image](https://user-images.githubusercontent.com/69445946/179416416-ae520270-145d-4285-81ec-24d54cdde8fd.png)
-
+![image](https://user-images.githubusercontent.com/69445946/179416410-2a2d909a-9666-4932-a461-fac11d902f00.png)
 
 ## 5. 기획
-![image](https://user-images.githubusercontent.com/69445946/179416410-2a2d909a-9666-4932-a461-fac11d902f00.png)
+  <img width="1002" alt="스크린샷 2022-07-27 오후 12 57 20" src="https://user-images.githubusercontent.com/69445946/181157754-c2faf969-c031-4ba6-9f9c-6bcb8b494704.png">
+
+  
