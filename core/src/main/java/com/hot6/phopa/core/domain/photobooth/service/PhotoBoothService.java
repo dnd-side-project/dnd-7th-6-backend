@@ -11,6 +11,7 @@ import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothLikeEntity;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothLikeRepository;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothRepository;
+import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.locationtech.jts.geom.Point;

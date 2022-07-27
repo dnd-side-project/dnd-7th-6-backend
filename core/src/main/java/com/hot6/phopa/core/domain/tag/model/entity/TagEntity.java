@@ -29,4 +29,7 @@ public class TagEntity extends BaseTimeEntity implements Serializable {
 
     @Column(name = "post_count")
     private Integer postCount;
+
+    @Column(name = "is_photo_booth")
+    private Boolean isPhotoBooth;
 }

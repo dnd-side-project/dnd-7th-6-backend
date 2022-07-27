@@ -1,6 +1,8 @@
 package com.hot6.phopa.api.domain.photobooth.service;
 
+import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothApiResponse;
+import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothFormResponse;
 import com.hot6.phopa.api.domain.photobooth.model.mapper.PhotoBoothApiMapper;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
@@ -8,6 +10,9 @@ import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothLikeEntity;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewLikeEntity;
+import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
+import com.hot6.phopa.core.domain.tag.model.mapper.TagMapper;
+import com.hot6.phopa.core.domain.tag.service.TagService;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +29,8 @@ public class PhotoBoothApiService {
 
     private final PhotoBoothService photoBoothService;
     private final PhotoBoothApiMapper photoBoothMapper;
+    private final TagService tagService;
+    private final TagMapper tagMapper;
 
     private final UserService userService;
     public List<PhotoBoothApiResponse> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet) {
@@ -31,7 +38,9 @@ public class PhotoBoothApiService {
     }
 
     public List<PhotoBoothApiResponse> kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance) {
-        return photoBoothMapper.toDtoList(photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance));
+        List<PhotoBoothEntity> photoBoothEntityList = photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance);
+        tagService.getTagOrCreate(keyword);
+        return photoBoothMapper.toDtoList(photoBoothEntityList);
     }
 
     public void like(Long photoBoothId, Long userId) {
@@ -49,5 +58,10 @@ public class PhotoBoothApiService {
             photoBoothService.createReviewLikeEntity(photoBoothLikeEntity);
             photoBoothEntity.updateLikeCount(1);
         }
+    }
+
+    public PhotoBoothFormResponse getFormData() {
+        List<TagEntity> tagEntityList = tagService.getTagListIsPhotoBooth();
+        return PhotoBoothFormResponse.of(tagMapper.toDtoList(tagEntityList));
     }
 }

@@ -15,4 +15,21 @@ public class TagService {
     public List<TagEntity> getTagList(List<Long> tagIdList) {
         return tagRepository.findAllById(tagIdList);
     }
+
+    public List<TagEntity> getTagListIsPhotoBooth() { return tagRepository.findAllByIsPhotoBoothIsTrue(); }
+
+    public TagEntity getTagOrCreate(String keyword) {
+        TagEntity tagEntity = tagRepository.findOneByTagAndIsPhotoBoothIsTrue(keyword);
+        if(tagEntity == null){
+            tagEntity = tagRepository.save(
+                    TagEntity.builder()
+                            .tag(keyword)
+                            .postCount(0)
+                            .reviewCount(0)
+                            .isPhotoBooth(true)
+                            .build()
+            );
+        }
+        return tagEntity;
+    }
 }
