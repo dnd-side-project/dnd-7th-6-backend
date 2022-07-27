@@ -35,11 +35,11 @@ public class PostService {
         return postRepository.findById(postId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
 
-    public PostLikeEntity createReviewLikeEntity(PostLikeEntity postLikeEntity) {
+    public PostLikeEntity createPostLikeEntity(PostLikeEntity postLikeEntity) {
         return postLikeRepository.save(postLikeEntity);
     }
 
-    public void deletePostLike(PostLikeEntity postLikeEntity) {
+    public void deletePostLikeEntity(PostLikeEntity postLikeEntity) {
         postLikeRepository.delete(postLikeEntity);
     }
 
