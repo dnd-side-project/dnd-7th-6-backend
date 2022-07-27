@@ -1,7 +1,8 @@
-package com.hot6.phopa.api.domain.review.model.dto;
+package com.hot6.phopa.api.domain.community.model.dto;
 
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.domain.community.model.dto.PostDTO;
 import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
 import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import lombok.AllArgsConstructor;
@@ -17,7 +18,7 @@ public class PostApiDTO {
     @Getter
     @Setter
     @AllArgsConstructor
-    public static class PostApiResponse extends PostApiDTO {
+    public static class PostApiResponse extends PostDTO {
         Set<PostTagApiResponse> postTagSet;
         Set<PostImageResponse> postImageSet;
         UserDTO user;
