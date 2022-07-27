@@ -21,18 +21,25 @@ public class PostController {
     private final PostApiService postService;
 
     @GetMapping
-    public List<PostApiResponse> getPhotoBoothReview(
+    public List<PostApiResponse> getPosts(
     ) {
-        return postService.getPost();
+        return postService.getPosts();
+    }
+
+    @GetMapping("/{postId}")
+    public PostApiResponse getPost(
+            @PathVariable @Positive Long postId
+    ) {
+        return postService.getPost(postId);
     }
 
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public PostApiResponse createPhotoBoothReview(
+    public PostApiResponse createPost(
             @RequestPart PostCreateRequest postCreateRequest,
             @RequestPart List<MultipartFile> postImageList
     ) {
-        return postService.createReview(postCreateRequest, postImageList);
+        return postService.createPost(postCreateRequest, postImageList);
     }
 
     @PostMapping("/{postId}/like/{userId}")

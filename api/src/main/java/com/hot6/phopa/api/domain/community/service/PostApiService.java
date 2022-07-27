@@ -50,12 +50,12 @@ public class PostApiService {
     private String reviewPath;
 
     @Transactional(readOnly = true)
-    public List<PostApiResponse> getPost() {
+    public List<PostApiResponse> getPosts() {
         List<PostEntity> postEntityList = postService.getAllPost();
         return postApiMapper.toDtoList(postEntityList);
     }
 
-    public PostApiResponse createReview(PostCreateRequest postCreateRequest, List<MultipartFile> postImageList) {
+    public PostApiResponse createPost(PostCreateRequest postCreateRequest, List<MultipartFile> postImageList) {
         postCreateRequest.validCheck();
         fileInvalidCheck(postImageList);
         UserEntity userEntity = userService.findById(postCreateRequest.getUserId());
@@ -118,15 +118,19 @@ public class PostApiService {
         UserEntity userEntity = userService.findById(userId);
         PostLikeEntity postLikeEntity = postService.getPostLikeByPostIdAndUserId(postId, userId);
         if (postLikeEntity != null){
-            postService.deletePostLike(postLikeEntity);
+            postService.deletePostLikeEntity(postLikeEntity);
             postEntity.updateLikeCount(-1);
         } else {
             postLikeEntity = PostLikeEntity.builder()
                     .post(postEntity)
                     .user(userEntity)
                     .build();
-            postService.createReviewLikeEntity(postLikeEntity);
+            postService.createPostLikeEntity(postLikeEntity);
             postEntity.updateLikeCount(1);
         }
+    }
+
+    public PostApiResponse getPost(Long postId) {
+        return postApiMapper.toDto(postService.getPostById(postId));
     }
 }
