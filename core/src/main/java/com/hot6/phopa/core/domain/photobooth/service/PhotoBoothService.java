@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,7 +38,6 @@ public class PhotoBoothService {
     private final KakaoMapService kakaoMapService;
 
     private final PhotoBoothLikeRepository photoBoothLikeRepository;
-
     @Transactional(readOnly = true)
     //    distance 1 = 1km
     public List<PhotoBoothEntity> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet) {
@@ -61,9 +62,9 @@ public class PhotoBoothService {
         }
 
         String pointFormat = String.format("'LINESTRING(%f %f, %f %f)')", x1, y1, x2, y2);
-        Query query = em.createNativeQuery("SELECT distinct p.id as id, p.name as name, p.jibun_address as jibun_address, p.road_address as road_address, p.point as point, p.like_count as like_count, p.status as status, p.created_at as created_at, p.updated_at as updated_at "
+        Query query = em.createNativeQuery("SELECT distinct p.id as id, p.name as name, p.jibun_address as jibun_address, p.road_address as road_address, p.point as point, p.like_count as like_count, p.status as status, p.tag_id as tag_id, p.created_at as created_at, p.updated_at as updated_at "
                         + "FROM photo_booth AS p " + tagJoinStr
-                        + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) and status ='" + status + "'" + tagWhereStr, PhotoBoothEntity.class);
+                        + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) and p.status ='" + status + "'" + tagWhereStr, PhotoBoothEntity.class);
 
         List<PhotoBoothEntity> photoBoothEntityList = query.getResultList();
         return photoBoothEntityList;
@@ -74,11 +75,21 @@ public class PhotoBoothService {
         return photoBoothRepository.findById(photoBoothId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
 
-    public List<PhotoBoothEntity> kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance) {
+    public List<PhotoBoothEntity> kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance, TagEntity tagEntity) {
         List<PhotoBoothEntity> photoBoothEntityList = kakaoMapService.crawlingPhotoBoothData(keyword, latitude, longitude, distance);
         Set<Point> crawlingPointSet = photoBoothEntityList.stream().map(PhotoBoothEntity::getPoint).collect(Collectors.toSet());
         Set<Point> alreadyPointSet = photoBoothRepository.findByPointSet(crawlingPointSet).stream().map(PhotoBoothEntity::getPoint).collect(Collectors.toSet());
-        return photoBoothRepository.saveAll(photoBoothEntityList.stream().filter(photoBoothEntity -> alreadyPointSet.contains(photoBoothEntity.getPoint()) == false).collect(Collectors.toList()));
+        List<PhotoBoothEntity> savePhotoBoothEntityList = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(photoBoothEntityList)){
+            for(PhotoBoothEntity photoBoothEntity : photoBoothEntityList) {
+                if(alreadyPointSet.contains(photoBoothEntity.getPoint()) == false){
+                    photoBoothEntity.setTag(tagEntity);
+                    savePhotoBoothEntityList.add(photoBoothEntity);
+                }
+            }
+            tagEntity.updatePhotoBoothCount(photoBoothEntityList.size());
+        }
+        return photoBoothRepository.saveAll(savePhotoBoothEntityList);
     }
 
     @Transactional(readOnly = true)

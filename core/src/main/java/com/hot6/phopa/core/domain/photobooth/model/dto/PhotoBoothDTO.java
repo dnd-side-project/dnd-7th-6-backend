@@ -28,7 +28,7 @@ public class PhotoBoothDTO {
 
     private Double longitude;
 
-    private Integer PhotoBooth;
+    private Integer likeCount;
 
     private Status status;
 }

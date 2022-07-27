@@ -26,6 +26,7 @@ public class TagService {
                             .tag(keyword)
                             .postCount(0)
                             .reviewCount(0)
+                            .photoBoothCount(0)
                             .isPhotoBooth(true)
                             .build()
             );
