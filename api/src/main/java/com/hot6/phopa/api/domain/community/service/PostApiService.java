@@ -1,8 +1,8 @@
 package com.hot6.phopa.api.domain.community.service;
 
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostApiResponse;
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostCreateRequest;
 import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
-import com.hot6.phopa.api.domain.review.model.dto.PostApiDTO.PostApiResponse;
-import com.hot6.phopa.api.domain.review.model.dto.PostApiDTO.PostCreateRequest;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.model.type.Status;

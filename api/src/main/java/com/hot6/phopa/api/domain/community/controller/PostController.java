@@ -1,8 +1,8 @@
 package com.hot6.phopa.api.domain.community.controller;
 
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostApiResponse;
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostCreateRequest;
 import com.hot6.phopa.api.domain.community.service.PostApiService;
-import com.hot6.phopa.api.domain.review.model.dto.PostApiDTO.PostApiResponse;
-import com.hot6.phopa.api.domain.review.model.dto.PostApiDTO.PostCreateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
