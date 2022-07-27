@@ -25,6 +25,9 @@ public class UserEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "email", unique = true, columnDefinition = "회원 이메일")
     private String email;
 
+    @Column(name = "name", columnDefinition = "회원 이름")
+    private String name;
+
     @Column(unique = true, length = 300)
     private String upwd;
 
