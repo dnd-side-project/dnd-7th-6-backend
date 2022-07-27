@@ -12,7 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserDTO {
     private String email;
-    private String upwd;
+    private String name;
+//    private String upwd;
     private UserStatus status;
     private UserRole userRole;
     private UserProvider userProvider;
