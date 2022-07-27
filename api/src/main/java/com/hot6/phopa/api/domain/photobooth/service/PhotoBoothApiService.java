@@ -38,8 +38,8 @@ public class PhotoBoothApiService {
     }
 
     public List<PhotoBoothApiResponse> kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance) {
-        List<PhotoBoothEntity> photoBoothEntityList = photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance);
-        tagService.getTagOrCreate(keyword);
+        TagEntity tagEntity = tagService.getTagOrCreate(keyword);
+        List<PhotoBoothEntity> photoBoothEntityList = photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance, tagEntity);
         return photoBoothMapper.toDtoList(photoBoothEntityList);
     }
 
