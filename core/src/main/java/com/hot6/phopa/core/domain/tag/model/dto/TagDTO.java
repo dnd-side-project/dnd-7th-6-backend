@@ -10,4 +10,6 @@ public class TagDTO {
     protected String tag;
     protected Integer reviewCount;
     protected Integer postCount;
+
+    protected Boolean isPhotoBooth;
 }
