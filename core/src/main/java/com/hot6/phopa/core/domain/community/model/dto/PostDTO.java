@@ -4,6 +4,8 @@ import com.hot6.phopa.core.common.model.type.Status;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class PostDTO {
@@ -12,4 +14,6 @@ public class PostDTO {
     protected String content;
     protected Integer likeCount;
     protected Status status;
+    protected LocalDateTime createdAt;
+    protected LocalDateTime updatedAt;
 }
