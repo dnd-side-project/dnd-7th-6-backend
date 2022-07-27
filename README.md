@@ -86,3 +86,6 @@ FLUSH PRIVILEGES;
 ![image](https://user-images.githubusercontent.com/69445946/179416416-ae520270-145d-4285-81ec-24d54cdde8fd.png)
 
 ![image](https://user-images.githubusercontent.com/69445946/179416410-2a2d909a-9666-4932-a461-fac11d902f00.png)
+
+## 5. 기획
+![image](https://user-images.githubusercontent.com/69445946/181157551-6e304ae0-fdf3-4bef-aa3b-b6304b7f6a35.png)
