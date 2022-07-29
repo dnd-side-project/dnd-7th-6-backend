@@ -5,7 +5,6 @@ dependencies {
 
     testImplementation project(':api')
     testImplementation project(':core')
-    testImplementation project(':consumer')
 }
 
 bootJar {
