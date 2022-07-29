@@ -16,7 +16,6 @@ dependencies {
 
     testImplementation project(':admin')
     testImplementation project(':core')
-    testImplementation project(':consumer')
 }
 
 test {
