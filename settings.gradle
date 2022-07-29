@@ -1,7 +1,6 @@
 rootProject.name = 'Phopa'
 include 'api'
 include 'admin'
-include 'consumer'
 include 'core'
 include 'flyway'
 
