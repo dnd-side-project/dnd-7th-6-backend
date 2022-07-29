@@ -15,11 +15,14 @@ import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.locationtech.jts.geom.Point;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -38,6 +41,7 @@ public class PhotoBoothService {
     private final KakaoMapService kakaoMapService;
 
     private final PhotoBoothLikeRepository photoBoothLikeRepository;
+
     @Transactional(readOnly = true)
     //    distance 1 = 1km
     public List<PhotoBoothEntity> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet) {
@@ -50,24 +54,18 @@ public class PhotoBoothService {
         double y1 = northEast.getLongitude();
         double x2 = southWest.getLatitude();
         double y2 = southWest.getLongitude();
-
-        String tagJoinStr = "";
-        String tagWhereStr = "";
-
-        if(CollectionUtils.isNotEmpty(tagIdSet)){
-            tagJoinStr = "join review r on r.photo_booth_id = p.id " +
-                    "join review_tag rt on rt.review_id = r.id " +
-                    "join tag t on rt.tag_id = t.id ";
-            tagWhereStr = "and t.id in (" + tagIdSet.stream().map(String::valueOf).collect(Collectors.joining(", ")) + ") ";
-        }
-
         String pointFormat = String.format("'LINESTRING(%f %f, %f %f)')", x1, y1, x2, y2);
-        Query query = em.createNativeQuery("SELECT distinct p.id as id, p.name as name, p.jibun_address as jibun_address, p.road_address as road_address, p.point as point, p.like_count as like_count, p.status as status, p.tag_id as tag_id, p.created_at as created_at, p.updated_at as updated_at "
-                        + "FROM photo_booth AS p " + tagJoinStr
-                        + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) and p.status ='" + status + "'" + tagWhereStr, PhotoBoothEntity.class);
 
-        List<PhotoBoothEntity> photoBoothEntityList = query.getResultList();
-        return photoBoothEntityList;
+        String tagWhereStr = CollectionUtils.isNotEmpty(tagIdSet) ? "AND t.id IN (" + tagIdSet.stream().map(String::valueOf).collect(Collectors.joining(", ")) + ") " : "";
+
+        Query query = em.createNativeQuery("SELECT DISTINCT p.*"
+                + "FROM photo_booth AS p "
+                + "LEFT JOIN review r ON r.photo_booth_id = p.id "
+                + "LEFT JOIN review_tag rt ON rt.review_id = r.id "
+                + "LEFT JOIN tag t ON rt.tag_id = t.id "
+                + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) and p.status ='" + status + "'" + tagWhereStr, PhotoBoothEntity.class);
+
+        return query.getResultList();
     }
 
     @Transactional(readOnly = true)
@@ -80,9 +78,9 @@ public class PhotoBoothService {
         Set<Point> crawlingPointSet = photoBoothEntityList.stream().map(PhotoBoothEntity::getPoint).collect(Collectors.toSet());
         Set<Point> alreadyPointSet = photoBoothRepository.findByPointSet(crawlingPointSet).stream().map(PhotoBoothEntity::getPoint).collect(Collectors.toSet());
         List<PhotoBoothEntity> savePhotoBoothEntityList = new ArrayList<>();
-        if(CollectionUtils.isNotEmpty(photoBoothEntityList)){
-            for(PhotoBoothEntity photoBoothEntity : photoBoothEntityList) {
-                if(alreadyPointSet.contains(photoBoothEntity.getPoint()) == false){
+        if (CollectionUtils.isNotEmpty(photoBoothEntityList)) {
+            for (PhotoBoothEntity photoBoothEntity : photoBoothEntityList) {
+                if (alreadyPointSet.contains(photoBoothEntity.getPoint()) == false) {
                     photoBoothEntity.setTag(tagEntity);
                     savePhotoBoothEntityList.add(photoBoothEntity);
                 }
