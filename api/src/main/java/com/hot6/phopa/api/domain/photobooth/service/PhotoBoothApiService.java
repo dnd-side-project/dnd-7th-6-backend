@@ -1,6 +1,5 @@
 package com.hot6.phopa.api.domain.photobooth.service;
 
-import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothApiResponse;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothFormResponse;
 import com.hot6.phopa.api.domain.photobooth.model.mapper.PhotoBoothApiMapper;
@@ -8,8 +7,7 @@ import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothLikeEntity;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
-import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
-import com.hot6.phopa.core.domain.review.model.entity.ReviewLikeEntity;
+import com.hot6.phopa.core.domain.tag.enumeration.TagType;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.tag.model.mapper.TagMapper;
 import com.hot6.phopa.core.domain.tag.service.TagService;
@@ -38,7 +36,7 @@ public class PhotoBoothApiService {
     }
 
     public List<PhotoBoothApiResponse> kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance) {
-        TagEntity tagEntity = tagService.getTagOrCreate(keyword);
+        TagEntity tagEntity = tagService.getTagOrCreate(keyword, TagType.PHOTO_BOOTH);
         List<PhotoBoothEntity> photoBoothEntityList = photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance, tagEntity);
         return photoBoothMapper.toDtoList(photoBoothEntityList);
     }
@@ -61,7 +59,7 @@ public class PhotoBoothApiService {
     }
 
     public PhotoBoothFormResponse getFormData() {
-        List<TagEntity> tagEntityList = tagService.getTagListIsPhotoBooth();
+        List<TagEntity> tagEntityList = tagService.getTagListByTagType(TagType.PHOTO_BOOTH);
         return PhotoBoothFormResponse.of(tagMapper.toDtoList(tagEntityList));
     }
 }

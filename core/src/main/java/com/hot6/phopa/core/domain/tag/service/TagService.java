@@ -1,5 +1,6 @@
 package com.hot6.phopa.core.domain.tag.service;
 
+import com.hot6.phopa.core.domain.tag.enumeration.TagType;
 import com.hot6.phopa.core.domain.tag.repository.TagRepository;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import lombok.RequiredArgsConstructor;
@@ -16,18 +17,18 @@ public class TagService {
         return tagRepository.findAllById(tagIdList);
     }
 
-    public List<TagEntity> getTagListIsPhotoBooth() { return tagRepository.findAllByIsPhotoBoothIsTrue(); }
+    public List<TagEntity> getTagListByTagType(TagType tagType) { return tagRepository.findAllByTagType(tagType); }
 
-    public TagEntity getTagOrCreate(String keyword) {
-        TagEntity tagEntity = tagRepository.findOneByTagAndIsPhotoBoothIsTrue(keyword);
+    public TagEntity getTagOrCreate(String keyword, TagType tagType) {
+        TagEntity tagEntity = tagRepository.findOneByTitleAndTagType(keyword, tagType);
         if(tagEntity == null){
             tagEntity = tagRepository.save(
                     TagEntity.builder()
-                            .tag(keyword)
+                            .title(keyword)
                             .postCount(0)
                             .reviewCount(0)
                             .photoBoothCount(0)
-                            .isPhotoBooth(true)
+                            .tagType(TagType.PHOTO_BOOTH)
                             .build()
             );
         }
