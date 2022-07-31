@@ -1,5 +1,6 @@
 package com.hot6.phopa.core.domain.tag.model.dto;
 
+import com.hot6.phopa.core.domain.tag.enumeration.TagType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,8 +8,8 @@ import lombok.Setter;
 @Setter
 public class TagDTO {
     protected Long id;
-    protected String tag;
+    protected String title;
     protected Integer reviewCount;
     protected Integer postCount;
-    protected Boolean isPhotoBooth;
+    protected TagType tagType;
 }
