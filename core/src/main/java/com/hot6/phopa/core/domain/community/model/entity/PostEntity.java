@@ -47,6 +47,9 @@ public class PostEntity extends BaseTimeEntity implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "post", orphanRemoval = true)
     private Set<PostImageEntity> postImageSet;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "post", orphanRemoval = true)
+    private Set<PostLikeEntity> postLikeSet;
+
     public void updateLikeCount(int count) {
         this.likeCount += count;
     }

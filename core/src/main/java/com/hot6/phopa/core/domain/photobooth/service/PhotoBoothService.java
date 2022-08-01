@@ -107,4 +107,8 @@ public class PhotoBoothService {
     public PhotoBoothLikeEntity getPhotoBoothLikeByPhotoBoothIdAndUserId(Long photoBoothId, Long userId) {
         return photoBoothLikeRepository.findOneByPhotoBoothIdAndUserId(photoBoothId, userId);
     }
+
+    public List<PhotoBoothEntity> findAllByUserLike(Long userId) {
+        return photoBoothRepository.findAllByUserLike(userId);
+    }
 }
