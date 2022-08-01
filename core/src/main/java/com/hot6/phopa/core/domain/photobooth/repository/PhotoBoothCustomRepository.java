@@ -8,4 +8,6 @@ import java.util.Set;
 
 public interface PhotoBoothCustomRepository {
     List<PhotoBoothEntity> findByPointSet(Set<Point> crawlingPointSet);
+
+    List<PhotoBoothEntity> findAllByUserLike(Long userId);
 }

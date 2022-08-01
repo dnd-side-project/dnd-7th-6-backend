@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 import static com.hot6.phopa.core.domain.photobooth.model.entity.QPhotoBoothEntity.photoBoothEntity;
+import static com.hot6.phopa.core.domain.photobooth.model.entity.QPhotoBoothLikeEntity.photoBoothLikeEntity;
+import static com.hot6.phopa.core.domain.user.model.entity.QUserEntity.userEntity;
 
 @Repository
 public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport implements PhotoBoothCustomRepository {
@@ -22,7 +24,7 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
     }
 
 
-    public List<PhotoBoothEntity> findByPhotoBoothId(Long photoBoothId){
+    public List<PhotoBoothEntity> findByPhotoBoothId(Long photoBoothId) {
         return from(photoBoothEntity)
                 .where(photoBoothEntity.id.eq(photoBoothId))
                 .fetch();
@@ -32,6 +34,15 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
     public List<PhotoBoothEntity> findByPointSet(Set<Point> crawlingPointSet) {
         return from(photoBoothEntity)
                 .where(photoBoothEntity.point.in(crawlingPointSet))
+                .fetch();
+    }
+
+    @Override
+    public List<PhotoBoothEntity> findAllByUserLike(Long userId) {
+        return from(photoBoothEntity)
+                .join(photoBoothEntity.photoBoothLikeSet, photoBoothLikeEntity).fetchJoin()
+                .join(photoBoothLikeEntity.user, userEntity).fetchJoin()
+                .where(userEntity.id.eq(userId))
                 .fetch();
     }
 }

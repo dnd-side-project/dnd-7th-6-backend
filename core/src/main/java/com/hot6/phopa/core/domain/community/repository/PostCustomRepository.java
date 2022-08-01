@@ -8,4 +8,6 @@ import java.util.List;
 @Repository
 public interface PostCustomRepository {
     List<PostEntity> findAll();
+
+    List<PostEntity> findAllByUserLike(Long userId);
 }

@@ -47,4 +47,8 @@ public class PostService {
     public PostLikeEntity getPostLikeByPostIdAndUserId(Long postId, Long userId) {
         return postLikeRepository.findOneByPostIdAndUserId(postId, userId);
     }
+
+    public List<PostEntity> findAllByUserLike(Long userId) {
+        return postRepository.findAllByUserLike(userId);
+    }
 }

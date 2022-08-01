@@ -1,17 +1,15 @@
 package com.hot6.phopa.core.domain.photobooth.model.entity;
 
-import com.google.common.collect.Lists;
 import com.hot6.phopa.core.common.model.entity.BaseTimeEntity;
 import com.hot6.phopa.core.common.model.type.Status;
-import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
-import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.locationtech.jts.geom.Point;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -49,6 +47,9 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private TagEntity tag;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "photoBooth", orphanRemoval = true)
+    private Set<PhotoBoothLikeEntity> photoBoothLikeSet;
 
     public void updateLikeCount(int count) {
         this.likeCount += count;
