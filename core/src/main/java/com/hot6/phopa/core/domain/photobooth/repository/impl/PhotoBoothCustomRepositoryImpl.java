@@ -12,6 +12,9 @@ import java.util.Set;
 
 import static com.hot6.phopa.core.domain.photobooth.model.entity.QPhotoBoothEntity.photoBoothEntity;
 import static com.hot6.phopa.core.domain.photobooth.model.entity.QPhotoBoothLikeEntity.photoBoothLikeEntity;
+import static com.hot6.phopa.core.domain.review.model.entity.QReviewEntity.reviewEntity;
+import static com.hot6.phopa.core.domain.review.model.entity.QReviewTagEntity.reviewTagEntity;
+import static com.hot6.phopa.core.domain.tag.model.entity.QTagEntity.tagEntity;
 import static com.hot6.phopa.core.domain.user.model.entity.QUserEntity.userEntity;
 
 @Repository
@@ -44,5 +47,15 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
                 .join(photoBoothLikeEntity.user, userEntity).fetchJoin()
                 .where(userEntity.id.eq(userId))
                 .fetch();
+    }
+
+    @Override
+    public PhotoBoothEntity findByIdWithTag(Long photoBoothId) {
+        return from(photoBoothEntity)
+                .leftJoin(photoBoothEntity.tag, tagEntity).fetchJoin()
+                .leftJoin(photoBoothEntity.reviewSet, reviewEntity).fetchJoin()
+                .leftJoin(reviewEntity.reviewTagSet, reviewTagEntity).fetchJoin()
+                .where(photoBoothEntity.id.eq(photoBoothId))
+                .fetchOne();
     }
 }

@@ -2,6 +2,7 @@ package com.hot6.phopa.core.domain.photobooth.model.entity;
 
 import com.hot6.phopa.core.common.model.entity.BaseTimeEntity;
 import com.hot6.phopa.core.common.model.type.Status;
+import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -47,6 +48,10 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private TagEntity tag;
+
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "photoBooth", orphanRemoval = true)
+    private Set<ReviewEntity> reviewSet;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "photoBooth", orphanRemoval = true)
     private Set<PhotoBoothLikeEntity> photoBoothLikeSet;

@@ -3,6 +3,7 @@ package com.hot6.phopa.core.domain.tag.model.entity;
 import com.hot6.phopa.core.common.model.entity.BaseTimeEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostTagEntity;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
+import com.hot6.phopa.core.domain.review.model.entity.ReviewTagEntity;
 import com.hot6.phopa.core.domain.tag.enumeration.TagType;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -43,6 +44,12 @@ public class TagEntity extends BaseTimeEntity implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "tag", orphanRemoval = true)
     private Set<PhotoBoothEntity> PhotoBoothSet;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "tag", orphanRemoval = true)
+    private Set<PostTagEntity> postTagSet;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "tag", orphanRemoval = true)
+    private Set<ReviewTagEntity> reviewTagSet;
 
     public void updatePhotoBoothCount(int count) {
         this.photoBoothCount += count;

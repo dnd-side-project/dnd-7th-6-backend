@@ -1,8 +1,6 @@
 package com.hot6.phopa.api.domain.photobooth.model.mapper;
 
-import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothApiResponse;
-import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothFormResponse;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
