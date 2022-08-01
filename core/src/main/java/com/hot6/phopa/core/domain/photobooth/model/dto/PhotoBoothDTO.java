@@ -16,19 +16,19 @@ import java.util.stream.Collectors;
 @Setter
 @Getter
 public class PhotoBoothDTO {
-    private Long id;
+    protected Long id;
 
-    private String name;
+    protected String name;
 
-    private String jibunAddress;
+    protected String jibunAddress;
 
-    private String roadAddress;
+    protected String roadAddress;
 
-    private Double latitude;
+    protected Double latitude;
 
-    private Double longitude;
+    protected Double longitude;
 
-    private Integer likeCount;
+    protected Integer likeCount;
 
-    private Status status;
+    protected Status status;
 }

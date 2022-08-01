@@ -2,18 +2,24 @@ package com.hot6.phopa.api.domain.photobooth.service;
 
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothApiResponse;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothFormResponse;
+import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothWithTagResponse;
 import com.hot6.phopa.api.domain.photobooth.model.mapper.PhotoBoothApiMapper;
+import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
+import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothLikeEntity;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
+import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.tag.enumeration.TagType;
+import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.tag.model.mapper.TagMapper;
 import com.hot6.phopa.core.domain.tag.service.TagService;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +36,7 @@ public class PhotoBoothApiService {
     private final TagService tagService;
     private final TagMapper tagMapper;
 
+    private final ReviewApiMapper reviewApiMapper;
     private final UserService userService;
     public List<PhotoBoothApiResponse> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet) {
         return photoBoothMapper.toDtoList(photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet));
@@ -61,5 +68,13 @@ public class PhotoBoothApiService {
     public PhotoBoothFormResponse getFormData() {
         List<TagEntity> tagEntityList = tagService.getTagListByTagType(TagType.PHOTO_BOOTH);
         return PhotoBoothFormResponse.of(tagMapper.toDtoList(tagEntityList));
+    }
+
+    public PhotoBoothWithTagResponse getPhotoBooth(Long photoBoothId) {
+        PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(photoBoothId);
+        PhotoBoothApiResponse photoBooth = photoBoothMapper.toDto(photoBoothEntity);
+        ReviewApiResponse review = CollectionUtils.isNotEmpty(photoBoothEntity.getReviewSet()) ? reviewApiMapper.toDto((ReviewEntity) photoBoothEntity.getReviewSet().toArray()[0]) : null;
+        List<TagDTO> tagList = tagMapper.toDtoList(tagService.getTagByPhotoBoothId(photoBoothId));
+        return PhotoBoothWithTagResponse.of(photoBooth, review, tagList);
     }
 }

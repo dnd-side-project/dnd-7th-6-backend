@@ -10,4 +10,6 @@ public interface PhotoBoothCustomRepository {
     List<PhotoBoothEntity> findByPointSet(Set<Point> crawlingPointSet);
 
     List<PhotoBoothEntity> findAllByUserLike(Long userId);
+
+    PhotoBoothEntity findByIdWithTag(Long photoBoothId);
 }

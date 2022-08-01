@@ -34,4 +34,8 @@ public class TagService {
         }
         return tagEntity;
     }
+
+    public List<TagEntity> getTagByPhotoBoothId(Long photoBoothId) {
+        return tagRepository.findByPhotoBoothId(photoBoothId);
+    }
 }

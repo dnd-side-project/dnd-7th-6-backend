@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TagRepository extends JpaRepository<TagEntity, Long> {
+public interface TagRepository extends JpaRepository<TagEntity, Long>, TagCustomRepository {
     TagEntity findOneByTitleAndTagType(String title, TagType tagType);
 
     List<TagEntity> findAllByTagType(TagType tagType);
