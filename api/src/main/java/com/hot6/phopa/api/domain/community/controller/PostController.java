@@ -46,7 +46,14 @@ public class PostController {
     public void like(
             @PathVariable Long postId,
             @PathVariable Long userId
-    ){
+    ) {
         postService.like(postId, userId);
+    }
+
+    @GetMapping("/recommendation/{tag}")
+    public List<PostApiResponse> getPostsByTag(
+            @PathVariable String tag
+    ) {
+        return postService.getPostsByTag(tag);
     }
 }
