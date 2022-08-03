@@ -1,6 +1,5 @@
 package com.hot6.phopa.api.domain.photobooth.controller;
 
-import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothApiResponse;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothFormResponse;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothWithTagResponse;
@@ -28,9 +27,11 @@ public class PhotoBoothController {
             @RequestParam Double longitude,
             @RequestParam Double distance,
             @RequestParam Status status,
-            @RequestParam(required = false) Set<Long> tagIdSet
+            @RequestParam(required = false) Set<Long> tagIdSet,
+            @RequestParam @Positive int pageSize,
+            @RequestParam @Positive int pageNumber
             ){
-        return photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet);
+        return photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, pageSize, pageNumber);
     }
 
     @GetMapping("/{photoBoothId}")

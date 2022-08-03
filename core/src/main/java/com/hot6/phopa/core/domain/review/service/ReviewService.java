@@ -24,8 +24,8 @@ public class ReviewService {
     private final ReviewLikeRepository reviewLikeRepository;
 
     @Transactional(readOnly = true)
-    public List<ReviewEntity> getReview(long photoBoothId) {
-        return reviewRepository.findByPhotoBoothId(photoBoothId);
+    public List<ReviewEntity> getReview(long photoBoothId, int pageSize, int pageNumber) {
+        return reviewRepository.findByPhotoBoothId(photoBoothId, pageSize, pageNumber).getContent();
     }
 
     public ReviewEntity createReview(ReviewEntity reviewEntity) {

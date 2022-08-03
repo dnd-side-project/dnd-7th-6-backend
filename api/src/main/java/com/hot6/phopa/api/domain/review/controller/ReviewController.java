@@ -22,9 +22,11 @@ public class ReviewController {
 
     @GetMapping
     public List<ReviewApiResponse> getPhotoBoothReview(
-            @RequestParam @Positive long photoBoothId
+            @RequestParam @Positive long photoBoothId,
+            @RequestParam @Positive int pageSize,
+            @RequestParam @Positive int pageNumber
     ) {
-        return reviewService.getReview(photoBoothId);
+        return reviewService.getReview(photoBoothId, pageSize, pageNumber);
     }
 
 

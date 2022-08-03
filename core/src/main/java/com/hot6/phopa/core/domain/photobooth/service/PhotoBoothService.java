@@ -17,6 +17,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +45,8 @@ public class PhotoBoothService {
 
     @Transactional(readOnly = true)
     //    distance 1 = 1km
-    public List<PhotoBoothEntity> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet) {
+    //TODO 리팩토링 필요
+    public List<PhotoBoothEntity> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, int pageSize, int pageNumber) {
         Location northEast = GeometryUtil
                 .calculate(latitude, longitude, distance, Direction.NORTHEAST.getBearing());
         Location southWest = GeometryUtil
@@ -55,15 +57,15 @@ public class PhotoBoothService {
         double x2 = southWest.getLatitude();
         double y2 = southWest.getLongitude();
         String pointFormat = String.format("'LINESTRING(%f %f, %f %f)')", x1, y1, x2, y2);
-
-        String tagWhereStr = CollectionUtils.isNotEmpty(tagIdSet) ? "AND t.id IN (" + tagIdSet.stream().map(String::valueOf).collect(Collectors.joining(", ")) + ") " : "";
-
-        Query query = em.createNativeQuery("SELECT DISTINCT p.*"
+        String orderByFormat = " ORDER BY " + String.format("ST_DISTANCE(p.point, POINT(%f, %f)) ", longitude, latitude);
+        String tagIdStringFormat = "(" + tagIdSet.stream().map(String::valueOf).collect(Collectors.joining(", ")) + ") ";
+        String tagWhereStr = CollectionUtils.isNotEmpty(tagIdSet) ? "AND (t.id IN " + tagIdStringFormat + " OR p.tag_id IN" + tagIdStringFormat + ")": "";
+        Query query = em.createNativeQuery("SELECT DISTINCT p.* "
                 + "FROM photo_booth AS p "
                 + "LEFT JOIN review r ON r.photo_booth_id = p.id "
                 + "LEFT JOIN review_tag rt ON rt.review_id = r.id "
                 + "LEFT JOIN tag t ON rt.tag_id = t.id "
-                + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) and p.status ='" + status + "'" + tagWhereStr, PhotoBoothEntity.class);
+                + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) AND p.status ='" + status + "' " + tagWhereStr + orderByFormat + "LIMIT  " + pageSize +" OFFSET  " + (pageNumber - 1), PhotoBoothEntity.class);
 
         return query.getResultList();
     }
