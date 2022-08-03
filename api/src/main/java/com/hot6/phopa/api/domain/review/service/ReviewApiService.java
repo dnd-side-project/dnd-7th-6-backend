@@ -5,6 +5,8 @@ import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewCreateReque
 import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.common.model.dto.PageableParam;
+import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.service.S3UploadService;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
@@ -23,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,9 +57,10 @@ public class ReviewApiService {
     private String reviewPath;
 
     @Transactional(readOnly = true)
-    public List<ReviewApiResponse> getReview(long photoBoothId, int pageSize, int pageNumber) {
-        List<ReviewEntity> reviewEntityList = reviewService.getReview(photoBoothId, pageSize, pageNumber);
-        return reviewMapper.toDtoList(reviewEntityList);
+    public PageableResponse<ReviewApiResponse> getReview(long photoBoothId, PageableParam pageable) {
+        Page<ReviewEntity> reviewEntityPage = reviewService.getReview(photoBoothId, pageable);
+        List<ReviewApiResponse> reviewApiResponseList = reviewMapper.toDtoList(reviewEntityPage.getContent());
+        return PageableResponse.makeResponse(reviewEntityPage, reviewApiResponseList);
     }
 
     public ReviewApiResponse createReview(ReviewCreateRequest reviewCreateRequest, List<MultipartFile> reviewImageList) {

@@ -4,6 +4,8 @@ import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoot
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothFormResponse;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothWithTagResponse;
 import com.hot6.phopa.api.domain.photobooth.service.PhotoBoothApiService;
+import com.hot6.phopa.core.common.model.dto.PageableParam;
+import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import com.hot6.phopa.core.common.model.type.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,16 +24,15 @@ public class PhotoBoothController {
     private final PhotoBoothApiService photoBoothService;
 
     @GetMapping("/near-by")
-    public List<PhotoBoothApiResponse> getPhotoBoothNearByUserGeo(
+    public PageableResponse<PhotoBoothApiResponse> getPhotoBoothNearByUserGeo(
             @RequestParam Double latitude,
             @RequestParam Double longitude,
             @RequestParam Double distance,
-            @RequestParam Status status,
+            @RequestParam(required = false) Status status,
             @RequestParam(required = false) Set<Long> tagIdSet,
-            @RequestParam @Positive int pageSize,
-            @RequestParam @Positive int pageNumber
+            PageableParam pageable
             ){
-        return photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, pageSize, pageNumber);
+        return photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, pageable);
     }
 
     @GetMapping("/{photoBoothId}")

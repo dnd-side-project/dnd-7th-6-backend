@@ -2,12 +2,14 @@ package com.hot6.phopa.core.domain.review.service;
 
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
+import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewLikeEntity;
 import com.hot6.phopa.core.domain.review.repository.ReviewLikeRepository;
 import com.hot6.phopa.core.domain.review.repository.ReviewRepository;
 import com.hot6.phopa.core.domain.tag.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +26,8 @@ public class ReviewService {
     private final ReviewLikeRepository reviewLikeRepository;
 
     @Transactional(readOnly = true)
-    public List<ReviewEntity> getReview(long photoBoothId, int pageSize, int pageNumber) {
-        return reviewRepository.findByPhotoBoothId(photoBoothId, pageSize, pageNumber).getContent();
+    public Page<ReviewEntity> getReview(long photoBoothId, PageableParam pageable) {
+        return reviewRepository.findByPhotoBoothId(photoBoothId, pageable);
     }
 
     public ReviewEntity createReview(ReviewEntity reviewEntity) {

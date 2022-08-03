@@ -3,6 +3,8 @@ package com.hot6.phopa.api.domain.community.controller;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostApiResponse;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostCreateRequest;
 import com.hot6.phopa.api.domain.community.service.PostApiService;
+import com.hot6.phopa.core.common.model.dto.PageableParam;
+import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -52,11 +54,10 @@ public class PostController {
     }
 
     @GetMapping("/recommendation")
-    public List<PostApiResponse> getPostsByTag(
+    public PageableResponse<PostApiResponse> getPostsByTag(
             @RequestParam("tagIdSet") Set<Long> tagIdSet,
-            @RequestParam @Positive int pageSize,
-            @RequestParam @Positive int pageNumber
+            PageableParam pageable
     ) {
-        return postService.getPostsByTagIdSet(tagIdSet, pageSize, pageNumber);
+        return postService.getPostsByTagIdSet(tagIdSet, pageable);
     }
 }

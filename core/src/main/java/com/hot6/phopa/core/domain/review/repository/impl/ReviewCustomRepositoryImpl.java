@@ -1,5 +1,6 @@
 package com.hot6.phopa.core.domain.review.repository.impl;
 
+import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.repository.ReviewCustomRepository;
 import com.hot6.phopa.core.domain.tag.model.entity.QTagEntity;
@@ -29,7 +30,7 @@ public class ReviewCustomRepositoryImpl extends QuerydslRepositorySupport implem
     }
 
     @Override
-    public Page<ReviewEntity> findByPhotoBoothId(long photoBoothId, int pageSize, int pageNumber) {
+    public Page<ReviewEntity> findByPhotoBoothId(long photoBoothId, PageableParam pageable) {
         QueryResults<ReviewEntity> result = jpaQueryFactory
                 .selectFrom(reviewEntity)
                 .join(reviewEntity.photoBooth, photoBoothEntity).fetchJoin()
@@ -37,9 +38,9 @@ public class ReviewCustomRepositoryImpl extends QuerydslRepositorySupport implem
                 .leftJoin(reviewEntity.reviewTagSet, reviewTagEntity).fetchJoin()
                 .leftJoin(reviewTagEntity.tag, QTagEntity.tagEntity).fetchJoin()
                 .where(photoBoothEntity.id.eq(photoBoothId))
-                .offset(pageNumber - 1)
-                .limit(pageSize)
+                .offset(pageable.getPage())
+                .limit(pageable.getPageSize())
                 .distinct().fetchResults();
-        return new PageImpl<>(result.getResults(), PageRequest.of(pageSize, pageNumber), result.getTotal()) ;
+        return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
     }
 }

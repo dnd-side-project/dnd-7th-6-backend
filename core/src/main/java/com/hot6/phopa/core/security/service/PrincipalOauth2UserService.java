@@ -60,6 +60,7 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
         // 유저 데이터가 없을 경우 회원가입
         if (userEntity == null) {
             UserDTO userDTO = new UserDTO(
+                    userEntity.getId(),
                     email,
                     bCryptPasswordEncoder.encode(email),
                     UserStatus.ACTIVE,
