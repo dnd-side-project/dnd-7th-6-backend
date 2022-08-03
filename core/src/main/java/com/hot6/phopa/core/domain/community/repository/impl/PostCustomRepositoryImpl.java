@@ -1,5 +1,6 @@
 package com.hot6.phopa.core.domain.community.repository.impl;
 
+import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.QPostLikeEntity;
 import com.hot6.phopa.core.domain.community.model.entity.QPostTagEntity;
@@ -57,18 +58,18 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 
 
     @Override
-    public Page<PostEntity> getPostByTagIdSet(Set<Long> tagIdSet, int pageSize, int pageNumber) {
+    public Page<PostEntity> getPostByTagIdSet(Set<Long> tagIdSet, PageableParam pageable) {
         QueryResults result = jpaQueryFactory.selectFrom(postEntity)
                 .join(postEntity.postLikeSet, postLikeEntity).fetchJoin()
                 .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
                 .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
                 .leftJoin(postLikeEntity.user, userEntity).fetchJoin()
                 .where(tagEntity.id.in(tagIdSet))
-                .offset(pageNumber - 1)
-                .limit(pageSize)
+                .offset(pageable.getPage())
+                .limit(pageable.getPageSize())
                 .distinct()
                 .fetchResults();
-        return new PageImpl<>(result.getResults(), PageRequest.of(pageSize, pageNumber), result.getTotal());
+        return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
 
     }
 }

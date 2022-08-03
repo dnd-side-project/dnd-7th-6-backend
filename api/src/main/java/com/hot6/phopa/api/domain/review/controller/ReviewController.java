@@ -3,6 +3,8 @@ package com.hot6.phopa.api.domain.review.controller;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewCreateRequest;
 import com.hot6.phopa.api.domain.review.service.ReviewApiService;
+import com.hot6.phopa.core.common.model.dto.PageableParam;
+import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -21,12 +23,11 @@ public class ReviewController {
     private final ReviewApiService reviewService;
 
     @GetMapping
-    public List<ReviewApiResponse> getPhotoBoothReview(
+    public PageableResponse<ReviewApiResponse> getPhotoBoothReview(
             @RequestParam @Positive long photoBoothId,
-            @RequestParam @Positive int pageSize,
-            @RequestParam @Positive int pageNumber
+            PageableParam pageable
     ) {
-        return reviewService.getReview(photoBoothId, pageSize, pageNumber);
+        return reviewService.getReview(photoBoothId, pageable);
     }
 
 

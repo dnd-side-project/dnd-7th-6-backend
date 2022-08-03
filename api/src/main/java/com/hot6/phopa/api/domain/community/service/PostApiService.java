@@ -5,6 +5,8 @@ import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostCreateReques
 import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.common.model.dto.PageableParam;
+import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.service.S3UploadService;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
@@ -21,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -135,7 +138,9 @@ public class PostApiService {
     }
 
 
-    public List<PostApiResponse> getPostsByTagIdSet(Set<Long> tagIdSet, int pageSize, int pageNumber) {
-        return postApiMapper.toDtoList(postService.getPostByTagIdSet(tagIdSet, pageSize, pageNumber));
+    public PageableResponse<PostApiResponse> getPostsByTagIdSet(Set<Long> tagIdSet, PageableParam pageable) {
+        Page<PostEntity> postEntityPage = postService.getPostByTagIdSet(tagIdSet, pageable);
+        List<PostApiResponse> postApiResponseList = postApiMapper.toDtoList(postEntityPage.getContent());
+        return PageableResponse.makeResponse(postEntityPage, postApiResponseList);
     }
 }
