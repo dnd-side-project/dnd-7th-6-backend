@@ -37,7 +37,7 @@ public class ReviewCustomRepositoryImpl extends QuerydslRepositorySupport implem
                 .leftJoin(reviewEntity.reviewTagSet, reviewTagEntity).fetchJoin()
                 .leftJoin(reviewTagEntity.tag, QTagEntity.tagEntity).fetchJoin()
                 .where(photoBoothEntity.id.eq(photoBoothId))
-                .offset(pageNumber)
+                .offset(pageNumber - 1)
                 .limit(pageSize)
                 .distinct().fetchResults();
         return new PageImpl<>(result.getResults(), PageRequest.of(pageSize, pageNumber), result.getTotal()) ;

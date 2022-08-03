@@ -65,7 +65,7 @@ public class PhotoBoothService {
                 + "LEFT JOIN review r ON r.photo_booth_id = p.id "
                 + "LEFT JOIN review_tag rt ON rt.review_id = r.id "
                 + "LEFT JOIN tag t ON rt.tag_id = t.id "
-                + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) AND p.status ='" + status + "' " + tagWhereStr + orderByFormat + "LIMIT  " + pageSize +" OFFSET  " + pageNumber, PhotoBoothEntity.class);
+                + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) AND p.status ='" + status + "' " + tagWhereStr + orderByFormat + "LIMIT  " + pageSize +" OFFSET  " + (pageNumber - 1), PhotoBoothEntity.class);
 
         return query.getResultList();
     }

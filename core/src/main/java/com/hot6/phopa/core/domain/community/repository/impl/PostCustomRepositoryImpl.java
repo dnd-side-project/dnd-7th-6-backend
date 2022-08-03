@@ -2,14 +2,22 @@ package com.hot6.phopa.core.domain.community.repository.impl;
 
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.QPostLikeEntity;
+import com.hot6.phopa.core.domain.community.model.entity.QPostTagEntity;
 import com.hot6.phopa.core.domain.community.repository.PostCustomRepository;
+import com.hot6.phopa.core.domain.tag.model.entity.QTagEntity;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.user.model.entity.QUserEntity;
+import com.querydsl.core.QueryResults;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.hot6.phopa.core.domain.community.model.entity.QPostEntity.postEntity;
 import static com.hot6.phopa.core.domain.community.model.entity.QPostImageEntity.postImageEntity;
@@ -47,12 +55,20 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
                 .fetch();
     }
 
-    public List<PostEntity> getPostByTag(Long tagId) {
-        return from(postEntity)
+
+    @Override
+    public Page<PostEntity> getPostByTagIdSet(Set<Long> tagIdSet, int pageSize, int pageNumber) {
+        QueryResults result = jpaQueryFactory.selectFrom(postEntity)
                 .join(postEntity.postLikeSet, postLikeEntity).fetchJoin()
+                .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
+                .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
                 .leftJoin(postLikeEntity.user, userEntity).fetchJoin()
-                .where(tagEntity.id.eq(tagId))
+                .where(tagEntity.id.in(tagIdSet))
+                .offset(pageNumber - 1)
+                .limit(pageSize)
                 .distinct()
-                .fetch();
+                .fetchResults();
+        return new PageImpl<>(result.getResults(), PageRequest.of(pageSize, pageNumber), result.getTotal());
+
     }
 }

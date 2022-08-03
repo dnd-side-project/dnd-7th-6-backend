@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Positive;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -52,8 +53,10 @@ public class PostController {
 
     @GetMapping("/recommendation")
     public List<PostApiResponse> getPostsByTag(
-            @RequestParam("tagId") Long tagId
+            @RequestParam("tagIdSet") Set<Long> tagIdSet,
+            @RequestParam @Positive int pageSize,
+            @RequestParam @Positive int pageNumber
     ) {
-        return postService.getPostsByTag(tagId);
+        return postService.getPostsByTagIdSet(tagIdSet, pageSize, pageNumber);
     }
 }

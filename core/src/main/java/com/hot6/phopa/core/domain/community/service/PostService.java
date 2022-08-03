@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +55,7 @@ public class PostService {
         return postRepository.findAllByUserLike(userId);
     }
 
-    public List<PostEntity> getPostByTag(Long tagId) {
-        return postRepository.getPostByTag(tagId);
+    public List<PostEntity> getPostByTagIdSet(Set<Long> tagIdSet, int pageSize, int pageNumber) {
+        return postRepository.getPostByTagIdSet(tagIdSet, pageSize, pageNumber).getContent();
     }
 }
