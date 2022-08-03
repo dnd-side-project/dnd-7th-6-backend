@@ -54,6 +54,6 @@ public class PostController {
     public List<PostApiResponse> getPostsByTag(
             @RequestParam("tagId") Long tagId
     ) {
-        return postService.getPostsByTag(tagId);
+        return postService.getPostsByTagId(tagId);
     }
 }
