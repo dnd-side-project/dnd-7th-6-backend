@@ -46,7 +46,7 @@ public class PhotoBoothService {
     @Transactional(readOnly = true)
     //    distance 1 = 1km
     //TODO 리팩토링 필요
-    public List<PhotoBoothEntity> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet) {
+    public List<PhotoBoothEntity> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, int pageSize, int pageNumber) {
         Location northEast = GeometryUtil
                 .calculate(latitude, longitude, distance, Direction.NORTHEAST.getBearing());
         Location southWest = GeometryUtil
@@ -65,7 +65,7 @@ public class PhotoBoothService {
                 + "LEFT JOIN review r ON r.photo_booth_id = p.id "
                 + "LEFT JOIN review_tag rt ON rt.review_id = r.id "
                 + "LEFT JOIN tag t ON rt.tag_id = t.id "
-                + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) AND p.status ='" + status + "' " + tagWhereStr + orderByFormat + "LIMIT  " + 3 +" OFFSET  " + 1, PhotoBoothEntity.class);
+                + "WHERE MBRContains(ST_LINESTRINGFROMTEXT(" + pointFormat + ", p.point) AND p.status ='" + status + "' " + tagWhereStr + orderByFormat + "LIMIT  " + pageSize +" OFFSET  " + pageNumber, PhotoBoothEntity.class);
 
         return query.getResultList();
     }
