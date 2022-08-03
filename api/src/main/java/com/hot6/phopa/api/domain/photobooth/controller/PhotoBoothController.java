@@ -1,6 +1,5 @@
 package com.hot6.phopa.api.domain.photobooth.controller;
 
-import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothApiResponse;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothFormResponse;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothWithTagResponse;
@@ -8,7 +7,6 @@ import com.hot6.phopa.api.domain.photobooth.service.PhotoBoothApiService;
 import com.hot6.phopa.core.common.model.type.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Positive;
@@ -30,8 +28,8 @@ public class PhotoBoothController {
             @RequestParam Double distance,
             @RequestParam Status status,
             @RequestParam(required = false) Set<Long> tagIdSet,
-            @RequestParam Integer pageSize,
-            @RequestParam Integer pageNumber
+            @RequestParam @Positive int pageSize,
+            @RequestParam @Positive int pageNumber
             ){
         return photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, pageSize, pageNumber);
     }

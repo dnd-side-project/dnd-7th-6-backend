@@ -54,8 +54,8 @@ public class ReviewApiService {
     private String reviewPath;
 
     @Transactional(readOnly = true)
-    public List<ReviewApiResponse> getReview(long photoBoothId) {
-        List<ReviewEntity> reviewEntityList = reviewService.getReview(photoBoothId);
+    public List<ReviewApiResponse> getReview(long photoBoothId, int pageSize, int pageNumber) {
+        List<ReviewEntity> reviewEntityList = reviewService.getReview(photoBoothId, pageSize, pageNumber);
         return reviewMapper.toDtoList(reviewEntityList);
     }
 
