@@ -54,8 +54,7 @@ public class PostService {
         return postRepository.findAllByUserLike(userId);
     }
 
-    public List<PostEntity> getPostByTag(String tagTitle) {
-        TagEntity tag = tagRepository.findOneByTitleAndTagType(tagTitle, TagType.POST);
-        return postRepository.getPostByTag(tag.getId());
+    public List<PostEntity> getPostByTag(Long tagId) {
+        return postRepository.getPostByTag(tagId);
     }
 }

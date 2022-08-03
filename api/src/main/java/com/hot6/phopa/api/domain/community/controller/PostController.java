@@ -52,8 +52,8 @@ public class PostController {
 
     @GetMapping("/recommendation")
     public List<PostApiResponse> getPostsByTag(
-            @RequestParam("tagTitle") String tagTitle
+            @RequestParam("tagId") Long tagId
     ) {
-        return postService.getPostsByTag(tagTitle);
+        return postService.getPostsByTag(tagId);
     }
 }
