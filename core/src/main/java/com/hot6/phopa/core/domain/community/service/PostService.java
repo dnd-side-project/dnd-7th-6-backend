@@ -6,6 +6,8 @@ import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostLikeEntity;
 import com.hot6.phopa.core.domain.community.repository.PostLikeRepository;
 import com.hot6.phopa.core.domain.community.repository.PostRepository;
+import com.hot6.phopa.core.domain.tag.enumeration.TagType;
+import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.tag.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,5 +52,9 @@ public class PostService {
 
     public List<PostEntity> findAllByUserLike(Long userId) {
         return postRepository.findAllByUserLike(userId);
+    }
+
+    public List<PostEntity> getPostByTag(Long tagId) {
+        return postRepository.getPostByTag(tagId);
     }
 }

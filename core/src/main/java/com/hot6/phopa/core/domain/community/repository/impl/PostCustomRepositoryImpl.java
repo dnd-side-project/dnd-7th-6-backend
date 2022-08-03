@@ -3,6 +3,7 @@ package com.hot6.phopa.core.domain.community.repository.impl;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.QPostLikeEntity;
 import com.hot6.phopa.core.domain.community.repository.PostCustomRepository;
+import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.user.model.entity.QUserEntity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
@@ -43,6 +44,15 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
                 .join(postEntity.postLikeSet, postLikeEntity).fetchJoin()
                 .join(postLikeEntity.user, userEntity).fetchJoin()
                 .where(userEntity.id.eq(userId))
+                .fetch();
+    }
+
+    public List<PostEntity> getPostByTag(Long tagId) {
+        return from(postEntity)
+                .join(postEntity.postLikeSet, postLikeEntity).fetchJoin()
+                .leftJoin(postLikeEntity.user, userEntity).fetchJoin()
+                .where(tagEntity.id.eq(tagId))
+                .distinct()
                 .fetch();
     }
 }
