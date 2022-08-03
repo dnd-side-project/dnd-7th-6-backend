@@ -134,7 +134,7 @@ public class PostApiService {
         return postApiMapper.toDto(postService.getPostById(postId));
     }
 
-    public List<PostApiResponse> getPostsByTag(Long tagId) {
+    public List<PostApiResponse> getPostsByTagId(Long tagId) {
         return postApiMapper.toDtoList(postService.getPostByTag(tagId));
     }
 }

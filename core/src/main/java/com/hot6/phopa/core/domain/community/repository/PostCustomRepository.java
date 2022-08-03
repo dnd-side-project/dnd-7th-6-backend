@@ -12,5 +12,5 @@ public interface PostCustomRepository {
 
     List<PostEntity> findAllByUserLike(Long userId);
 
-    List<PostEntity> getPostByTag(Long tagId);
+    List<PostEntity> getPostByTagId(Long tagId);
 }

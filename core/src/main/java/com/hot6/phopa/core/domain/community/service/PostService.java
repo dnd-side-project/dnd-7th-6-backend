@@ -55,6 +55,6 @@ public class PostService {
     }
 
     public List<PostEntity> getPostByTag(Long tagId) {
-        return postRepository.getPostByTag(tagId);
+        return postRepository.getPostByTagId(tagId);
     }
 }
