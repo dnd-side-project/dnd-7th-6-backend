@@ -56,6 +56,6 @@ public class PostService {
 
     public List<PostEntity> getPostByTag(String tagTitle) {
         TagEntity tag = tagRepository.findOneByTitleAndTagType(tagTitle, TagType.POST);
-        return postRepository.getPostByTag(tag);
+        return postRepository.getPostByTag(tag.getId());
     }
 }

@@ -50,10 +50,10 @@ public class PostController {
         postService.like(postId, userId);
     }
 
-    @GetMapping("/recommendation/{tag}")
+    @GetMapping("/recommendation")
     public List<PostApiResponse> getPostsByTag(
-            @PathVariable String tag
+            @RequestParam("tagTitle") String tagTitle
     ) {
-        return postService.getPostsByTag(tag);
+        return postService.getPostsByTag(tagTitle);
     }
 }

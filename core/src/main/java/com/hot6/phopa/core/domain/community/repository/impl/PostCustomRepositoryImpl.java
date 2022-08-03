@@ -47,11 +47,12 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
                 .fetch();
     }
 
-    public List<PostEntity> getPostByTag(TagEntity tag) {
+    public List<PostEntity> getPostByTag(Long tagId) {
         return from(postEntity)
                 .join(postEntity.postLikeSet, postLikeEntity).fetchJoin()
-                .join(postLikeEntity.user, userEntity).fetchJoin()
-                .where(tagEntity.eq(tag))
+                .leftJoin(postLikeEntity.user, userEntity).fetchJoin()
+                .where(tagEntity.id.eq(tagId))
+                .distinct()
                 .fetch();
     }
 }
