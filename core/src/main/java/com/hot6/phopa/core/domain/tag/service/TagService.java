@@ -1,10 +1,13 @@
 package com.hot6.phopa.core.domain.tag.service;
 
+import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.domain.tag.enumeration.TagType;
 import com.hot6.phopa.core.domain.tag.repository.TagRepository;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -37,5 +40,9 @@ public class TagService {
 
     public List<TagEntity> getTagByPhotoBoothId(Long photoBoothId) {
         return tagRepository.findByPhotoBoothId(photoBoothId);
+    }
+    @Transactional(readOnly = true)
+    public Page<TagEntity> getTagByKeyword(String keyword, TagType tagType, PageableParam pageable) {
+        return tagRepository.getTagByKeyword(keyword, tagType, pageable);
     }
 }
