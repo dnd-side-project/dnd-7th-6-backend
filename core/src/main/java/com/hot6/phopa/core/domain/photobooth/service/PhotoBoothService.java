@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,7 +40,7 @@ public class PhotoBoothService {
 
     @Transactional(readOnly = true)
     //    distance 1 = 1km
-    public Page<PhotoBoothEntity> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, PageableParam pageable) {
+    public Page<PhotoBoothEntity> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, Long userId, PageableParam pageable) {
         Location northEast = GeometryUtil
                 .calculate(latitude, longitude, distance, Direction.NORTHEAST.getBearing());
         Location southWest = GeometryUtil
@@ -97,6 +94,11 @@ public class PhotoBoothService {
     @Transactional(readOnly = true)
     public PhotoBoothLikeEntity getPhotoBoothLikeByPhotoBoothIdAndUserId(Long photoBoothId, Long userId) {
         return photoBoothLikeRepository.findOneByPhotoBoothIdAndUserId(photoBoothId, userId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<PhotoBoothLikeEntity> getPhotoBoothLikeByPhotoBoothIdListAndUserId(List<Long> photoBoothIdList, Long userId) {
+        return photoBoothLikeRepository.findAllByPhotoBoothIdListAndUserId(photoBoothIdList, userId);
     }
 
     public List<PhotoBoothEntity> findAllByUserLike(Long userId) {

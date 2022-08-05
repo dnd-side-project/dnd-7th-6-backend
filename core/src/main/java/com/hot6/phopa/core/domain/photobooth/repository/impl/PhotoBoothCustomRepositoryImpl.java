@@ -4,8 +4,6 @@ import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothCustomRepository;
-import com.hot6.phopa.core.domain.review.model.entity.QReviewTagEntity;
-import com.hot6.phopa.core.domain.tag.model.entity.QTagEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.OrderSpecifier;
@@ -88,12 +86,12 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
         return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
     }
 
-    private Predicate buildPredicate(Status status, Set<Long> tagIdSet){
+    private Predicate buildPredicate(Status status, Set<Long> tagIdSet) {
         BooleanBuilder builder = new BooleanBuilder();
-        if(status != null){
+        if (status != null) {
             builder.and(photoBoothEntity.status.eq(status));
         }
-        if(CollectionUtils.isNotEmpty(tagIdSet)){
+        if (CollectionUtils.isNotEmpty(tagIdSet)) {
             builder.and(photoBoothEntity.tag.id.in(tagIdSet).or(tagEntity.id.in(tagIdSet)));
         }
         return builder.getValue();
