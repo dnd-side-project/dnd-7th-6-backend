@@ -86,6 +86,10 @@ public class ReviewApiService {
                                 .tag(tagEntity)
                                 .build()
                 );
+                if(tagEntity.getReviewTagSet().stream().anyMatch(r -> r.getReview().getPhotoBooth().getId().equals(photoBoothEntity.getId())) == false){
+                    tagEntity.updatePhotoBoothCount(1);
+                }
+                tagEntity.updateReviewCount(1);
             }
             reviewEntity.setReviewTagSet(reviewTagEntitySet);
         }

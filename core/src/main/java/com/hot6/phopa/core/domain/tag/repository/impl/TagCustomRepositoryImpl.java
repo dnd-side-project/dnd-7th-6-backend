@@ -47,7 +47,7 @@ public class TagCustomRepositoryImpl extends QuerydslRepositorySupport implement
         QueryResults result = jpaQueryFactory
                 .selectFrom(tagEntity)
                 .where(buildPredicate(tagType))
-                .where(tagEntity.title.contains(keyword))
+                .where(tagEntity.keyword.contains(keyword))
                 .limit(pageable.getPageSize())
                 .offset(pageable.getPage())
                 .fetchResults();
