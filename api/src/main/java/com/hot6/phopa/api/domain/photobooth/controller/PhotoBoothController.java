@@ -24,22 +24,24 @@ public class PhotoBoothController {
     private final PhotoBoothApiService photoBoothService;
 
     @GetMapping("/near-by")
-    public PageableResponse<PhotoBoothApiResponse> getPhotoBoothNearByUserGeo(
+    public PageableResponse<PhotoBoothWithTagResponse> getPhotoBoothNearByUserGeo(
             @RequestParam Double latitude,
             @RequestParam Double longitude,
             @RequestParam Double distance,
             @RequestParam(required = false) Status status,
             @RequestParam(required = false) Set<Long> tagIdSet,
+            @RequestParam(required = false) Long userId,
             PageableParam pageable
             ){
-        return photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, pageable);
+        return photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, userId, pageable);
     }
 
     @GetMapping("/{photoBoothId}")
     public PhotoBoothWithTagResponse getPhotoBooth(
-            @PathVariable @Positive Long photoBoothId
+            @PathVariable @Positive Long photoBoothId,
+            @RequestParam(required = false) Long userId
     ){
-        return photoBoothService.getPhotoBooth(photoBoothId);
+        return photoBoothService.getPhotoBooth(photoBoothId, userId);
     }
 
     @GetMapping("/kakao-map-test")

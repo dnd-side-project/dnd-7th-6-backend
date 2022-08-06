@@ -29,6 +29,7 @@ public class PhotoBoothApiDTO {
         PhotoBoothApiResponse photoBooth;
         ReviewApiResponse firstReview;
         List<TagDTO> tagSet;
+        boolean isLike;
     }
     @Getter
     @Setter
