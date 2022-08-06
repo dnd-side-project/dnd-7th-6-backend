@@ -41,4 +41,11 @@ public class TagController {
     ){
         return tagService.createTagList(tagCreateRequestList);
     }
+
+    @GetMapping(value = "/form")
+    public List<TagApiResponse> getForm(
+            @RequestParam TagType tagType
+    ){
+        return tagService.getForm(tagType);
+    }
 }

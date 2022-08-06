@@ -45,4 +45,8 @@ public class TagApiService {
                 .tagType(tagCreateRequest.getTagType())
                 .build();
     }
+
+    public List<TagApiResponse> getForm(TagType tagType) {
+        return tagApiMapper.toDtoList(tagService.getTagListByTagType(tagType));
+    }
 }
