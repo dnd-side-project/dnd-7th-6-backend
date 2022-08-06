@@ -45,4 +45,12 @@ public class TagService {
     public Page<TagEntity> getTagByKeyword(String keyword, TagType tagType, PageableParam pageable) {
         return tagRepository.getTagByKeyword(keyword, tagType, pageable);
     }
+
+    public TagEntity create(TagEntity tagEntity) {
+        return tagRepository.save(tagEntity);
+    }
+
+    public List<TagEntity> createAll(List<TagEntity> tagEntityList) {
+        return tagRepository.saveAll(tagEntityList);
+    }
 }
