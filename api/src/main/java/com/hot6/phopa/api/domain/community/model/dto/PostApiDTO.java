@@ -68,6 +68,12 @@ public class PostApiDTO {
         Map<TagType, List<TagDTO>> conceptTagList;
         List<TagDTO> frameTagList;
     }
+    @Getter
+    @Setter
+    @AllArgsConstructor(staticName = "of")
+    public static class PostForm {
+        Map<TagType, List<TagDTO>> postFormTagList;
+    }
 }
 
 

@@ -1,8 +1,10 @@
 package com.hot6.phopa.api.domain.community.service;
 
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostApiResponse;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostCreateRequest;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostFilterForm;
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostForm;
 import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
@@ -168,5 +170,11 @@ public class PostApiService {
             }
         }
         return PostFilterForm.of(brandTagList, personalTagList, conceptTagList, frameTagList);
+    }
+
+    public PostForm getFormData() {
+        List<TagDTO> tagDTOList = tagMapper.toDtoList(tagService.getTagListByTagTypeList(TagType.POST_TAG_LIST, null));
+        Map<TagType, List<TagDTO>> tagTypeListMap = tagDTOList.stream().collect(Collectors.groupingBy(TagDTO::getTagType));
+        return PostForm.of(tagTypeListMap);
     }
 }
