@@ -80,8 +80,10 @@ public class PhotoBoothApiService {
     }
 
     public PhotoBoothFormResponse getFormData() {
-        List<TagEntity> tagEntityList = tagService.getTagListByTagType(TagType.BRAND);
-        return PhotoBoothFormResponse.of(tagMapper.toDtoList(tagEntityList));
+        List<TagDTO> tagDTOList = tagMapper.toDtoList(tagService.getTagListByTagTypeList(TagType.REVIEW_FORM_TAG_LIST, true));
+        List<TagDTO> brandTagDTOList = tagDTOList.stream().filter(tag -> TagType.BRAND.equals(tag.getTagType())).collect(Collectors.toList());
+        tagDTOList.removeAll(brandTagDTOList);
+        return PhotoBoothFormResponse.of(brandTagDTOList, tagDTOList);
     }
 
     public PhotoBoothWithTagResponse getPhotoBooth(Long photoBoothId, Long userId) {
