@@ -73,6 +73,7 @@ public class ReviewApiService {
                 .content(reviewCreateRequest.getContent())
                 .likeCount(0)
                 .status(Status.ACTIVE)
+                .starScore(reviewCreateRequest.getStarScore())
                 .user(userEntity)
                 .photoBooth(photoBoothEntity)
                 .build();
@@ -120,7 +121,7 @@ public class ReviewApiService {
     public void fileInvalidCheck(List<MultipartFile> imageList) {
         if (CollectionUtils.isNotEmpty(imageList)) {
             for (MultipartFile file : imageList) {
-                if (Arrays.asList("jpg", "jpeg", "png").contains(FilenameUtils.getExtension(file.getOriginalFilename())) == false) {
+                if (Arrays.asList("jpg", "jpeg", "png", "JPG", "PNG").contains(FilenameUtils.getExtension(file.getOriginalFilename())) == false) {
                     throw new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST);
                 }
             }
