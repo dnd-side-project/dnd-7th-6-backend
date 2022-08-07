@@ -57,7 +57,7 @@ public class PhotoBoothApiService {
     }
 
     public List<PhotoBoothApiResponse> kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance) {
-        TagEntity tagEntity = tagService.getTagOrCreate(keyword, TagType.PHOTO_BOOTH);
+        TagEntity tagEntity = tagService.getTagOrCreate(keyword, TagType.BRAND);
         List<PhotoBoothEntity> photoBoothEntityList = photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance, tagEntity);
         return photoBoothMapper.toDtoList(photoBoothEntityList);
     }
@@ -80,7 +80,7 @@ public class PhotoBoothApiService {
     }
 
     public PhotoBoothFormResponse getFormData() {
-        List<TagEntity> tagEntityList = tagService.getTagListByTagType(TagType.PHOTO_BOOTH);
+        List<TagEntity> tagEntityList = tagService.getTagListByTagType(TagType.BRAND);
         return PhotoBoothFormResponse.of(tagMapper.toDtoList(tagEntityList));
     }
 

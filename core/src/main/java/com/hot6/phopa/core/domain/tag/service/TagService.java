@@ -31,7 +31,7 @@ public class TagService {
                             .postCount(0)
                             .reviewCount(0)
                             .photoBoothCount(0)
-                            .tagType(TagType.PHOTO_BOOTH)
+                            .tagType(TagType.BRAND)
                             .build()
             );
         }
