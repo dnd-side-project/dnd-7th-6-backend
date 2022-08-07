@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS `tag`;
 CREATE TABLE `tag` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'tag id',
   `title` varchar(50) NOT NULL COMMENT 'tag title',
+  `keyword` varchar(50) NOT NULL COMMENT 'tag keyword',
   `review_count` int NOT NULL default 0  COMMENT 'tag 리뷰수',
   `post_count` int NOT NULL default 0 COMMENT 'tag 포스트수',
   `photo_booth_count` int NOT NULL default 0 COMMENT 'tag photoBooth 수',
@@ -14,5 +15,5 @@ CREATE TABLE `tag` (
   `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='태그 테이블';
-create unique index tag_title_tag_type_uindex
-    on tag (title, tag_type);
+create unique index tag_keyword_tag_type_uindex
+    on tag (keyword, tag_type);

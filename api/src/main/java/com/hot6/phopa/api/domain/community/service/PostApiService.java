@@ -79,6 +79,7 @@ public class PostApiService {
                                 .tag(tagEntity)
                                 .build()
                 );
+                tagEntity.updatePostCount(1);
             }
             postEntity.setPostTagSet(postTagEntitySet);
         }

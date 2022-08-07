@@ -29,14 +29,17 @@ public class TagEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "title")
     private String title;
 
+    @Column(name = "keyword")
+    private String keyword;
+
     @Column(name = "review_count")
-    private Integer reviewCount;
+    private int reviewCount;
 
     @Column(name = "post_count")
-    private Integer postCount;
+    private int postCount;
 
     @Column(name = "photo_booth_count")
-    private Integer photoBoothCount;
+    private int photoBoothCount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tag_type")
@@ -54,4 +57,9 @@ public class TagEntity extends BaseTimeEntity implements Serializable {
     public void updatePhotoBoothCount(int count) {
         this.photoBoothCount += count;
     }
+
+    public void updateReviewCount(int count) { this.reviewCount += count;}
+
+    public void updatePostCount(int count) { this.postCount += count;}
+
 }
