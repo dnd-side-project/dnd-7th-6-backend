@@ -2,6 +2,7 @@ package com.hot6.phopa.api.domain.community.service;
 
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostApiResponse;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostCreateRequest;
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostFilterForm;
 import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
@@ -14,7 +15,10 @@ import com.hot6.phopa.core.domain.community.model.entity.PostImageEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostLikeEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostTagEntity;
 import com.hot6.phopa.core.domain.community.service.PostService;
+import com.hot6.phopa.core.domain.tag.enumeration.TagType;
+import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
+import com.hot6.phopa.core.domain.tag.model.mapper.TagMapper;
 import com.hot6.phopa.core.domain.tag.service.TagService;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.service.UserService;
@@ -28,10 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -48,6 +50,8 @@ public class PostApiService {
     private final UserService userService;
 
     private final TagService tagService;
+
+    private final TagMapper tagMapper;
 
     @Value("${cloud.aws.s3.upload.path.review}")
     private String reviewPath;
@@ -143,5 +147,26 @@ public class PostApiService {
         Page<PostEntity> postEntityPage = postService.getPostByTagIdSet(tagIdSet, pageable);
         List<PostApiResponse> postApiResponseList = postApiMapper.toDtoList(postEntityPage.getContent());
         return PageableResponse.makeResponse(postEntityPage, postApiResponseList);
+    }
+
+    public PostFilterForm getFilterFormData() {
+        List<TagDTO> tagDTOList = tagMapper.toDtoList(tagService.getTagListByTagTypeList(TagType.POST_TAG_LIST, null));
+        List<TagDTO> brandTagList = new ArrayList<>();
+        Map<TagType, List<TagDTO>> personalTagList = new HashMap<>();
+        Map<TagType, List<TagDTO>> conceptTagList = new HashMap<>();
+        List<TagDTO> frameTagList = new ArrayList<>();
+        Map<TagType, List<TagDTO>> tagTypeListMap = tagDTOList.stream().collect(Collectors.groupingBy(TagDTO::getTagType));
+        for(Map.Entry<TagType, List<TagDTO>> entry : tagTypeListMap.entrySet()){
+            if(TagType.BRAND.equals(entry.getKey())){
+                brandTagList = entry.getValue();
+            } else if (TagType.FRAME.equals(entry.getKey())){
+                frameTagList = entry.getValue();
+            } else if (TagType.PERSONAL_TAG_LIST.contains(entry.getKey())){
+                personalTagList.put(entry.getKey(), entry.getValue());
+            } else if (TagType.CONCEPT_TAG_LIST.contains(entry.getKey())){
+                conceptTagList.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return PostFilterForm.of(brandTagList, personalTagList, conceptTagList, frameTagList);
     }
 }
