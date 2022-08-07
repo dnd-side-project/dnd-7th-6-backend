@@ -54,6 +54,24 @@ public class TagCustomRepositoryImpl extends QuerydslRepositorySupport implement
         return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
     }
 
+    @Override
+    public List<TagEntity> findAllByTagTypeList(List<TagType> tagTypeList, Boolean onlyKeyword){
+        return from(tagEntity)
+                .where(tagEntity.tagType.in(tagTypeList))
+                .where(buildKeywordPredicate(onlyKeyword))
+                .orderBy(tagEntity.reviewCount.desc())
+                .fetch();
+    }
+
+    private Predicate buildKeywordPredicate(Boolean onlyKeyword) {
+        BooleanBuilder builder = new BooleanBuilder();
+        if(onlyKeyword){
+            builder.and(tagEntity.tagType.eq(TagType.BRAND).or(tagEntity.title.eq(tagEntity.keyword).not()));
+        }
+        return builder.getValue();
+    }
+
+
     private Predicate buildPredicate(TagType tagType){
         BooleanBuilder builder = new BooleanBuilder();
         if(tagType != null){

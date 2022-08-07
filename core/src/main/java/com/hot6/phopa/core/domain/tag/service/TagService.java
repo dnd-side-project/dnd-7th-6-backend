@@ -22,6 +22,9 @@ public class TagService {
 
     public List<TagEntity> getTagListByTagType(TagType tagType) { return tagRepository.findAllByTagType(tagType); }
 
+    public List<TagEntity> getTagListByTagTypeList(List<TagType> tagTypeList, Boolean onlyKeyword) { return tagRepository.findAllByTagTypeList(tagTypeList, onlyKeyword); }
+
+
     public TagEntity getTagOrCreate(String keyword, TagType tagType) {
         TagEntity tagEntity = tagRepository.findOneByTitleAndTagType(keyword, tagType);
         if(tagEntity == null){

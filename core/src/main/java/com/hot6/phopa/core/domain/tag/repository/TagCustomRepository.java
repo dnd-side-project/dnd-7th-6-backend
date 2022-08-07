@@ -11,4 +11,6 @@ public interface TagCustomRepository {
     List<TagEntity> findByPhotoBoothId(Long photoBoothId);
 
     Page<TagEntity> getTagByKeyword(String keyword, TagType tagType, PageableParam pageable);
+
+    List<TagEntity> findAllByTagTypeList(List<TagType> tagType, Boolean onlyKeyword);
 }
