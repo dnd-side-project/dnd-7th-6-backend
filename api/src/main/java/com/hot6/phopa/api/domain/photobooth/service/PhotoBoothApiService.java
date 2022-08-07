@@ -1,7 +1,7 @@
 package com.hot6.phopa.api.domain.photobooth.service;
 
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothApiResponse;
-import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothFormResponse;
+import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothFilterFormResponse;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothWithTagResponse;
 import com.hot6.phopa.api.domain.photobooth.model.mapper.PhotoBoothApiMapper;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
@@ -79,11 +79,11 @@ public class PhotoBoothApiService {
         }
     }
 
-    public PhotoBoothFormResponse getFormData() {
+    public PhotoBoothFilterFormResponse getFilterData() {
         List<TagDTO> tagDTOList = tagMapper.toDtoList(tagService.getTagListByTagTypeList(TagType.PHOTO_BOOTH_FILTER_TAG_LIST, true));
         List<TagDTO> brandTagDTOList = tagDTOList.stream().filter(tag -> TagType.BRAND.equals(tag.getTagType())).collect(Collectors.toList());
         tagDTOList.removeAll(brandTagDTOList);
-        return PhotoBoothFormResponse.of(brandTagDTOList, tagDTOList);
+        return PhotoBoothFilterFormResponse.of(brandTagDTOList, tagDTOList);
     }
 
     public PhotoBoothWithTagResponse getPhotoBooth(Long photoBoothId, Long userId) {
