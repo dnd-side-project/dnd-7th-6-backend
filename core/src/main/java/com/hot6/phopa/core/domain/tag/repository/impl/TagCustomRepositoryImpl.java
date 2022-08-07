@@ -65,7 +65,7 @@ public class TagCustomRepositoryImpl extends QuerydslRepositorySupport implement
 
     private Predicate buildKeywordPredicate(Boolean onlyKeyword) {
         BooleanBuilder builder = new BooleanBuilder();
-        if(onlyKeyword){
+        if(Boolean.TRUE.equals(onlyKeyword)){
             builder.and(tagEntity.tagType.eq(TagType.BRAND).or(tagEntity.title.eq(tagEntity.keyword).not()));
         }
         return builder.getValue();
