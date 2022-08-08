@@ -1,7 +1,10 @@
 package com.hot6.phopa.api.domain.community.controller;
 
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostApiResponse;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostCreateRequest;
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostFilterForm;
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostForm;
 import com.hot6.phopa.api.domain.community.service.PostApiService;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
@@ -59,5 +62,15 @@ public class PostController {
             PageableParam pageable
     ) {
         return postService.getPostsByTagIdSet(tagIdSet, pageable);
+    }
+
+    @GetMapping("/filter")
+    public PostFilterForm getFilterForm() {
+        return postService.getFilterFormData();
+    }
+
+    @GetMapping("/form")
+    public PostForm getFormData() {
+        return postService.getFormData();
     }
 }

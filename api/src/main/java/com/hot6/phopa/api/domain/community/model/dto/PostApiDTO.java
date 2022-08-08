@@ -3,6 +3,7 @@ package com.hot6.phopa.api.domain.community.model.dto;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.domain.community.model.dto.PostDTO;
+import com.hot6.phopa.core.domain.tag.enumeration.TagType;
 import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
 import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -55,6 +57,22 @@ public class PostApiDTO {
         private Long id;
         private String imageUrl;
         private Integer imageOrder;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor(staticName = "of")
+    public static class PostFilterForm {
+        List<TagDTO> brandTagList;
+        Map<TagType, List<TagDTO>> personalTagList;
+        Map<TagType, List<TagDTO>> conceptTagList;
+        List<TagDTO> frameTagList;
+    }
+    @Getter
+    @Setter
+    @AllArgsConstructor(staticName = "of")
+    public static class PostForm {
+        Map<TagType, List<TagDTO>> postFormTagList;
     }
 }
 

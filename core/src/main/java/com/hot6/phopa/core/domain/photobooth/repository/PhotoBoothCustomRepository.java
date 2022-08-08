@@ -2,16 +2,15 @@ package com.hot6.phopa.core.domain.photobooth.repository;
 
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.type.Status;
+import com.hot6.phopa.core.common.utils.PointUtil;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
-import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 import java.util.Set;
 
 public interface PhotoBoothCustomRepository {
-    List<PhotoBoothEntity> findByPointSet(Set<Point> crawlingPointSet);
+    List<PhotoBoothEntity> findByPointSet(Set<PointUtil> crawlingPointSet);
 
     List<PhotoBoothEntity> findAllByUserLike(Long userId);
 

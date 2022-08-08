@@ -1,7 +1,9 @@
 package com.hot6.phopa.api.domain.review.service;
 
+import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewCreateRequest;
+import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewFormResponse;
 import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
@@ -16,7 +18,10 @@ import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewLikeEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewTagEntity;
 import com.hot6.phopa.core.domain.review.service.ReviewService;
+import com.hot6.phopa.core.domain.tag.enumeration.TagType;
+import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
+import com.hot6.phopa.core.domain.tag.model.mapper.TagMapper;
 import com.hot6.phopa.core.domain.tag.service.TagService;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.service.UserService;
@@ -30,10 +35,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -52,6 +55,8 @@ public class ReviewApiService {
     private final UserService userService;
 
     private final TagService tagService;
+
+    private final TagMapper tagMapper;
 
     @Value("${cloud.aws.s3.upload.path.review}")
     private String reviewPath;
@@ -142,5 +147,11 @@ public class ReviewApiService {
             reviewService.createReviewLikeEntity(reviewLikeEntity);
             reviewEntity.updateLikeCount(1);
         }
+    }
+
+    public ReviewFormResponse getFormData() {
+        List<TagDTO> tagDTOList = tagMapper.toDtoList(tagService.getTagListByTagTypeList(TagType.REVIEW_FORM_TAG_LIST, null));
+        Map<TagType, List<TagDTO>> reviewTagMap = tagDTOList.stream().collect(Collectors.groupingBy(TagDTO::getTagType));
+        return ReviewFormResponse.of(reviewTagMap);
     }
 }

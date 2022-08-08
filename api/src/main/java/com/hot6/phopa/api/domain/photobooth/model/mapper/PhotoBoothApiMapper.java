@@ -14,8 +14,8 @@ public abstract class PhotoBoothApiMapper {
     @Mapping(source = "photoBoothEntity.name", target = "name")
     @Mapping(source = "photoBoothEntity.jibunAddress", target = "jibunAddress")
     @Mapping(source = "photoBoothEntity.roadAddress", target = "roadAddress")
-    @Mapping(expression = "java(photoBoothEntity.getPoint().getX())", target = "latitude")
-    @Mapping(expression = "java(photoBoothEntity.getPoint().getY())", target = "longitude")
+    @Mapping(source = "photoBoothEntity.latitude", target = "latitude")
+    @Mapping(source = "photoBoothEntity.longitude", target = "longitude")
     public abstract PhotoBoothApiResponse toDto(PhotoBoothEntity photoBoothEntity);
 
     public abstract List<PhotoBoothApiResponse> toDtoList(List<PhotoBoothEntity> photoBoothEntityList);

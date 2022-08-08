@@ -1,10 +1,6 @@
 package com.hot6.phopa.core.common.utils;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-
-/**
+/**Ø
  * Haversine Formula
  * φ2 = asin( sin φ1 ⋅ cos δ + cos φ1 ⋅ sin δ ⋅ cos θ )
  * λ2 = λ1 + atan2( sin θ ⋅ sin δ ⋅ cos φ1, cos δ − sin φ1 ⋅ sin φ2 )
@@ -23,7 +19,7 @@ public class GeometryUtil {
         Double longitude = radianLongitude + Math.atan2(sin(radianAngle) * sin(distanceRadius) *
                 cos(radianLatitude), cos(distanceRadius) - sin(radianLatitude) * sin(latitude));
 
-        longitude = normalizeLongitude(longitude);
+//        longitude = normalizeLongitude(longitude);
         return new Location(toDegree(latitude), toDegree(longitude));
     }
 
@@ -43,11 +39,24 @@ public class GeometryUtil {
         return Math.cos(coordinate);
     }
 
-    private static Double normalizeLongitude(Double longitude) {
-        return (longitude + 540) % 360 - 180;
+//    private static Double normalizeLongitude(Double longitude) {
+//        return (longitude + 540) % 360 - 180;
+//    }
+//    public static Point createPoint(double lat, double lon) {
+//        GeometryFactory gf = new GeometryFactory();
+//        return gf.createPoint(new Coordinate(lat, lon));
+//    }
+
+    public static double distance(double lat1, double lon1, double lat2, double lon2) {
+        double theta = lon1 - lon2;
+        double dist = Math.sin(toDegree(lat1)) * Math.sin(toDegree(lat2)) + Math.cos(toDegree(lat1)) * Math.cos(toDegree(lat2)) * Math.cos(toDegree(theta));
+
+        dist = Math.acos(dist);
+        dist = toRadian(dist);
+        dist = dist * 60 * 1.1515;
+        dist = dist * 1.609344;
+
+        return (dist);
     }
-    public static Point createPoint(double lat, double lon) {
-        GeometryFactory gf = new GeometryFactory();
-        return gf.createPoint(new Coordinate(lat, lon));
-    }
+    
 }
