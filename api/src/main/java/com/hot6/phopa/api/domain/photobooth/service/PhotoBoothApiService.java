@@ -9,6 +9,8 @@ import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import com.hot6.phopa.core.common.model.type.Status;
+import com.hot6.phopa.core.common.utils.GeometryUtil;
+import com.hot6.phopa.core.domain.photobooth.model.dto.PhotoBoothWithDistanceDTO;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothLikeEntity;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
@@ -44,14 +46,16 @@ public class PhotoBoothApiService {
     private final UserService userService;
 
     public PageableResponse<PhotoBoothWithTagResponse> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, Long userId, PageableParam pageable) {
-        Page<PhotoBoothEntity> photoBoothEntityPage = photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, userId, pageable);
+        PhotoBoothWithDistanceDTO photoBoothWithDistanceDTO = photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, pageable);
+        Page<PhotoBoothEntity> photoBoothEntityPage = photoBoothWithDistanceDTO.getPhotoBoothEntityPage();
+        Map<Long, Double> photoBoothIdDistanceMap = photoBoothWithDistanceDTO.getPhotoBoothIdDistanceMap();
         List<Long> photoBoothIdList = photoBoothEntityPage.getContent().stream().map(PhotoBoothEntity::getId).collect(Collectors.toList());
         Map<Long, List<PhotoBoothLikeEntity>> userLikePhotoBoothIdMap = userId != null ? photoBoothService.getPhotoBoothLikeByPhotoBoothIdListAndUserId(photoBoothIdList, userId).stream().collect(Collectors.groupingBy(photoBoothLikeEntity -> photoBoothLikeEntity.getPhotoBooth().getId())) : new HashMap<>();
         List<PhotoBoothWithTagResponse> photoBoothWithTagResponseList = new ArrayList<>();
         for (PhotoBoothEntity photoBoothEntity : photoBoothEntityPage.getContent()) {
             List<TagEntity> tagEntityList = photoBoothEntity.getReviewSet().stream().flatMap(r -> r.getReviewTagSet().stream().map(ReviewTagEntity::getTag)).collect(Collectors.toList());
             boolean isLike = userLikePhotoBoothIdMap.containsKey(photoBoothEntity.getId());
-            photoBoothWithTagResponseList.add(buildPhotoBoothWithTagResponse(photoBoothEntity, tagEntityList, isLike));
+            photoBoothWithTagResponseList.add(buildPhotoBoothWithTagResponse(photoBoothEntity, tagEntityList, isLike, photoBoothIdDistanceMap.get(photoBoothEntity.getId())));
         }
         return PageableResponse.makeResponse(photoBoothEntityPage, photoBoothWithTagResponseList);
     }
@@ -86,17 +90,18 @@ public class PhotoBoothApiService {
         return PhotoBoothFilterFormResponse.of(brandTagDTOList, tagDTOList);
     }
 
-    public PhotoBoothWithTagResponse getPhotoBooth(Long photoBoothId, Long userId) {
+    public PhotoBoothWithTagResponse getPhotoBooth(Long photoBoothId, Long userId, Double latitude, Double longitude) {
         PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(photoBoothId);
         List<TagEntity> tagEntityList = tagService.getTagByPhotoBoothId(photoBoothId);
         boolean isLike = userId != null & photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBoothEntity.getId(), userId) == null;
-        return buildPhotoBoothWithTagResponse(photoBoothEntity, tagEntityList, isLike);
+        Double distance = latitude != null && longitude != null ? GeometryUtil.distance(photoBoothEntity.getLatitude(), photoBoothEntity.getLongitude(), latitude, longitude) : null;
+        return buildPhotoBoothWithTagResponse(photoBoothEntity, tagEntityList, isLike, distance);
     }
 
-    private PhotoBoothWithTagResponse buildPhotoBoothWithTagResponse(PhotoBoothEntity photoBoothEntity, List<TagEntity> tagList, boolean isLike) {
+    private PhotoBoothWithTagResponse buildPhotoBoothWithTagResponse(PhotoBoothEntity photoBoothEntity, List<TagEntity> tagList, boolean isLike, Double distance) {
         PhotoBoothApiResponse photoBooth = photoBoothMapper.toDto(photoBoothEntity);
         ReviewApiResponse review = CollectionUtils.isNotEmpty(photoBoothEntity.getReviewSet()) ? reviewApiMapper.toDto((ReviewEntity) photoBoothEntity.getReviewSet().toArray()[0]) : null;
         List<TagDTO> tagDTOList = CollectionUtils.isNotEmpty(tagList) ? tagMapper.toDtoList(tagList) : null;
-        return PhotoBoothWithTagResponse.of(photoBooth, review, tagDTOList, isLike);
+        return PhotoBoothWithTagResponse.of(photoBooth, review, tagDTOList, isLike, distance);
     }
 }

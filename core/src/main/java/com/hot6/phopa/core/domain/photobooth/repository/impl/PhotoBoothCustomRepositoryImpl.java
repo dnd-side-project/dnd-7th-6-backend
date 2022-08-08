@@ -2,16 +2,16 @@ package com.hot6.phopa.core.domain.photobooth.repository.impl;
 
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.type.Status;
+import com.hot6.phopa.core.common.utils.PointUtil;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothCustomRepository;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.commons.collections4.CollectionUtils;
-import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -45,10 +45,18 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
     }
 
     @Override
-    public List<PhotoBoothEntity> findByPointSet(Set<Point> crawlingPointSet) {
+    public List<PhotoBoothEntity> findByPointSet(Set<PointUtil> crawlingPointSet) {
         return from(photoBoothEntity)
-                .where(photoBoothEntity.point.in(crawlingPointSet))
+                .where(buildPointPredicate(crawlingPointSet))
                 .fetch();
+    }
+
+    private Predicate buildPointPredicate(Set<PointUtil> crawlingPointSet) {
+        BooleanBuilder builder = new BooleanBuilder();
+        for (PointUtil point : crawlingPointSet) {
+            builder.or(photoBoothEntity.longitude.eq(point.getLongitude()).and(photoBoothEntity.latitude.eq(point.getLatitude())));
+        }
+        return builder.getValue();
     }
 
     @Override
@@ -72,18 +80,27 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
 
     @Override
     public Page<PhotoBoothEntity> findByPhotoBoothIdAndColumn(List<Long> photoBoothIdList, Status status, Set<Long> tagIdSet, PageableParam pageable) {
-        QueryResults result = jpaQueryFactory
-                .selectFrom(photoBoothEntity)
-                .leftJoin(photoBoothEntity.reviewSet, reviewEntity).fetchJoin()
-                .leftJoin(reviewEntity.reviewTagSet, reviewTagEntity).fetchJoin()
-                .leftJoin(reviewTagEntity.tag, tagEntity).fetchJoin()
+        List<PhotoBoothEntity> result = jpaQueryFactory.selectFrom(photoBoothEntity)
+                .leftJoin(photoBoothEntity.reviewSet, reviewEntity)
+                .leftJoin(reviewEntity.reviewTagSet, reviewTagEntity)
+                .leftJoin(reviewTagEntity.tag, tagEntity)
                 .where(photoBoothEntity.id.in(photoBoothIdList))
                 .where(buildPredicate(status, tagIdSet))
                 .orderBy(orderByFieldList(photoBoothIdList))
                 .offset(pageable.getPage())
                 .limit(pageable.getPageSize())
-                .fetchResults();
-        return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
+                .distinct()
+                .fetch();
+        long totalCount = from(photoBoothEntity)
+                .leftJoin(photoBoothEntity.reviewSet, reviewEntity).fetchJoin()
+                .leftJoin(reviewEntity.reviewTagSet, reviewTagEntity).fetchJoin()
+                .leftJoin(reviewTagEntity.tag, tagEntity).fetchJoin()
+                .where(photoBoothEntity.id.in(photoBoothIdList))
+                .where(buildPredicate(status, tagIdSet))
+                .distinct()
+                .fetch()
+                .size();
+        return new PageImpl<>(result, PageRequest.of(pageable.getPage(), pageable.getPageSize()), totalCount);
     }
 
     private Predicate buildPredicate(Status status, Set<Long> tagIdSet) {

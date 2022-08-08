@@ -24,6 +24,7 @@ public class PhotoBoothApiDTO {
         ReviewApiResponse firstReview;
         List<TagDTO> tagSet;
         boolean isLike;
+        Double distance;
     }
     @Getter
     @Setter

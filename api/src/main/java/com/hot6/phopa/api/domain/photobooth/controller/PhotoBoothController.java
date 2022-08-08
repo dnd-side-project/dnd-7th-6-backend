@@ -39,9 +39,11 @@ public class PhotoBoothController {
     @GetMapping("/{photoBoothId}")
     public PhotoBoothWithTagResponse getPhotoBooth(
             @PathVariable @Positive Long photoBoothId,
-            @RequestParam(required = false) Long userId
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude
     ){
-        return photoBoothService.getPhotoBooth(photoBoothId, userId);
+        return photoBoothService.getPhotoBooth(photoBoothId, userId, latitude, longitude);
     }
 
     @GetMapping("/kakao-map-test")

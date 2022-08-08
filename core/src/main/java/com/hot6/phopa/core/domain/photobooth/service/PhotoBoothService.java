@@ -1,14 +1,13 @@
 package com.hot6.phopa.core.domain.photobooth.service;
 
-import com.hot6.phopa.core.common.enumeration.Direction;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.type.Status;
-import com.hot6.phopa.core.common.utils.GeometryUtil;
-import com.hot6.phopa.core.common.utils.Location;
+import com.hot6.phopa.core.common.utils.PointUtil;
 import com.hot6.phopa.core.domain.map.service.KakaoMapService;
 import com.hot6.phopa.core.domain.photobooth.dto.PhotoBoothNativeQueryDTO;
+import com.hot6.phopa.core.domain.photobooth.model.dto.PhotoBoothWithDistanceDTO;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothLikeEntity;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothLikeRepository;
@@ -16,7 +15,6 @@ import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothRepository;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,21 +37,13 @@ public class PhotoBoothService {
     private final PhotoBoothLikeRepository photoBoothLikeRepository;
 
     @Transactional(readOnly = true)
-    //    distance 1 = 1km
-    public Page<PhotoBoothEntity> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, Long userId, PageableParam pageable) {
-        Location northEast = GeometryUtil
-                .calculate(latitude, longitude, distance, Direction.NORTHEAST.getBearing());
-        Location southWest = GeometryUtil
-                .calculate(latitude, longitude, distance, Direction.SOUTHWEST.getBearing());
-
-        double x1 = northEast.getLatitude();
-        double y1 = northEast.getLongitude();
-        double x2 = southWest.getLatitude();
-        double y2 = southWest.getLongitude();
-        String lineString = String.format("LINESTRING(%f %f, %f %f)", x1, y1, x2, y2);
-        List<Long> photoBoothIdList = photoBoothRepository.findIdsByGeo(lineString, latitude, longitude).stream().sorted(Comparator.comparingDouble(PhotoBoothNativeQueryDTO::getDistance)).map(PhotoBoothNativeQueryDTO::getId).collect(Collectors.toList());
+    //    distance 1 = 1m
+    public PhotoBoothWithDistanceDTO getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, PageableParam pageable) {
+        List<PhotoBoothNativeQueryDTO> photoBoothNativeQueryDTOList = photoBoothRepository.findIdsByGeo(latitude, longitude, distance/100);
+        Map<Long, Double> photoBoothIdDistanceMap = photoBoothNativeQueryDTOList.stream().collect(Collectors.toMap(PhotoBoothNativeQueryDTO::getId, p->(p.getDistance() *100)));
+        List<Long> photoBoothIdList = photoBoothNativeQueryDTOList.stream().sorted(Comparator.comparingDouble(PhotoBoothNativeQueryDTO::getDistance)).map(PhotoBoothNativeQueryDTO::getId).collect(Collectors.toList());
         Page<PhotoBoothEntity> photoBoothEntityPage = photoBoothRepository.findByPhotoBoothIdAndColumn(photoBoothIdList, status, tagIdSet, pageable);
-        return photoBoothEntityPage;
+        return PhotoBoothWithDistanceDTO.of(photoBoothIdDistanceMap, photoBoothEntityPage);
     }
 
     @Transactional(readOnly = true)
@@ -63,12 +53,12 @@ public class PhotoBoothService {
 
     public List<PhotoBoothEntity> kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance, TagEntity tagEntity) {
         List<PhotoBoothEntity> photoBoothEntityList = kakaoMapService.crawlingPhotoBoothData(keyword, latitude, longitude, distance);
-        Set<Point> crawlingPointSet = photoBoothEntityList.stream().map(PhotoBoothEntity::getPoint).collect(Collectors.toSet());
-        Set<Point> alreadyPointSet = photoBoothRepository.findByPointSet(crawlingPointSet).stream().map(PhotoBoothEntity::getPoint).collect(Collectors.toSet());
+        Set<PointUtil> crawlingPointSet = photoBoothEntityList.stream().map(photoBoothEntity -> PointUtil.of(photoBoothEntity.getLatitude(), photoBoothEntity.getLongitude())).collect(Collectors.toSet());
+        Set<PointUtil> alreadyPointSet = photoBoothRepository.findByPointSet(crawlingPointSet).stream().map(photoBoothEntity -> PointUtil.of(photoBoothEntity.getLatitude(), photoBoothEntity.getLongitude())).collect(Collectors.toSet());
         List<PhotoBoothEntity> savePhotoBoothEntityList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(photoBoothEntityList)) {
             for (PhotoBoothEntity photoBoothEntity : photoBoothEntityList) {
-                if (alreadyPointSet.contains(photoBoothEntity.getPoint()) == false) {
+                if (alreadyPointSet.contains(PointUtil.of(photoBoothEntity.getLatitude(), photoBoothEntity.getLongitude())) == false) {
                     photoBoothEntity.setTag(tagEntity);
                     savePhotoBoothEntityList.add(photoBoothEntity);
                 }
