@@ -92,13 +92,19 @@ public class ReviewApiService {
                                 .tag(tagEntity)
                                 .build()
                 );
-                if(tagEntity.getReviewTagSet().stream().anyMatch(r -> r.getReview().getPhotoBooth().getId().equals(photoBoothEntity.getId())) == false){
+                if (tagEntity.getReviewTagSet().stream().anyMatch(r -> r.getReview().getPhotoBooth().getId().equals(photoBoothEntity.getId())) == false) {
                     tagEntity.updatePhotoBoothCount(1);
                 }
                 tagEntity.updateReviewCount(1);
             }
             reviewEntity.setReviewTagSet(reviewTagEntitySet);
-            photoBoothService.updatePhotoBoothStarScore(reviewCreateRequest.getPhotoBoothId(), reviewCreateRequest.getStarScore());
+
+            Float starScore = reviewCreateRequest.getStarScore();
+            if (photoBoothEntity.getReviewCount() != 0) {
+                starScore = ((photoBoothEntity.getStarScore() * photoBoothEntity.getReviewCount()) + starScore) / (photoBoothEntity.getReviewCount() + 1);
+            }
+            photoBoothEntity.updateStarScore(starScore);
+            photoBoothEntity.updateReviewCount(1);
         }
 
         if (CollectionUtils.isNotEmpty(reviewImageList)) {

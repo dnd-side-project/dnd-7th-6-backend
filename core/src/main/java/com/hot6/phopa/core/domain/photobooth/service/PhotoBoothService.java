@@ -38,8 +38,6 @@ public class PhotoBoothService {
 
     private final PhotoBoothLikeRepository photoBoothLikeRepository;
 
-    private final ReviewService reviewService;
-
     @Transactional(readOnly = true)
     //    distance 1 = 1m
     public PhotoBoothWithDistanceDTO getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, PageableParam pageable) {
@@ -99,12 +97,4 @@ public class PhotoBoothService {
         return photoBoothRepository.findAllByUserLike(userId);
     }
 
-    public void updatePhotoBoothStarScore(Long photoBoothId, Float starScore) {
-        PhotoBoothEntity photoBoothEntity = photoBoothRepository.findPhotoBoothEntityById(photoBoothId);
-        Long reviewCount = reviewService.getReviewCountByPhotoBoothId(photoBoothId);
-        if(reviewCount != 0) {
-            starScore = ((photoBoothEntity.getStarScore() * reviewCount) + starScore) / (reviewCount+1);
-        }
-        photoBoothEntity.updateStarScore(starScore);
-    }
 }

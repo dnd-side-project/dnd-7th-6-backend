@@ -48,6 +48,7 @@ public class KakaoMapService {
                             .latitude(Double.valueOf(document.getY()))
                             .longitude(Double.valueOf(document.getX()))
                             .likeCount(0)
+                            .reviewCount(0)
                             .starScore(0.0F)
                             .status(Status.ACTIVE)
                             .build()

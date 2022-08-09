@@ -23,6 +23,4 @@ public interface PhotoBoothRepository extends JpaRepository<PhotoBoothEntity, Lo
     )
     List<PhotoBoothNativeQueryDTO> findIdsByGeo(@Param(value = "lat") double lat, @Param(value = "lon") double lon, @Param(value = "distance") Double distance);
 
-    PhotoBoothEntity findPhotoBoothEntityById(Long photoBoothId);
-
 }
