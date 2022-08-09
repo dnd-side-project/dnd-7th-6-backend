@@ -58,4 +58,8 @@ public class PostService {
     public Page<PostEntity> getPostByTagIdSet(Set<Long> tagIdSet, PageableParam pageable) {
         return postRepository.getPostByTagIdSet(tagIdSet, pageable);
     }
+
+    public List<PostEntity> findAllByUserId(Long userId) {
+        return postRepository.getAllByUserId(userId);
+    }
 }
