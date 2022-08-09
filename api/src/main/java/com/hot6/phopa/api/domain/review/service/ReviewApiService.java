@@ -98,13 +98,10 @@ public class ReviewApiService {
                 tagEntity.updateReviewCount(1);
             }
             reviewEntity.setReviewTagSet(reviewTagEntitySet);
-
-            Float starScore = reviewCreateRequest.getStarScore();
-            if (photoBoothEntity.getReviewCount() != 0) {
-                starScore = ((photoBoothEntity.getStarScore() * photoBoothEntity.getReviewCount()) + starScore) / (photoBoothEntity.getReviewCount() + 1);
-            }
-            photoBoothEntity.updateStarScore(starScore);
             photoBoothEntity.updateReviewCount(1);
+
+            Integer reviewCount = photoBoothEntity.getReviewCount();
+            photoBoothEntity.updateStarScore(((photoBoothEntity.getStarScore() * (reviewCount - 1)) + reviewCreateRequest.getStarScore()) / (reviewCount));
         }
 
         if (CollectionUtils.isNotEmpty(reviewImageList)) {
