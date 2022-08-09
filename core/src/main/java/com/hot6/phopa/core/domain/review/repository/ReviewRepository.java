@@ -10,5 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<ReviewEntity, Long>, ReviewCustomRepository {
+
     List<ReviewEntity> findAllByUserId(Long userId);
+
 }

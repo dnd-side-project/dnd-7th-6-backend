@@ -38,6 +38,9 @@ public class ReviewEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "status")
     private Status status;
 
+    @Column(name = "star_score")
+    private Float starScore;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
