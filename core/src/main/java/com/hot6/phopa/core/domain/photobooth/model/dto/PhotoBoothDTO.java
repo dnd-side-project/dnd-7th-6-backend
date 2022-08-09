@@ -25,5 +25,7 @@ public class PhotoBoothDTO {
 
     protected Integer likeCount;
 
+    protected Float starCount;
+
     protected Status status;
 }
