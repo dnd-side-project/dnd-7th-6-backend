@@ -51,4 +51,8 @@ public class ReviewService {
     public ReviewLikeEntity getReviewLikeByReviewIdAndUserId(Long reviewId, Long userId) {
         return reviewLikeRepository.findOneByReviewIdAndUserId(reviewId, userId);
     }
+
+    public List<ReviewEntity> findAllByUserId(Long userId) {
+        return reviewRepository.findAllByUserId(userId);
+    }
 }

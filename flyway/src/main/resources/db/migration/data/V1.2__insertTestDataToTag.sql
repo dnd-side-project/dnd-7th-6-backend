@@ -34,7 +34,7 @@ INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_
 INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_count, tag_type, created_at, updated_at) VALUES (34, '커플', '커플', 0, 0, 0, 'RELATION', now(), now());
 INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_count, tag_type, created_at, updated_at) VALUES (35, '친구', '친구', 0, 0, 0, 'RELATION', now(), now());
 INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_count, tag_type, created_at, updated_at) VALUES (36, '가족', '가족', 0, 0, 0, 'RELATION', now(), now());
-INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_count, tag_type, created_at, updated_at) VALUES (37, '코믹', '코믹', 0, 0, 0, 'CONCEPT', now(), now());
+INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_count, tag_type, created_at, updated_at) VALUES (37, '재미있는', '재미있는', 0, 0, 0, 'CONCEPT', now(), now());
 INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_count, tag_type, created_at, updated_at) VALUES (38, '예쁜/청순', '예쁜/청순', 0, 0, 0, 'CONCEPT', now(), now());
 INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_count, tag_type, created_at, updated_at) VALUES (39, '힙한', '힙한', 0, 0, 0, 'CONCEPT', now(), now());
 INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_count, tag_type, created_at, updated_at) VALUES (40, '모던', '모던', 0, 0, 0, 'FRAME', now(), now());
@@ -52,3 +52,4 @@ INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_
 INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_count, tag_type, created_at, updated_at) VALUES (52, '읏긴소품', '읏긴소품', 0, 0, 0, 'SITUATION', now(), now());
 INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_count, tag_type, created_at, updated_at) VALUES (53, '공주소품', '공주소품', 0, 0, 0, 'SITUATION', now(), now());
 INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_count, tag_type, created_at, updated_at) VALUES (54, '반려동물', '반려동물', 0, 0, 0, 'SITUATION', now(), now());
+INSERT INTO hot6.tag (id, title, keyword, review_count, post_count, photo_booth_count, tag_type, created_at, updated_at) VALUES (55, '자연스러운', '자연스러운', 0, 0, 0, 'CONCEPT', now(), now());
