@@ -55,5 +55,8 @@ public class ReviewService {
 
     public Long getReviewCountByPhotoBoothId(Long photoBoothId) {
         return reviewRepository.countByPhotoBoothId(photoBoothId);
+
+    public List<ReviewEntity> findAllByUserId(Long userId) {
+        return reviewRepository.findAllByUserId(userId);
     }
 }
