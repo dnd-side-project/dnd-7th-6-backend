@@ -64,4 +64,8 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
     public void updateLikeCount(int count) {
         this.likeCount += count;
     }
+
+    public void updateStarScore(Float starScore) {
+        this.starScore = starScore;
+    }
 }

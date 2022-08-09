@@ -98,6 +98,7 @@ public class ReviewApiService {
                 tagEntity.updateReviewCount(1);
             }
             reviewEntity.setReviewTagSet(reviewTagEntitySet);
+            photoBoothService.updatePhotoBoothStarScore(reviewCreateRequest.getPhotoBoothId(), reviewCreateRequest.getStarScore());
         }
 
         if (CollectionUtils.isNotEmpty(reviewImageList)) {
