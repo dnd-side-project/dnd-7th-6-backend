@@ -1,7 +1,7 @@
 package com.hot6.phopa.api.domain.photobooth.controller;
 
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothApiResponse;
-import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothFormResponse;
+import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothFilterFormResponse;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothWithTagResponse;
 import com.hot6.phopa.api.domain.photobooth.service.PhotoBoothApiService;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
@@ -39,9 +39,11 @@ public class PhotoBoothController {
     @GetMapping("/{photoBoothId}")
     public PhotoBoothWithTagResponse getPhotoBooth(
             @PathVariable @Positive Long photoBoothId,
-            @RequestParam(required = false) Long userId
+            @RequestParam(required = false) Long userId,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude
     ){
-        return photoBoothService.getPhotoBooth(photoBoothId, userId);
+        return photoBoothService.getPhotoBooth(photoBoothId, userId, latitude, longitude);
     }
 
     @GetMapping("/kakao-map-test")
@@ -62,8 +64,8 @@ public class PhotoBoothController {
         photoBoothService.like(photoBoothId, userId);
     }
 
-    @GetMapping("/form")
-    public PhotoBoothFormResponse getFormData(){
-        return photoBoothService.getFormData();
+    @GetMapping("/filter")
+    public PhotoBoothFilterFormResponse getFilterData(){
+        return photoBoothService.getFilterData();
     }
 }

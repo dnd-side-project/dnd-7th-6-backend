@@ -6,7 +6,6 @@ import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
-import org.locationtech.jts.geom.Point;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -35,8 +34,11 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "road_address")
     private String roadAddress;
 
-    @Column(name = "point")
-    private Point point;
+    @Column(name = "latitude")
+    private Double latitude;
+
+    @Column(name = "longitude")
+    private Double longitude;
 
     @Column(name = "like_count")
     private Integer likeCount;
