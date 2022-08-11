@@ -11,6 +11,7 @@ CREATE TABLE `review` (
   `like_count` int NOT NULL default 0 COMMENT '리뷰 좋아요 수',
   `status` varchar(100) NOT NULL COMMENT '상태값',
   `user_id` bigint NOT NULL COMMENT 'user_id',
+  `star_score` float NOT NULL DEFAULT 0 COMMENT '별점',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
   `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
   FOREIGN KEY (photo_booth_id) REFERENCES photo_booth(id) ON DELETE CASCADE,
