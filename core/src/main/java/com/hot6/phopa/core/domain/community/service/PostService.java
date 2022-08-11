@@ -59,6 +59,14 @@ public class PostService {
         return postRepository.getPostByTagIdSet(tagIdSet, pageable);
     }
 
+    public Page<PostEntity> getPostByTagIdSetOrderByLikeCountDesc(Set<Long> tagIdSet, PageableParam pageable) {
+        return postRepository.getPostByTagIdSetOrderByLikeCountDesc(tagIdSet, pageable);
+    }
+
+    public Page<PostEntity> getPostByTagIdSetOrderByCreatedAtDesc(Set<Long> tagIdSet, PageableParam pageable) {
+        return postRepository.getPostByTagIdSetOrderByCreatedAtDesc(tagIdSet, pageable);
+    }
+
     public List<PostEntity> findAllByUserId(Long userId) {
         return postRepository.getAllByUserId(userId);
     }

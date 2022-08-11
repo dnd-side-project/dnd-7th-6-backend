@@ -15,4 +15,8 @@ public interface PostCustomRepository {
     List<PostEntity> findAllByUserLike(Long userId);
 
     Page<PostEntity> getPostByTagIdSet(Set<Long> tagIdSet, PageableParam pageable);
+
+    Page<PostEntity> getPostByTagIdSetOrderByLikeCountDesc(Set<Long> tagIdSet, PageableParam pageable);
+
+    Page<PostEntity> getPostByTagIdSetOrderByCreatedAtDesc(Set<Long> tagIdSet, PageableParam pageable);
 }

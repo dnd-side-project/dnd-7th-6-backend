@@ -145,8 +145,18 @@ public class PostApiService {
     }
 
 
-    public PageableResponse<PostApiResponse> getPostsByTagIdSet(Set<Long> tagIdSet, PageableParam pageable) {
-        Page<PostEntity> postEntityPage = postService.getPostByTagIdSet(tagIdSet, pageable);
+    public PageableResponse<PostApiResponse> getPostsByTagIdSet(Set<Long> tagIdSet, String order, PageableParam pageable) {
+        log.info("order : {}", order);
+        Page<PostEntity> postEntityPage = null;
+        if(order==null) {
+            postEntityPage = postService.getPostByTagIdSet(tagIdSet, pageable);
+        } else if(order.equals("popular")) {
+            postEntityPage = postService.getPostByTagIdSetOrderByLikeCountDesc(tagIdSet, pageable);
+        } else if(order.equals("latest")) {
+            postEntityPage = postService.getPostByTagIdSetOrderByCreatedAtDesc(tagIdSet, pageable);
+        }
+        
+//        Page<PostEntity> postEntityPage = postService.getPostByTagIdSet(tagIdSet, pageable);
         List<PostApiResponse> postApiResponseList = postApiMapper.toDtoList(postEntityPage.getContent());
         return PageableResponse.makeResponse(postEntityPage, postApiResponseList);
     }

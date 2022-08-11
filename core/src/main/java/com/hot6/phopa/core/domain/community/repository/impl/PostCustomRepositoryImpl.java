@@ -70,6 +70,37 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
                 .distinct()
                 .fetchResults();
         return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
+    }
 
+    @Override
+    public Page<PostEntity> getPostByTagIdSetOrderByLikeCountDesc(Set<Long> tagIdSet, PageableParam pageable) {
+        QueryResults result = jpaQueryFactory.selectFrom(postEntity)
+                .join(postEntity.postLikeSet, postLikeEntity).fetchJoin()
+                .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
+                .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
+                .leftJoin(postLikeEntity.user, userEntity).fetchJoin()
+                .where(tagEntity.id.in(tagIdSet))
+                .orderBy(postEntity.likeCount.desc())
+                .offset(pageable.getPage())
+                .limit(pageable.getPageSize())
+                .distinct()
+                .fetchResults();
+        return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
+    }
+
+    @Override
+    public Page<PostEntity> getPostByTagIdSetOrderByCreatedAtDesc(Set<Long> tagIdSet, PageableParam pageable) {
+        QueryResults result = jpaQueryFactory.selectFrom(postEntity)
+                .join(postEntity.postLikeSet, postLikeEntity).fetchJoin()
+                .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
+                .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
+                .leftJoin(postLikeEntity.user, userEntity).fetchJoin()
+                .where(tagEntity.id.in(tagIdSet))
+                .orderBy(postEntity.createdAt.desc())
+                .offset(pageable.getPage())
+                .limit(pageable.getPageSize())
+                .distinct()
+                .fetchResults();
+        return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
     }
 }
