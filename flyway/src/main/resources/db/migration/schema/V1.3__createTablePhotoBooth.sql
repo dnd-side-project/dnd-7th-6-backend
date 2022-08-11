@@ -11,6 +11,8 @@ CREATE TABLE `photo_booth` (
   `latitude` DOUBLE NOT NULL COMMENT 'geometry',
   `longitude` DOUBLE NOT NULL COMMENT 'geometry',
   `like_count` int NOT NULL default 0 COMMENT '좋아요수',
+  `review_count` int NOT NULL default 0 COMMENT '리뷰 수',
+  `star_score` float NOT NULL default 0 COMMENT '평균 별점',
   `tag_id` bigint NOT NULL COMMENT 'tag id',
   `status` varchar(100) default 'ACTIVE' NOT NULL COMMENT '상태값',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',

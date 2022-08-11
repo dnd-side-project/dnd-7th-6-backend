@@ -3,6 +3,7 @@ package com.hot6.phopa.core.domain.review.service;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
+import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewLikeEntity;
 import com.hot6.phopa.core.domain.review.repository.ReviewLikeRepository;

@@ -12,6 +12,8 @@ import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothLikeEntity;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothLikeRepository;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothRepository;
+import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
+import com.hot6.phopa.core.domain.review.service.ReviewService;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
@@ -39,8 +41,8 @@ public class PhotoBoothService {
     @Transactional(readOnly = true)
     //    distance 1 = 1m
     public PhotoBoothWithDistanceDTO getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, PageableParam pageable) {
-        List<PhotoBoothNativeQueryDTO> photoBoothNativeQueryDTOList = photoBoothRepository.findIdsByGeo(latitude, longitude, distance/100);
-        Map<Long, Double> photoBoothIdDistanceMap = photoBoothNativeQueryDTOList.stream().collect(Collectors.toMap(PhotoBoothNativeQueryDTO::getId, p->(p.getDistance() *100)));
+        List<PhotoBoothNativeQueryDTO> photoBoothNativeQueryDTOList = photoBoothRepository.findIdsByGeo(latitude, longitude, distance / 100);
+        Map<Long, Double> photoBoothIdDistanceMap = photoBoothNativeQueryDTOList.stream().collect(Collectors.toMap(PhotoBoothNativeQueryDTO::getId, p -> (p.getDistance() * 100)));
         List<Long> photoBoothIdList = photoBoothNativeQueryDTOList.stream().sorted(Comparator.comparingDouble(PhotoBoothNativeQueryDTO::getDistance)).map(PhotoBoothNativeQueryDTO::getId).collect(Collectors.toList());
         Page<PhotoBoothEntity> photoBoothEntityPage = photoBoothRepository.findByPhotoBoothIdAndColumn(photoBoothIdList, status, tagIdSet, pageable);
         return PhotoBoothWithDistanceDTO.of(photoBoothIdDistanceMap, photoBoothEntityPage);
@@ -94,4 +96,5 @@ public class PhotoBoothService {
     public List<PhotoBoothEntity> findAllByUserLike(Long userId) {
         return photoBoothRepository.findAllByUserLike(userId);
     }
+
 }
