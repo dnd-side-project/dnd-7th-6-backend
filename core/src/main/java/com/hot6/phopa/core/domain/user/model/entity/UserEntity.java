@@ -33,17 +33,21 @@ public class UserEntity extends BaseTimeEntity implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "회원 상태")
-    private UserStatus status = UserStatus.INIT;
+    private UserStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role", nullable = false, columnDefinition = "회원 권한")
-    private UserRole userRole = UserRole.ANONYMOUS;
+    private UserRole userRole;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "provider", nullable = false, columnDefinition = "회원 권한")
-    private UserProvider provider = UserProvider.ITSELF;
+    private UserProvider provider;
 
     @Column(name = "provider_id", columnDefinition = "provider 고유 id")
     private String providerId;
+
+    public void updateName(String name){
+        this.name = name;
+    }
 
 }

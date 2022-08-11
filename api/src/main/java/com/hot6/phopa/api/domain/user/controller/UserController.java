@@ -18,17 +18,15 @@ import javax.validation.constraints.Positive;
 @RequiredArgsConstructor
 public class UserController {
     private final UserApiService userApiService;
-    @GetMapping("/{userId}/like")
+    @GetMapping("/like")
     public UserLikeResponse getLikeResponse(
-            @PathVariable @Positive Long userId
     ) {
-        return userApiService.getLikeResponse(userId);
+        return userApiService.getLikeResponse();
     }
 
-    @GetMapping("{userId}/list")
+    @GetMapping("/list")
     public UserListResponse getUserListResponse(
-            @PathVariable @Positive Long userId
     ) {
-        return userApiService.getUserListResponse(userId);
+        return userApiService.getUserListResponse();
     }
 }

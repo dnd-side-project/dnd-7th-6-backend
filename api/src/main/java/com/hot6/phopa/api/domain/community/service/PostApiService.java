@@ -24,6 +24,7 @@ import com.hot6.phopa.core.domain.tag.model.mapper.TagMapper;
 import com.hot6.phopa.core.domain.tag.service.TagService;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.service.UserService;
+import com.hot6.phopa.core.security.config.PrincipleDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -65,9 +66,10 @@ public class PostApiService {
     }
 
     public PostApiResponse createPost(PostCreateRequest postCreateRequest, List<MultipartFile> postImageList) {
+        PrincipleDetail userDetailDto = PrincipleDetail.get();
+        UserEntity userEntity = userDetailDto.getUser();
         postCreateRequest.validCheck();
         fileInvalidCheck(postImageList);
-        UserEntity userEntity = userService.findById(postCreateRequest.getUserId());
         PostEntity postEntity = PostEntity.builder()
                 .title(postCreateRequest.getTitle())
                 .content(postCreateRequest.getContent())
@@ -123,10 +125,11 @@ public class PostApiService {
         }
     }
 
-    public void like(Long postId, Long userId) {
+    public void like(Long postId) {
+        PrincipleDetail userDetailDto = PrincipleDetail.get();
+        UserEntity userEntity = userDetailDto.getUser();
         PostEntity postEntity = postService.getPostById(postId);
-        UserEntity userEntity = userService.findById(userId);
-        PostLikeEntity postLikeEntity = postService.getPostLikeByPostIdAndUserId(postId, userId);
+        PostLikeEntity postLikeEntity = postService.getPostLikeByPostIdAndUserId(postId, userEntity.getId());
         if (postLikeEntity != null){
             postService.deletePostLikeEntity(postLikeEntity);
             postEntity.updateLikeCount(-1);

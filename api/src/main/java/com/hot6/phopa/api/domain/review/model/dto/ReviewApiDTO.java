@@ -35,14 +35,12 @@ public class ReviewApiDTO {
         private String content;
         private List<Long> tagIdList;
         private Long photoBoothId;
-        private Long userId;
         private Float starScore;
 
         public void validCheck() {
             Optional.ofNullable(this.getTitle()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
             Optional.ofNullable(this.getContent()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
             Optional.ofNullable(this.getPhotoBoothId()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
-            Optional.ofNullable(this.getUserId()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
         }
     }
 

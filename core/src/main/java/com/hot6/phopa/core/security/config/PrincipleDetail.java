@@ -3,9 +3,7 @@ package com.hot6.phopa.core.security.config;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,18 +13,22 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+@Getter
 public class PrincipleDetail implements UserDetails, OAuth2User {
 
     private final UserEntity user;
+
+    private String jwtToken;
     private Map<String, Object> attributes;
 
     public PrincipleDetail(UserEntity user){
         this.user = user;
     }
 
-    public PrincipleDetail(UserEntity user, Map<String, Object> attributes){
+    public PrincipleDetail(UserEntity user, Map<String, Object> attributes, String jwtToken){
         this.user = user;
         this.attributes = attributes;
+        this.jwtToken = jwtToken;
     }
 
     @Override

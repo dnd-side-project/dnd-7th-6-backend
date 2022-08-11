@@ -41,12 +41,11 @@ public class ReviewController {
         return reviewService.createReview(reviewCreateRequest, reviewImageList);
     }
 
-    @PostMapping("/{reviewId}/like/{userId}")
+    @PostMapping("/{reviewId}/like")
     public void like(
-           @PathVariable Long reviewId,
-           @PathVariable Long userId
+           @PathVariable Long reviewId
     ){
-        reviewService.like(reviewId, userId);
+        reviewService.like(reviewId);
     }
 
     @GetMapping("/form")

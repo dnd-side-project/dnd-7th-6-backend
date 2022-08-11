@@ -13,6 +13,8 @@ import com.hot6.phopa.core.domain.photobooth.model.mapper.PhotoBoothMapper;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.service.ReviewService;
+import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
+import com.hot6.phopa.core.security.config.PrincipleDetail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,15 +31,19 @@ public class UserApiService {
     private final PostApiMapper postApiMapper;
 
     private final ReviewApiMapper reviewApiMapper;
-    public UserLikeResponse getLikeResponse(Long userId) {
-        List<PhotoBoothDTO> photoBoothDTOList = photoBoothMapper.toDtoList(photoBoothService.findAllByUserLike(userId));
-        List<PostDTO> postDTOList = postMapper.toDtoList(postService.findAllByUserLike(userId));
+    public UserLikeResponse getLikeResponse() {
+        PrincipleDetail userDetailDto = PrincipleDetail.get();
+        UserEntity userEntity = userDetailDto.getUser();
+        List<PhotoBoothDTO> photoBoothDTOList = photoBoothMapper.toDtoList(photoBoothService.findAllByUserLike(userEntity.getId()));
+        List<PostDTO> postDTOList = postMapper.toDtoList(postService.findAllByUserLike(userEntity.getId()));
         return UserLikeResponse.of(photoBoothDTOList, postDTOList);
     }
 
-    public UserListResponse getUserListResponse(Long userId) {
-        List<ReviewEntity> reviewEntityList = reviewService.findAllByUserId(userId);
-        List<PostEntity> postEntityList = postService.findAllByUserId(userId);
+    public UserListResponse getUserListResponse() {
+        PrincipleDetail userDetailDto = PrincipleDetail.get();
+        UserEntity userEntity = userDetailDto.getUser();
+        List<ReviewEntity> reviewEntityList = reviewService.findAllByUserId(userEntity.getId());
+        List<PostEntity> postEntityList = postService.findAllByUserId(userEntity.getId());
         return UserListResponse.of(reviewApiMapper.toDtoList(reviewEntityList), postApiMapper.toDtoList(postEntityList));
     }
 }
