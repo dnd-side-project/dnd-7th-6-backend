@@ -1,6 +1,5 @@
 package com.hot6.phopa.api.domain.review.service;
 
-import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewCreateRequest;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewFormResponse;
@@ -13,9 +12,6 @@ import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.service.S3UploadService;
-import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
-import com.hot6.phopa.core.domain.community.model.entity.PostImageEntity;
-import com.hot6.phopa.core.domain.community.model.entity.PostTagEntity;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
@@ -73,6 +69,12 @@ public class ReviewApiService {
     public PageableResponse<ReviewApiResponse> getReview(long photoBoothId, PageableParam pageable) {
         Page<ReviewEntity> reviewEntityPage = reviewService.getReview(photoBoothId, pageable);
         List<ReviewApiResponse> reviewApiResponseList = reviewApiMapper.toDtoList(reviewEntityPage.getContent());
+        UserDTO userDTO = PrincipleDetail.get();
+        if(userDTO.getId() != null){
+            List<Long> reviewIdList = reviewApiResponseList.stream().map(ReviewApiResponse::getId).collect(Collectors.toList());
+            List<Long> userLikeReviewIdList = reviewService.getReviewLikeByReviewIdsAndUserId(reviewIdList, userDTO.getId()).stream().map(reviewLike -> reviewLike.getReview().getId()).collect(Collectors.toList());
+            reviewApiResponseList.stream().forEach(review -> review.setLike(userLikeReviewIdList.contains(review.getId())));
+        }
         return PageableResponse.makeResponse(reviewEntityPage, reviewApiResponseList);
     }
 

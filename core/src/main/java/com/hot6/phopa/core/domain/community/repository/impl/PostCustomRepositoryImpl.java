@@ -62,7 +62,7 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
     @Override
     public Page<PostEntity> getPostByTagIdSet(Set<Long> tagIdSet, PageableParam pageable) {
         QueryResults result = jpaQueryFactory.selectFrom(postEntity)
-                .join(postEntity.postLikeSet, postLikeEntity).fetchJoin()
+                .leftJoin(postEntity.postLikeSet, postLikeEntity).fetchJoin()
                 .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
                 .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
                 .leftJoin(postLikeEntity.user, userEntity).fetchJoin()
