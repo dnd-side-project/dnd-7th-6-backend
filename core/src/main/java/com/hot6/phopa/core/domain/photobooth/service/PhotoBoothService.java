@@ -56,11 +56,11 @@ public class PhotoBoothService {
     public List<PhotoBoothEntity> kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance, TagEntity tagEntity) {
         List<PhotoBoothEntity> photoBoothEntityList = kakaoMapService.crawlingPhotoBoothData(keyword, latitude, longitude, distance);
         Set<PointUtil> crawlingPointSet = photoBoothEntityList.stream().map(photoBoothEntity -> PointUtil.of(photoBoothEntity.getLatitude(), photoBoothEntity.getLongitude())).collect(Collectors.toSet());
-        Set<PointUtil> alreadyPointSet = photoBoothRepository.findByPointSet(crawlingPointSet).stream().map(photoBoothEntity -> PointUtil.of(photoBoothEntity.getLatitude(), photoBoothEntity.getLongitude())).collect(Collectors.toSet());
+        Map<Double, Double> alreadyPointMap = photoBoothRepository.findByPointSet(crawlingPointSet).stream().collect(Collectors.toMap(PhotoBoothEntity::getLatitude, PhotoBoothEntity::getLongitude));
         List<PhotoBoothEntity> savePhotoBoothEntityList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(photoBoothEntityList)) {
             for (PhotoBoothEntity photoBoothEntity : photoBoothEntityList) {
-                if (alreadyPointSet.contains(PointUtil.of(photoBoothEntity.getLatitude(), photoBoothEntity.getLongitude())) == false) {
+                if (alreadyPointMap.get(photoBoothEntity.getLatitude()) == null || (alreadyPointMap.get(photoBoothEntity.getLatitude()).doubleValue() == photoBoothEntity.getLongitude()) == false) {
                     photoBoothEntity.setTag(tagEntity);
                     savePhotoBoothEntityList.add(photoBoothEntity);
                 }
