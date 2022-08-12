@@ -26,6 +26,7 @@ public class ReviewApiDTO {
         Set<ReviewTagApiResponse> reviewTagSet;
         Set<ReviewImageResponse> reviewImageSet;
         UserApiResponse user;
+        boolean isLike;
     }
 
     @Getter
