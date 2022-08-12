@@ -9,7 +9,9 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -61,5 +63,21 @@ public class ReviewEntity extends BaseTimeEntity implements Serializable {
 
     public void updateStatus(Status status) {
         this.status = status;
+    }
+
+    public void updateStarScore(Float starScore) {
+        this.starScore = starScore;
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void deleteImage(List<Long> imageIdList) {
+        this.getReviewImageSet().removeAll(this.getReviewImageSet().stream().filter(image -> imageIdList.contains(image.getId())).collect(Collectors.toSet()));
     }
 }

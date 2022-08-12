@@ -81,7 +81,7 @@ public class PostController {
     public PostApiResponse modifyPost(
             @PathVariable @Positive Long postId,
             @RequestPart PostUpdateRequest postUpdateRequest,
-            @RequestPart List<MultipartFile> postImageList
+            @RequestPart(required = false) List<MultipartFile> postImageList
     ) {
         return postService.modifyPost(postId, postUpdateRequest, postImageList);
     }

@@ -1,9 +1,11 @@
 package com.hot6.phopa.api.domain.review.controller;
 
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewCreateRequest;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewFormResponse;
+import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewUpdateRequest;
 import com.hot6.phopa.api.domain.review.service.ReviewApiService;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
@@ -51,6 +53,22 @@ public class ReviewController {
     @GetMapping("/form")
     public ReviewFormResponse getFormData(){
         return reviewService.getFormData();
+    }
+
+    @DeleteMapping("/{reviewId}")
+    public void inactivePost(
+            @PathVariable @Positive Long reviewId
+    ) {
+        reviewService.inactiveReview(reviewId);
+    }
+
+    @PatchMapping("/{reviewId}")
+    public ReviewApiResponse modifyPost(
+            @PathVariable @Positive Long reviewId,
+            @RequestPart ReviewUpdateRequest reviewUpdateRequest,
+            @RequestPart(required = false) List<MultipartFile> reviewImageList
+    ) {
+        return reviewService.modifyReview(reviewId, reviewUpdateRequest, reviewImageList);
     }
 
 }

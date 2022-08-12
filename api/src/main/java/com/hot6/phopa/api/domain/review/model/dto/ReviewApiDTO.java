@@ -49,6 +49,18 @@ public class ReviewApiDTO {
     @Getter
     @Setter
     @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ReviewUpdateRequest {
+        private String title;
+        private String content;
+        private List<Long> tagIdList;
+        private Float starScore;
+        private List<Long> deleteImageIdList;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
     public static class ReviewTagApiResponse {
         private TagDTO tag;
     }
