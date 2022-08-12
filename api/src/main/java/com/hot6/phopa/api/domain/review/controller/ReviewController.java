@@ -62,6 +62,13 @@ public class ReviewController {
         reviewService.inactiveReview(reviewId);
     }
 
+    @GetMapping("/{reviewId}")
+    public ReviewApiResponse getReview(
+            @PathVariable @Positive Long reviewId
+    ){
+        return reviewService.getReview(reviewId);
+    }
+
     @PatchMapping("/{reviewId}")
     public ReviewApiResponse modifyPost(
             @PathVariable @Positive Long reviewId,

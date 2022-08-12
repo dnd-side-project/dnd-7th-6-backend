@@ -170,6 +170,20 @@ public class ReviewApiService {
         return ReviewFormResponse.of(reviewTagMap);
     }
 
+    public ReviewApiResponse getReview(Long reviewId) {
+        ReviewEntity reviewEntity = reviewService.getReviewById(reviewId);
+        UserDTO userDTO = PrincipleDetail.get();
+        boolean isLike = false;
+        if(userDTO.getId() != null){
+            if(reviewService.getReviewLikeByReviewIdAndUserId(reviewId, userDTO.getId()) != null){
+                isLike = true;
+            }
+        }
+        ReviewApiResponse reviewApiResponse = reviewApiMapper.toDto(reviewEntity);
+        reviewApiResponse.setLike(isLike);
+        return reviewApiResponse;
+    }
+
     public void inactiveReview(Long reviewId) {
         UserDTO userDTO = PrincipleDetail.get();
         UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
