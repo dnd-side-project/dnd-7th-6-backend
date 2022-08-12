@@ -1,24 +1,20 @@
 package com.hot6.phopa.api.domain.user.controller;
 
+import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserApiResponse;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserLikeResponse;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserListResponse;
+import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserNameUpdateRequest;
 import com.hot6.phopa.api.domain.user.service.UserApiService;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
-import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
-import com.hot6.phopa.core.security.config.PrincipleDetail;
 import com.hot6.phopa.core.security.jwt.JwtToken;
 import com.hot6.phopa.core.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.Positive;
 
 @Slf4j
 @RestController
@@ -27,6 +23,11 @@ import javax.validation.constraints.Positive;
 public class UserController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserApiService userApiService;
+
+    @GetMapping
+    public UserApiResponse getUserDto(){
+        return userApiService.getUserDto();
+    }
     @GetMapping("/like")
     public UserLikeResponse getLikeResponse(
     ) {
@@ -37,6 +38,13 @@ public class UserController {
     public UserListResponse getUserListResponse(
     ) {
         return userApiService.getUserListResponse();
+    }
+
+    @PatchMapping("/name")
+    public UserApiResponse updateName(
+            @RequestBody UserNameUpdateRequest userNameUpdateRequest
+            ) {
+        return userApiService.updateName(userNameUpdateRequest);
     }
 
     @GetMapping("/token/expired")

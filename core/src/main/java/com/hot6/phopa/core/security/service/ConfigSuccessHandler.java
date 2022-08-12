@@ -1,11 +1,14 @@
 package com.hot6.phopa.core.security.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.model.mapper.UserMapper;
 import com.hot6.phopa.core.domain.user.service.UserService;
 import com.hot6.phopa.core.domain.user.type.UserRole;
+import com.hot6.phopa.core.domain.user.type.UserStatus;
 import com.hot6.phopa.core.security.config.PrincipleDetail;
 import com.hot6.phopa.core.security.jwt.JwtToken;
 import com.hot6.phopa.core.security.jwt.JwtTokenProvider;
@@ -30,15 +33,19 @@ public class ConfigSuccessHandler extends SavedRequestAwareAuthenticationSuccess
     private final UserService userService;
     private final ObjectMapper objectMapper;
     private final UserMapper userMapper;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException, ServletException {
-        PrincipleDetail principleDetail = (PrincipleDetail)authentication.getPrincipal();
+        PrincipleDetail principleDetail = (PrincipleDetail) authentication.getPrincipal();
         UserEntity user = principleDetail.getUser();
         // 최초 로그인이라면 회원가입 처리를 한다.
         UserEntity userEntity = userService.getUser(user.getEmail());
-        if(userEntity == null) {
+        if (userEntity == null) {
             userEntity = userService.createUser(user);
+            userEntity.updateName("photalks_user_" + userEntity.getId());
+        } else if (UserStatus.INACTIVE.equals(userEntity.getStatus())) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.INACTIVE_USER, "탈퇴한 회원입니다.");
         }
         Authentication auth = getAuthentication(userMapper.toDto(userEntity));
         SecurityContextHolder.getContext().setAuthentication(auth);
