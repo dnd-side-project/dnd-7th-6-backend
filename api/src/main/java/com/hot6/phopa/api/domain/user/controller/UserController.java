@@ -3,6 +3,8 @@ package com.hot6.phopa.api.domain.user.controller;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserLikeResponse;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserListResponse;
 import com.hot6.phopa.api.domain.user.service.UserApiService;
+import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import com.hot6.phopa.core.security.config.PrincipleDetail;
 import com.hot6.phopa.core.security.jwt.JwtToken;
@@ -39,7 +41,7 @@ public class UserController {
 
     @GetMapping("/token/expired")
     public String auth() {
-        throw new RuntimeException();
+        throw new SilentApplicationErrorException(ApplicationErrorType.EXPIRED_TOKEN);
     }
 
     @GetMapping("/token/refresh")
@@ -56,6 +58,6 @@ public class UserController {
 
             return "HAPPY NEW TOKEN";
         }
-        throw new RuntimeException();
+        throw new SilentApplicationErrorException(ApplicationErrorType.EXPIRED_REFRESH_TOKEN);
     }
 }

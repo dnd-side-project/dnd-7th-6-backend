@@ -20,6 +20,7 @@ public class JwtTokenProvider {	// JWT토큰 생성 및 유효성을 검증하�
     private String SECRET_KEY;
 
     private long tokenValidMillisecond = 1000L * 60 * 60; // 1시간 토큰 유효
+    private long refreshTokenValidMillisecond = 1000L * 60 * 60 * 24; // 24시간 토큰 유효
 
     @PostConstruct
     protected void init() {
@@ -39,7 +40,7 @@ public class JwtTokenProvider {	// JWT토큰 생성 및 유효성을 검증하�
                 Jwts.builder()
                         .setClaims(claims)
                         .setIssuedAt(now)
-                        .setExpiration(new Date(now.getTime() + tokenValidMillisecond))
+                        .setExpiration(new Date(now.getTime() + refreshTokenValidMillisecond))
                         .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
                         .compact());
     }
