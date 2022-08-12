@@ -3,12 +3,16 @@ package com.hot6.phopa.core.domain.photobooth.repository.impl;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.utils.PointUtil;
+import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothCustomRepository;
+import com.hot6.phopa.core.domain.user.type.UserStatus;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.commons.collections4.CollectionUtils;
@@ -40,7 +44,7 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
 
     public List<PhotoBoothEntity> findByPhotoBoothId(Long photoBoothId) {
         return from(photoBoothEntity)
-                .where(photoBoothEntity.id.eq(photoBoothId))
+                .where(photoBoothEntity.id.eq(photoBoothId).and(photoBoothEntity.status.eq(Status.ACTIVE)))
                 .fetch();
     }
 
@@ -48,6 +52,7 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
     public List<PhotoBoothEntity> findByPointSet(Set<PointUtil> crawlingPointSet) {
         return from(photoBoothEntity)
                 .where(buildPointPredicate(crawlingPointSet))
+                .where(photoBoothEntity.status.eq(Status.ACTIVE))
                 .fetch();
     }
 
@@ -64,7 +69,7 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
         return from(photoBoothEntity)
                 .join(photoBoothEntity.photoBoothLikeSet, photoBoothLikeEntity).fetchJoin()
                 .join(photoBoothLikeEntity.user, userEntity).fetchJoin()
-                .where(userEntity.id.eq(userId))
+                .where(userEntity.id.eq(userId).and(userEntity.status.eq(UserStatus.ACTIVE)))
                 .fetch();
     }
 
@@ -74,7 +79,7 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
                 .leftJoin(photoBoothEntity.tag, tagEntity).fetchJoin()
                 .leftJoin(photoBoothEntity.reviewSet, reviewEntity).fetchJoin()
                 .leftJoin(reviewEntity.reviewTagSet, reviewTagEntity).fetchJoin()
-                .where(photoBoothEntity.id.eq(photoBoothId))
+                .where(photoBoothEntity.id.eq(photoBoothId).and(photoBoothEntity.status.eq(Status.ACTIVE)))
                 .fetchOne();
     }
 
@@ -84,7 +89,7 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
                 .leftJoin(photoBoothEntity.reviewSet, reviewEntity)
                 .leftJoin(reviewEntity.reviewTagSet, reviewTagEntity)
                 .leftJoin(reviewTagEntity.tag, tagEntity)
-                .where(photoBoothEntity.id.in(photoBoothIdList))
+                .where(photoBoothEntity.id.in(photoBoothIdList).and(photoBoothEntity.status.eq(Status.ACTIVE)))
                 .where(buildPredicate(status, tagIdSet))
                 .orderBy(orderByFieldList(photoBoothIdList))
                 .offset(pageable.getPage())
@@ -95,7 +100,7 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
                 .leftJoin(photoBoothEntity.reviewSet, reviewEntity).fetchJoin()
                 .leftJoin(reviewEntity.reviewTagSet, reviewTagEntity).fetchJoin()
                 .leftJoin(reviewTagEntity.tag, tagEntity).fetchJoin()
-                .where(photoBoothEntity.id.in(photoBoothIdList))
+                .where(photoBoothEntity.id.in(photoBoothIdList).and(photoBoothEntity.status.eq(Status.ACTIVE)))
                 .where(buildPredicate(status, tagIdSet))
                 .distinct()
                 .fetch()

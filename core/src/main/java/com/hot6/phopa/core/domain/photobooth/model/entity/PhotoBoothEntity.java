@@ -49,6 +49,9 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "star_score")
     private Float starScore;
 
+    @Column(name = "total_star_score")
+    private Float totalStarScore;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
@@ -72,7 +75,8 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
         this.reviewCount += count;
     }
 
-    public void updateStarScore(Float starScore) {
-        this.starScore = starScore;
+    public void updateStarScore(Float totalStarScore) {
+        this.totalStarScore = totalStarScore;
+        this.starScore = this.totalStarScore/this.reviewCount;
     }
 }

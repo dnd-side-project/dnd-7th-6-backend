@@ -30,4 +30,6 @@ public class UserService {
     }
 
     public UserEntity findById(Long id) { return userRepository.findById(id).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));}
+
+    public UserEntity getByName(String name) { return userRepository.findByName(name);}
 }

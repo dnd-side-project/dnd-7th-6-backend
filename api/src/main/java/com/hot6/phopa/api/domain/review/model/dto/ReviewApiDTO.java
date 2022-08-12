@@ -1,5 +1,7 @@
 package com.hot6.phopa.api.domain.review.model.dto;
 
+import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO;
+import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserApiResponse;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.domain.review.model.dto.ReviewDTO;
@@ -23,7 +25,8 @@ public class ReviewApiDTO {
     public static class ReviewApiResponse extends ReviewDTO {
         Set<ReviewTagApiResponse> reviewTagSet;
         Set<ReviewImageResponse> reviewImageSet;
-        UserDTO user;
+        UserApiResponse user;
+        boolean isLike;
     }
 
     @Getter
@@ -35,15 +38,25 @@ public class ReviewApiDTO {
         private String content;
         private List<Long> tagIdList;
         private Long photoBoothId;
-        private Long userId;
         private Float starScore;
 
         public void validCheck() {
             Optional.ofNullable(this.getTitle()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
             Optional.ofNullable(this.getContent()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
             Optional.ofNullable(this.getPhotoBoothId()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
-            Optional.ofNullable(this.getUserId()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
         }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class ReviewUpdateRequest {
+        private String title;
+        private String content;
+        private List<Long> tagIdList;
+        private Float starScore;
+        private List<Long> deleteImageIdList;
     }
 
     @Getter
