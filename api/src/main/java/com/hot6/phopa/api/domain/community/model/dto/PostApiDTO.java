@@ -26,6 +26,7 @@ public class PostApiDTO {
         Set<PostTagApiResponse> postTagSet;
         Set<PostImageResponse> postImageSet;
         UserApiResponse user;
+        boolean isLike;
     }
 
     @Getter

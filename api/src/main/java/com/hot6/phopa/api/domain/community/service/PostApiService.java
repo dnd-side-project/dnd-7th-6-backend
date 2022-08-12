@@ -3,6 +3,7 @@ package com.hot6.phopa.api.domain.community.service;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.*;
 import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
+import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
@@ -144,13 +145,26 @@ public class PostApiService {
     }
 
     public PostApiResponse getPost(Long postId) {
-        return postApiMapper.toDto(postService.getPostById(postId));
+        PostApiResponse postApiResponse = postApiMapper.toDto(postService.getPostById(postId));
+        UserDTO userDTO = PrincipleDetail.get();
+        boolean isLike = false;
+        if(userDTO.getId() != null){
+            isLike = postService.getPostLikeByPostIdAndUserId(postApiResponse.getId(), userDTO.getId()) != null;
+        }
+        postApiResponse.setLike(isLike);
+        return postApiResponse;
     }
 
 
     public PageableResponse<PostApiResponse> getPostsByTagIdSet(Set<Long> tagIdSet, PageableParam pageable) {
         Page<PostEntity> postEntityPage = postService.getPostByTagIdSet(tagIdSet, pageable);
         List<PostApiResponse> postApiResponseList = postApiMapper.toDtoList(postEntityPage.getContent());
+        UserDTO userDTO = PrincipleDetail.get();
+        if(userDTO.getId() != null){
+            List<Long> postIdList = postApiResponseList.stream().map(PostApiResponse::getId).collect(Collectors.toList());
+            List<Long> userLikePostIdList = postService.getPostLikeByPostIdsAndUserId(postIdList, userDTO.getId()).stream().map(postLike -> postLike.getPost().getId()).collect(Collectors.toList());
+            postApiResponseList.stream().forEach(post -> post.setLike(userLikePostIdList.contains(post.getId())));
+        }
         return PageableResponse.makeResponse(postEntityPage, postApiResponseList);
     }
 

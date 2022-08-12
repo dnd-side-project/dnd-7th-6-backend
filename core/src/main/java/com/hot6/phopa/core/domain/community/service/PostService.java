@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -62,5 +63,9 @@ public class PostService {
 
     public List<PostEntity> findAllByUserId(Long userId) {
         return postRepository.getAllByUserIdAndStatus(userId, Status.ACTIVE);
+    }
+
+    public List<PostLikeEntity> getPostLikeByPostIdsAndUserId(List<Long> postIdList, Long userId) {
+        return postLikeRepository.findAllByPostIdsAndUserId(postIdList, userId);
     }
 }
