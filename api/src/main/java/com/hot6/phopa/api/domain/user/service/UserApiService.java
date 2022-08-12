@@ -42,16 +42,16 @@ public class UserApiService {
     private final UserService userService;
     private final UserApiMapper userApiMapper;
     public UserLikeResponse getLikeResponse() {
-        UserDTO userDto = PrincipleDetail.get();
-        List<PhotoBoothEntity> photoBoothEntityList = photoBoothService.findAllByUserLike(userDto.getId());
-        List<PostEntity> postEntityList = postService.findAllByUserLike(userDto.getId());
+        UserDTO userDTO = PrincipleDetail.get();
+        List<PhotoBoothEntity> photoBoothEntityList = photoBoothService.findAllByUserLike(userDTO.getId());
+        List<PostEntity> postEntityList = postService.findAllByUserLike(userDTO.getId());
         return UserLikeResponse.of(photoBoothMapper.toDtoList(photoBoothEntityList), postApiMapper.toDtoList(postEntityList));
     }
 
     public UserListResponse getUserListResponse() {
-        UserDTO userDto = PrincipleDetail.get();
-        List<ReviewEntity> reviewEntityList = reviewService.findAllByUserId(userDto.getId());
-        List<PostEntity> postEntityList = postService.findAllByUserId(userDto.getId());
+        UserDTO userDTO = PrincipleDetail.get();
+        List<ReviewEntity> reviewEntityList = reviewService.findAllByUserId(userDTO.getId());
+        List<PostEntity> postEntityList = postService.findAllByUserId(userDTO.getId());
         return UserListResponse.of(reviewApiMapper.toDtoList(reviewEntityList), postApiMapper.toDtoList(postEntityList));
     }
 
@@ -73,7 +73,7 @@ public class UserApiService {
 
     public void inactiveUser() {
         UserDTO userDTO = PrincipleDetail.get();
-        UserEntity userEntity = userService.findById(userDTO.getId());
+        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
         postService.findAllByUserId(userEntity.getId()).forEach(post -> post.updateStatus(Status.INACTIVE));
         reviewService.findAllByUserId(userEntity.getId()).forEach(review -> review.updateStatus(Status.INACTIVE));
         userEntity.updateStatus(UserStatus.INACTIVE);

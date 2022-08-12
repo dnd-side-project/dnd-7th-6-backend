@@ -71,8 +71,8 @@ public class ReviewApiService {
     }
 
     public ReviewApiResponse createReview(ReviewCreateRequest reviewCreateRequest, List<MultipartFile> reviewImageList) {
-        UserDTO userDto = PrincipleDetail.get();
-        UserEntity userEntity = userService.findById(userDto.getId());
+        UserDTO userDTO = PrincipleDetail.get();
+        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
         reviewCreateRequest.validCheck();
         fileInvalidCheck(reviewImageList);
         PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(reviewCreateRequest.getPhotoBoothId());
@@ -141,8 +141,8 @@ public class ReviewApiService {
     }
 
     public void like(Long reviewId) {
-        UserDTO userDto = PrincipleDetail.get();
-        UserEntity userEntity = userService.findById(userDto.getId());
+        UserDTO userDTO = PrincipleDetail.get();
+        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
         ReviewEntity reviewEntity = reviewService.getReviewById(reviewId);
         ReviewLikeEntity reviewLikeEntity = reviewService.getReviewLikeByReviewIdAndUserId(reviewId, userEntity.getId());
         if (reviewLikeEntity != null) {
