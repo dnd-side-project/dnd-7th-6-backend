@@ -1,6 +1,7 @@
 package com.hot6.phopa.core.domain.review.repository.impl;
 
 import com.hot6.phopa.core.common.model.dto.PageableParam;
+import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.repository.ReviewCustomRepository;
 import com.hot6.phopa.core.domain.tag.model.entity.QTagEntity;
@@ -37,7 +38,7 @@ public class ReviewCustomRepositoryImpl extends QuerydslRepositorySupport implem
                 .leftJoin(reviewEntity.reviewImageSet, reviewImageEntity).fetchJoin()
                 .leftJoin(reviewEntity.reviewTagSet, reviewTagEntity).fetchJoin()
                 .leftJoin(reviewTagEntity.tag, QTagEntity.tagEntity).fetchJoin()
-                .where(photoBoothEntity.id.eq(photoBoothId))
+                .where(photoBoothEntity.id.eq(photoBoothId).and(photoBoothEntity.status.eq(Status.ACTIVE)).and(reviewEntity.status.eq(Status.ACTIVE)))
                 .offset(pageable.getPage())
                 .limit(pageable.getPageSize())
                 .distinct().fetchResults();

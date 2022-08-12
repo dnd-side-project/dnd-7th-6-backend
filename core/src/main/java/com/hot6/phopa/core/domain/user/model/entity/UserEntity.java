@@ -50,4 +50,7 @@ public class UserEntity extends BaseTimeEntity implements Serializable {
         this.name = name;
     }
 
+    public void updateStatus(UserStatus status) {
+        this.status = status;
+    }
 }
