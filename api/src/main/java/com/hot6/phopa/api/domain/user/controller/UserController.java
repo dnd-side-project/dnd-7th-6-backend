@@ -56,7 +56,6 @@ public class UserController {
 
             return "HAPPY NEW TOKEN";
         }
-
         throw new RuntimeException();
     }
 }

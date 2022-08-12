@@ -42,9 +42,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/v1/user/token/**").permitAll()
                 // 가입 및 인증 주소는 누구나 접근 가능
-                .antMatchers("/api/v1/user/**").hasAnyRole(UserRole.USER.getAuthority())
+                .antMatchers("/api/v1/user/**").authenticated()
                 // user 관련 api는 회원만 접근 가능
-                .antMatchers(HttpMethod.POST, "/**").hasAnyRole(UserRole.USER.getAuthority())
+                .antMatchers(HttpMethod.POST, "/**").authenticated()
                 // 나머지 POST 메소드는 회원만 접근 가능
                 .anyRequest().permitAll()
                 // 그 외 나머지 요청은 모두 접근 가능

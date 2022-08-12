@@ -21,6 +21,7 @@ import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.tag.model.mapper.TagMapper;
 import com.hot6.phopa.core.domain.tag.service.TagService;
+import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.service.UserService;
 import com.hot6.phopa.core.security.config.PrincipleDetail;
@@ -47,8 +48,8 @@ public class PhotoBoothApiService {
     private final UserService userService;
 
     public PageableResponse<PhotoBoothWithTagResponse> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, PageableParam pageable) {
-        PrincipleDetail userDetailDto = PrincipleDetail.get();
-        UserEntity userEntity = userDetailDto.getUser();
+        UserDTO userDto = PrincipleDetail.get();
+        UserEntity userEntity = userService.findById(userDto.getId());
         PhotoBoothWithDistanceDTO photoBoothWithDistanceDTO = photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, pageable);
         Page<PhotoBoothEntity> photoBoothEntityPage = photoBoothWithDistanceDTO.getPhotoBoothEntityPage();
         Map<Long, Double> photoBoothIdDistanceMap = photoBoothWithDistanceDTO.getPhotoBoothIdDistanceMap();
@@ -70,8 +71,8 @@ public class PhotoBoothApiService {
     }
 
     public void like(Long photoBoothId) {
-        PrincipleDetail userDetailDto = PrincipleDetail.get();
-        UserEntity userEntity = userDetailDto.getUser();
+        UserDTO userDto = PrincipleDetail.get();
+        UserEntity userEntity = userService.findById(userDto.getId());
         PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBoothById(photoBoothId);
         PhotoBoothLikeEntity photoBoothLikeEntity = photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBoothId, userEntity.getId());
         if (photoBoothLikeEntity != null) {
@@ -95,8 +96,8 @@ public class PhotoBoothApiService {
     }
 
     public PhotoBoothWithTagResponse getPhotoBooth(Long photoBoothId, Double latitude, Double longitude) {
-        PrincipleDetail userDetailDto = PrincipleDetail.get();
-        UserEntity userEntity = userDetailDto.getUser();
+        UserDTO userDto = PrincipleDetail.get();
+        UserEntity userEntity = userService.findById(userDto.getId());
         PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(photoBoothId);
         List<TagEntity> tagEntityList = tagService.getTagByPhotoBoothId(photoBoothId);
         boolean isLike = userEntity != null & photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBoothEntity.getId(), userEntity.getId()) == null;

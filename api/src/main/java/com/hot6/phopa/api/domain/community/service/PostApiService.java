@@ -22,6 +22,7 @@ import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.tag.model.mapper.TagMapper;
 import com.hot6.phopa.core.domain.tag.service.TagService;
+import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.service.UserService;
 import com.hot6.phopa.core.security.config.PrincipleDetail;
@@ -66,8 +67,8 @@ public class PostApiService {
     }
 
     public PostApiResponse createPost(PostCreateRequest postCreateRequest, List<MultipartFile> postImageList) {
-        PrincipleDetail userDetailDto = PrincipleDetail.get();
-        UserEntity userEntity = userDetailDto.getUser();
+        UserDTO userDto = PrincipleDetail.get();
+        UserEntity userEntity = userService.findById(userDto.getId());
         postCreateRequest.validCheck();
         fileInvalidCheck(postImageList);
         PostEntity postEntity = PostEntity.builder()
@@ -126,8 +127,8 @@ public class PostApiService {
     }
 
     public void like(Long postId) {
-        PrincipleDetail userDetailDto = PrincipleDetail.get();
-        UserEntity userEntity = userDetailDto.getUser();
+        UserDTO userDto = PrincipleDetail.get();
+        UserEntity userEntity = userService.findById(userDto.getId());
         PostEntity postEntity = postService.getPostById(postId);
         PostLikeEntity postLikeEntity = postService.getPostLikeByPostIdAndUserId(postId, userEntity.getId());
         if (postLikeEntity != null){
