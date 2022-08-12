@@ -4,11 +4,11 @@ import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
 import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserLikeResponse;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserListResponse;
-import com.hot6.phopa.core.domain.community.model.dto.PostDTO;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.mapper.PostMapper;
 import com.hot6.phopa.core.domain.community.service.PostService;
-import com.hot6.phopa.core.domain.photobooth.model.dto.PhotoBoothDTO;
+import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
+import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.model.mapper.PhotoBoothMapper;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
@@ -29,23 +29,19 @@ public class UserApiService {
     private final PostService postService;
     private final PhotoBoothMapper photoBoothMapper;
     private final ReviewService reviewService;
-    private final PostMapper postMapper;
     private final PostApiMapper postApiMapper;
-    private final UserService userService;
     private final ReviewApiMapper reviewApiMapper;
     public UserLikeResponse getLikeResponse() {
         UserDTO userDto = PrincipleDetail.get();
-        UserEntity userEntity = userService.findById(userDto.getId());
-        List<PhotoBoothDTO> photoBoothDTOList = photoBoothMapper.toDtoList(photoBoothService.findAllByUserLike(userEntity.getId()));
-        List<PostDTO> postDTOList = postMapper.toDtoList(postService.findAllByUserLike(userEntity.getId()));
-        return UserLikeResponse.of(photoBoothDTOList, postDTOList);
+        List<PhotoBoothEntity> photoBoothEntityList = photoBoothService.findAllByUserLike(userDto.getId());
+        List<PostEntity> postEntityList = postService.findAllByUserLike(userDto.getId());
+        return UserLikeResponse.of(photoBoothMapper.toDtoList(photoBoothEntityList), postApiMapper.toDtoList(postEntityList));
     }
 
     public UserListResponse getUserListResponse() {
         UserDTO userDto = PrincipleDetail.get();
-        UserEntity userEntity = userService.findById(userDto.getId());
-        List<ReviewEntity> reviewEntityList = reviewService.findAllByUserId(userEntity.getId());
-        List<PostEntity> postEntityList = postService.findAllByUserId(userEntity.getId());
+        List<ReviewEntity> reviewEntityList = reviewService.findAllByUserId(userDto.getId());
+        List<PostEntity> postEntityList = postService.findAllByUserId(userDto.getId());
         return UserListResponse.of(reviewApiMapper.toDtoList(reviewEntityList), postApiMapper.toDtoList(postEntityList));
     }
 }
