@@ -3,6 +3,7 @@ package com.hot6.phopa.core.security.config;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
+import com.hot6.phopa.core.security.jwt.JwtToken;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,14 +19,14 @@ public class PrincipleDetail implements UserDetails, OAuth2User {
 
     private final UserEntity user;
 
-    private String jwtToken;
+    private JwtToken jwtToken;
     private Map<String, Object> attributes;
 
     public PrincipleDetail(UserEntity user){
         this.user = user;
     }
 
-    public PrincipleDetail(UserEntity user, Map<String, Object> attributes, String jwtToken){
+    public PrincipleDetail(UserEntity user, Map<String, Object> attributes, JwtToken jwtToken){
         this.user = user;
         this.attributes = attributes;
         this.jwtToken = jwtToken;
@@ -85,8 +86,7 @@ public class PrincipleDetail implements UserDetails, OAuth2User {
             }
 //          request.getAttribute("user_session");
         } catch (Throwable e) {
-            throw new ApplicationErrorException(ApplicationErrorType.INTERNAL_ERROR);
-//            log.debug("", e);
+            return new PrincipleDetail(null);
         }
 
         return userDetailDto;
