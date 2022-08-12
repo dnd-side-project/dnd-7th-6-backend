@@ -203,6 +203,9 @@ public class PostApiService {
             throw new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA);
         }
         PostEntity postEntity = postService.getPostById(postId);
+        if (postEntity.getUser().getId() != userEntity.getId()) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.DIFF_USER);
+        }
         if (CollectionUtils.isNotEmpty(postUpdateRequest.getTagIdList())) {
             updateTagList(postEntity, postUpdateRequest.getTagIdList());
         }
@@ -215,8 +218,8 @@ public class PostApiService {
             updateImageList(postEntity, postImageList);
         }
         Optional.ofNullable(postUpdateRequest.getTitle()).ifPresent(title -> postEntity.updateTitle(title));
-        Optional.ofNullable(postUpdateRequest.getContent()).ifPresent(title -> postEntity.updateContent(title));
-        return postApiMapper.toDto(postService.createPost(postEntity));
+        Optional.ofNullable(postUpdateRequest.getContent()).ifPresent(content -> postEntity.updateContent(content));
+        return postApiMapper.toDto(postEntity);
     }
 
     private void updateImageList(PostEntity postEntity, List<MultipartFile> postImageList) {

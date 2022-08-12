@@ -13,6 +13,7 @@ public class ReviewDTO {
     protected String title;
     protected String content;
     protected Integer likeCount;
+    protected Float starScore;
     protected Status status;
     protected LocalDateTime createdAt;
     protected LocalDateTime updatedAt;

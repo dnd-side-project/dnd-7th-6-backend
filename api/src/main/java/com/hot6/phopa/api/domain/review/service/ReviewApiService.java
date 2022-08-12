@@ -4,13 +4,18 @@ import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewCreateRequest;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewFormResponse;
+import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewUpdateRequest;
 import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.service.S3UploadService;
+import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
+import com.hot6.phopa.core.domain.community.model.entity.PostImageEntity;
+import com.hot6.phopa.core.domain.community.model.entity.PostTagEntity;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
@@ -38,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +56,7 @@ public class ReviewApiService {
 
     private final PhotoBoothService photoBoothService;
 
-    private final ReviewApiMapper reviewMapper;
+    private final ReviewApiMapper reviewApiMapper;
 
     private final S3UploadService s3UploadService;
 
@@ -66,7 +72,7 @@ public class ReviewApiService {
     @Transactional(readOnly = true)
     public PageableResponse<ReviewApiResponse> getReview(long photoBoothId, PageableParam pageable) {
         Page<ReviewEntity> reviewEntityPage = reviewService.getReview(photoBoothId, pageable);
-        List<ReviewApiResponse> reviewApiResponseList = reviewMapper.toDtoList(reviewEntityPage.getContent());
+        List<ReviewApiResponse> reviewApiResponseList = reviewApiMapper.toDtoList(reviewEntityPage.getContent());
         return PageableResponse.makeResponse(reviewEntityPage, reviewApiResponseList);
     }
 
@@ -104,7 +110,7 @@ public class ReviewApiService {
             photoBoothEntity.updateReviewCount(1);
 
             Integer reviewCount = photoBoothEntity.getReviewCount();
-            photoBoothEntity.updateStarScore(((photoBoothEntity.getStarScore() * (reviewCount - 1)) + reviewCreateRequest.getStarScore()) / (reviewCount));
+            photoBoothEntity.updateStarScore(photoBoothEntity.getTotalStarScore() + reviewEntity.getStarScore());
         }
 
         if (CollectionUtils.isNotEmpty(reviewImageList)) {
@@ -127,7 +133,7 @@ public class ReviewApiService {
             reviewEntity.setReviewImageSet(reviewImageEntitySet);
         }
 
-        return reviewMapper.toDto(reviewService.createReview(reviewEntity));
+        return reviewApiMapper.toDto(reviewService.createReview(reviewEntity));
     }
 
     public void fileInvalidCheck(List<MultipartFile> imageList) {
@@ -162,5 +168,94 @@ public class ReviewApiService {
         List<TagDTO> tagDTOList = tagMapper.toDtoList(tagService.getTagListByTagTypeList(TagType.REVIEW_FORM_TAG_LIST, null));
         Map<TagType, List<TagDTO>> reviewTagMap = tagDTOList.stream().collect(Collectors.groupingBy(TagDTO::getTagType));
         return ReviewFormResponse.of(reviewTagMap);
+    }
+
+    public void inactiveReview(Long reviewId) {
+        UserDTO userDTO = PrincipleDetail.get();
+        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
+        if (userEntity == null) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA);
+        }
+        ReviewEntity reviewEntity = reviewService.getReviewById(reviewId);
+        if (reviewEntity.getUser().getId() != userEntity.getId()) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.DIFF_USER);
+        }
+        reviewEntity.getPhotoBooth().updateReviewCount(-1);
+        reviewEntity.getPhotoBooth().updateStarScore(reviewEntity.getPhotoBooth().getTotalStarScore() - reviewEntity.getStarScore());
+        reviewEntity.updateStatus(Status.INACTIVE);
+    }
+
+    public ReviewApiResponse modifyReview(Long reviewId, ReviewUpdateRequest reviewUpdateRequest, List<MultipartFile> reviewImageList) {
+        fileInvalidCheck(reviewImageList);
+        UserDTO userDTO = PrincipleDetail.get();
+        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
+        if (userEntity == null) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA);
+        }
+        ReviewEntity reviewEntity = reviewService.getReviewById(reviewId);
+        if (reviewEntity.getUser().getId() != userEntity.getId()) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.DIFF_USER);
+        }
+        if (CollectionUtils.isNotEmpty(reviewUpdateRequest.getTagIdList())) {
+            updateTagList(reviewEntity, reviewUpdateRequest.getTagIdList());
+        }
+        //이미지 수정되었을 경우, 이전 이미지 지움.
+        if (CollectionUtils.isNotEmpty(reviewUpdateRequest.getDeleteImageIdList())) {
+            reviewEntity.deleteImage(reviewUpdateRequest.getDeleteImageIdList());
+        }
+        //수정된 이미지가 있을 경우, 새로 생성.
+        if (CollectionUtils.isNotEmpty(reviewImageList)) {
+            updateImageList(reviewEntity, reviewImageList);
+        }
+        Optional.ofNullable(reviewUpdateRequest.getTitle()).ifPresent(title -> reviewEntity.updateTitle(title));
+        Optional.ofNullable(reviewUpdateRequest.getContent()).ifPresent(content -> reviewEntity.updateContent(content));
+        Optional.ofNullable(reviewUpdateRequest.getStarScore()).ifPresent(starScore -> {
+            reviewEntity.getPhotoBooth().updateStarScore(reviewEntity.getPhotoBooth().getTotalStarScore() - reviewEntity.getStarScore() + starScore);
+            reviewEntity.updateStarScore(starScore);
+        });
+        return reviewApiMapper.toDto(reviewEntity);
+    }
+
+    private void updateImageList(ReviewEntity reviewEntity, List<MultipartFile> reviewImageList) {
+        int index = 1;
+        try {
+            for (MultipartFile reviewImage : reviewImageList) {
+                String imageUrl = s3UploadService.uploadFiles(reviewImage, reviewPath);
+                reviewEntity.getReviewImageSet().add(
+                        ReviewImageEntity.builder()
+                                .review(reviewEntity)
+                                .imageUrl(imageUrl)
+                                .imageOrder(index).
+                                build()
+                );
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        for(ReviewImageEntity reviewImageEntity : reviewEntity.getReviewImageSet()){
+            reviewImageEntity.setImageOrder(index++);
+        }
+    }
+
+    private void updateTagList(ReviewEntity reviewEntity, List<Long> tagIdList) {
+        Map<Long, ReviewTagEntity> tagIdPostTagMap = reviewEntity.getReviewTagSet().stream().collect(Collectors.toMap(reviewTag -> reviewTag.getTag().getId(), Function.identity()));
+        // postEntity에 없는 tagIdList
+        List<Long> newTagIdList = tagIdList.stream().filter(tagId -> tagIdPostTagMap.containsKey(tagId) == false).collect(Collectors.toList());
+        // postEntity에 있지만, request에 없는 tag인 경우 제거
+        Set<ReviewTagEntity> deletePostTagSet = reviewEntity.getReviewTagSet().stream().filter(reviewTag -> tagIdList.contains(reviewTag.getTag().getId()) == false).collect(Collectors.toSet());
+        for (ReviewTagEntity reviewTagEntity : deletePostTagSet) {
+            reviewTagEntity.getTag().updateReviewCount(-1);
+            reviewEntity.getReviewTagSet().remove(reviewTagEntity);
+        }
+        List<TagEntity> tagEntityList = tagService.getTagList(newTagIdList);
+        for (TagEntity tagEntity : tagEntityList) {
+            reviewEntity.getReviewTagSet().add(
+                    ReviewTagEntity.builder()
+                            .review(reviewEntity)
+                            .tag(tagEntity)
+                            .build()
+            );
+            tagEntity.updateReviewCount(1);
+        }
     }
 }
