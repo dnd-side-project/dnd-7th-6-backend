@@ -1,5 +1,7 @@
 package com.hot6.phopa.api.domain.review.model.dto;
 
+import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO;
+import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserApiResponse;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.domain.review.model.dto.ReviewDTO;
@@ -23,7 +25,7 @@ public class ReviewApiDTO {
     public static class ReviewApiResponse extends ReviewDTO {
         Set<ReviewTagApiResponse> reviewTagSet;
         Set<ReviewImageResponse> reviewImageSet;
-        UserDTO user;
+        UserApiResponse user;
     }
 
     @Getter

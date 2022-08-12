@@ -36,7 +36,7 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PostEntity getPostById(Long postId) {
-        return postRepository.findById(postId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
+        return postRepository.findByIdAndStatus(postId, Status.ACTIVE).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
 
     public PostLikeEntity createPostLikeEntity(PostLikeEntity postLikeEntity) {

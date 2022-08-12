@@ -34,7 +34,8 @@ public enum ApplicationErrorType {
     INACTIVE_USER(HttpStatus.UNAUTHORIZED, -100010, "inactive user"),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, -100010, "expired token"),
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, -100011, "expired refresh token"),
-    ALREADY_NAME(HttpStatus.BAD_REQUEST, -100012, "이미 있는 닉네임입니다. \n 다른 이름으로 수정해주세요.");
+    ALREADY_NAME(HttpStatus.BAD_REQUEST, -100012, "이미 있는 닉네임입니다. \n 다른 이름으로 수정해주세요."),
+    DIFF_USER(HttpStatus.BAD_REQUEST, -100013, "작성자가 아닙니다.");
 
 
     @Getter

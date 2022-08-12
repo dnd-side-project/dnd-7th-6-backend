@@ -45,7 +45,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/v1/user/**").authenticated()
                 // user 관련 api는 회원만 접근 가능
                 .antMatchers(HttpMethod.POST, "/**").authenticated()
-                // 나머지 POST 메소드는 회원만 접근 가능
+                .antMatchers(HttpMethod.DELETE, "/**").authenticated()
+                .antMatchers(HttpMethod.PUT, "/**").authenticated()
+                .antMatchers(HttpMethod.PATCH, "/**").authenticated()
+                // 나머지 POST, Delete, Put, Patch 메소드는 회원만 접근 가능
                 .anyRequest().permitAll()
                 // 그 외 나머지 요청은 모두 접근 가능
                 .and()

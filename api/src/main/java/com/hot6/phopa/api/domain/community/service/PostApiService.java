@@ -1,13 +1,11 @@
 package com.hot6.phopa.api.domain.community.service;
 
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO;
-import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostApiResponse;
-import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostCreateRequest;
-import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostFilterForm;
-import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostForm;
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.*;
 import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import com.hot6.phopa.core.common.model.type.Status;
@@ -37,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -103,7 +102,7 @@ public class PostApiService {
                             PostImageEntity.builder()
                                     .post(postEntity)
                                     .imageUrl(imageUrl)
-                                    .imageOrder(index++).
+                                    .imageOrder(index).
                                     build()
                     );
                 }
@@ -131,7 +130,7 @@ public class PostApiService {
         UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
         PostEntity postEntity = postService.getPostById(postId);
         PostLikeEntity postLikeEntity = postService.getPostLikeByPostIdAndUserId(postId, userEntity.getId());
-        if (postLikeEntity != null){
+        if (postLikeEntity != null) {
             postService.deletePostLikeEntity(postLikeEntity);
             postEntity.updateLikeCount(-1);
         } else {
@@ -162,14 +161,14 @@ public class PostApiService {
         Map<TagType, List<TagDTO>> conceptTagList = new HashMap<>();
         List<TagDTO> frameTagList = new ArrayList<>();
         Map<TagType, List<TagDTO>> tagTypeListMap = tagDTOList.stream().collect(Collectors.groupingBy(TagDTO::getTagType));
-        for(Map.Entry<TagType, List<TagDTO>> entry : tagTypeListMap.entrySet()){
-            if(TagType.BRAND.equals(entry.getKey())){
+        for (Map.Entry<TagType, List<TagDTO>> entry : tagTypeListMap.entrySet()) {
+            if (TagType.BRAND.equals(entry.getKey())) {
                 brandTagList = entry.getValue();
-            } else if (TagType.FRAME.equals(entry.getKey())){
+            } else if (TagType.FRAME.equals(entry.getKey())) {
                 frameTagList = entry.getValue();
-            } else if (TagType.PERSONAL_TAG_LIST.contains(entry.getKey())){
+            } else if (TagType.PERSONAL_TAG_LIST.contains(entry.getKey())) {
                 personalTagList.put(entry.getKey(), entry.getValue());
-            } else if (TagType.CONCEPT_TAG_LIST.contains(entry.getKey())){
+            } else if (TagType.CONCEPT_TAG_LIST.contains(entry.getKey())) {
                 conceptTagList.put(entry.getKey(), entry.getValue());
             }
         }
@@ -180,5 +179,83 @@ public class PostApiService {
         List<TagDTO> tagDTOList = tagMapper.toDtoList(tagService.getTagListByTagTypeList(TagType.POST_TAG_LIST, null));
         Map<TagType, List<TagDTO>> tagTypeListMap = tagDTOList.stream().collect(Collectors.groupingBy(TagDTO::getTagType));
         return PostForm.of(tagTypeListMap);
+    }
+
+    public void inactivePost(Long postId) {
+        UserDTO userDTO = PrincipleDetail.get();
+        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
+        if (userEntity == null) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA);
+        }
+        PostEntity postEntity = postService.getPostById(postId);
+        if (postEntity.getUser().getId() != userEntity.getId()) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.DIFF_USER);
+        }
+        postEntity.updateStatus(Status.INACTIVE);
+
+    }
+
+    public PostApiResponse modifyPost(Long postId, PostUpdateRequest postUpdateRequest, List<MultipartFile> postImageList) {
+        fileInvalidCheck(postImageList);
+        UserDTO userDTO = PrincipleDetail.get();
+        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
+        if (userEntity == null) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA);
+        }
+        PostEntity postEntity = postService.getPostById(postId);
+        if (CollectionUtils.isNotEmpty(postUpdateRequest.getTagIdList())) {
+            updateTagList(postEntity, postUpdateRequest.getTagIdList());
+        }
+        //이미지 수정되었을 경우, 이전 이미지 지움.
+        if (CollectionUtils.isNotEmpty(postUpdateRequest.getDeleteImageIdList())) {
+            postEntity.deleteImage(postUpdateRequest.getDeleteImageIdList());
+        }
+        //수정된 이미지가 있을 경우, 새로 생성.
+        if (CollectionUtils.isNotEmpty(postImageList)) {
+            updateImageList(postEntity, postImageList);
+        }
+        Optional.ofNullable(postUpdateRequest.getTitle()).ifPresent(title -> postEntity.updateTitle(title));
+        Optional.ofNullable(postUpdateRequest.getContent()).ifPresent(title -> postEntity.updateContent(title));
+        return postApiMapper.toDto(postService.createPost(postEntity));
+    }
+
+    private void updateImageList(PostEntity postEntity, List<MultipartFile> postImageList) {
+        int index = 1;
+        try {
+            for (MultipartFile reviewImage : postImageList) {
+                String imageUrl = s3UploadService.uploadFiles(reviewImage, reviewPath);
+                postEntity.getPostImageSet().add(
+                        PostImageEntity.builder()
+                                .post(postEntity)
+                                .imageUrl(imageUrl)
+                                .imageOrder(index).
+                                build()
+                );
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    private void updateTagList(PostEntity postEntity, List<Long> tagIdList) {
+        Map<Long, PostTagEntity> tagIdPostTagMap = postEntity.getPostTagSet().stream().collect(Collectors.toMap(postTag -> postTag.getTag().getId(), Function.identity()));
+        // postEntity에 없는 tagIdList
+        List<Long> newTagIdList = tagIdList.stream().filter(tagId -> tagIdPostTagMap.containsKey(tagId) == false).collect(Collectors.toList());
+        // postEntity에 있지만, request에 없는 tag인 경우 제거
+        Set<PostTagEntity> deletePostTagSet = postEntity.getPostTagSet().stream().filter(postTag -> tagIdList.contains(postTag.getTag().getId()) == false).collect(Collectors.toSet());
+        for (PostTagEntity postTagEntity : deletePostTagSet) {
+            postTagEntity.getTag().updatePostCount(-1);
+            postEntity.getPostTagSet().remove(postTagEntity);
+        }
+        List<TagEntity> tagEntityList = tagService.getTagList(newTagIdList);
+        for (TagEntity tagEntity : tagEntityList) {
+            postEntity.getPostTagSet().add(
+                    PostTagEntity.builder()
+                            .post(postEntity)
+                            .tag(tagEntity)
+                            .build()
+            );
+            tagEntity.updatePostCount(1);
+        }
     }
 }

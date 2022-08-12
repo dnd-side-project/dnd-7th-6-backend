@@ -1,5 +1,7 @@
 package com.hot6.phopa.api.domain.community.model.dto;
 
+import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO;
+import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserApiResponse;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.domain.community.model.dto.PostDTO;
@@ -23,7 +25,7 @@ public class PostApiDTO {
     public static class PostApiResponse extends PostDTO {
         Set<PostTagApiResponse> postTagSet;
         Set<PostImageResponse> postImageSet;
-        UserDTO user;
+        UserApiResponse user;
     }
 
     @Getter
@@ -39,6 +41,17 @@ public class PostApiDTO {
             Optional.ofNullable(this.getTitle()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
             Optional.ofNullable(this.getContent()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
         }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class PostUpdateRequest {
+        private String title;
+        private String content;
+        private List<Long> tagIdList;
+        private List<Long> deleteImageIdList;
     }
 
     @Getter
