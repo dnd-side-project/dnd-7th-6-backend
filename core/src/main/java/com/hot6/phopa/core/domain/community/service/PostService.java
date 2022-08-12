@@ -3,6 +3,7 @@ package com.hot6.phopa.core.domain.community.service;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
+import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostLikeEntity;
 import com.hot6.phopa.core.domain.community.repository.PostLikeRepository;
@@ -60,6 +61,6 @@ public class PostService {
     }
 
     public List<PostEntity> findAllByUserId(Long userId) {
-        return postRepository.getAllByUserId(userId);
+        return postRepository.getAllByUserIdAndStatus(userId, Status.ACTIVE);
     }
 }

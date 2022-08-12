@@ -68,4 +68,9 @@ public class UserController {
         }
         throw new SilentApplicationErrorException(ApplicationErrorType.EXPIRED_REFRESH_TOKEN);
     }
+
+    @DeleteMapping
+    public void inactiveUser(){
+        userApiService.inactiveUser();
+    }
 }

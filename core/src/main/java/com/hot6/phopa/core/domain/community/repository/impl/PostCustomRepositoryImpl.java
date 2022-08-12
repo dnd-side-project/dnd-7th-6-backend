@@ -1,6 +1,7 @@
 package com.hot6.phopa.core.domain.community.repository.impl;
 
 import com.hot6.phopa.core.common.model.dto.PageableParam;
+import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.QPostLikeEntity;
 import com.hot6.phopa.core.domain.community.model.entity.QPostTagEntity;
@@ -43,6 +44,7 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
                 .leftJoin(postEntity.postImageSet, postImageEntity).fetchJoin()
                 .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
                 .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
+                .where(postEntity.status.eq(Status.ACTIVE))
                 .distinct()
                 .fetch();
     }
@@ -52,7 +54,7 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
         return from(postEntity)
                 .join(postEntity.postLikeSet, postLikeEntity).fetchJoin()
                 .join(postLikeEntity.user, userEntity).fetchJoin()
-                .where(userEntity.id.eq(userId))
+                .where(userEntity.id.eq(userId).and(postEntity.status.eq(Status.ACTIVE)))
                 .fetch();
     }
 
@@ -64,7 +66,7 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
                 .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
                 .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
                 .leftJoin(postLikeEntity.user, userEntity).fetchJoin()
-                .where(tagEntity.id.in(tagIdSet))
+                .where(tagEntity.id.in(tagIdSet).and(postEntity.status.eq(Status.ACTIVE)))
                 .offset(pageable.getPage())
                 .limit(pageable.getPageSize())
                 .distinct()

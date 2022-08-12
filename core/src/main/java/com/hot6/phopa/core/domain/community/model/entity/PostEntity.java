@@ -53,4 +53,8 @@ public class PostEntity extends BaseTimeEntity implements Serializable {
     public void updateLikeCount(int count) {
         this.likeCount += count;
     }
+
+    public void updateStatus(Status status) {
+        this.status = status;
+    }
 }

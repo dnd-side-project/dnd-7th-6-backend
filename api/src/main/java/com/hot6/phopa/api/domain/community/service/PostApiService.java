@@ -67,8 +67,8 @@ public class PostApiService {
     }
 
     public PostApiResponse createPost(PostCreateRequest postCreateRequest, List<MultipartFile> postImageList) {
-        UserDTO userDto = PrincipleDetail.get();
-        UserEntity userEntity = userService.findById(userDto.getId());
+        UserDTO userDTO = PrincipleDetail.get();
+        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
         postCreateRequest.validCheck();
         fileInvalidCheck(postImageList);
         PostEntity postEntity = PostEntity.builder()
@@ -127,8 +127,8 @@ public class PostApiService {
     }
 
     public void like(Long postId) {
-        UserDTO userDto = PrincipleDetail.get();
-        UserEntity userEntity = userService.findById(userDto.getId());
+        UserDTO userDTO = PrincipleDetail.get();
+        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
         PostEntity postEntity = postService.getPostById(postId);
         PostLikeEntity postLikeEntity = postService.getPostLikeByPostIdAndUserId(postId, userEntity.getId());
         if (postLikeEntity != null){
