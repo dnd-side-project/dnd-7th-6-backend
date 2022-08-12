@@ -23,8 +23,10 @@ import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.tag.model.mapper.TagMapper;
 import com.hot6.phopa.core.domain.tag.service.TagService;
+import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.service.UserService;
+import com.hot6.phopa.core.security.config.PrincipleDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -69,9 +71,10 @@ public class ReviewApiService {
     }
 
     public ReviewApiResponse createReview(ReviewCreateRequest reviewCreateRequest, List<MultipartFile> reviewImageList) {
+        UserDTO userDto = PrincipleDetail.get();
+        UserEntity userEntity = userService.findById(userDto.getId());
         reviewCreateRequest.validCheck();
         fileInvalidCheck(reviewImageList);
-        UserEntity userEntity = userService.findById(reviewCreateRequest.getUserId());
         PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(reviewCreateRequest.getPhotoBoothId());
         ReviewEntity reviewEntity = ReviewEntity.builder()
                 .title(reviewCreateRequest.getTitle())
@@ -137,10 +140,11 @@ public class ReviewApiService {
         }
     }
 
-    public void like(Long reviewId, Long userId) {
+    public void like(Long reviewId) {
+        UserDTO userDto = PrincipleDetail.get();
+        UserEntity userEntity = userService.findById(userDto.getId());
         ReviewEntity reviewEntity = reviewService.getReviewById(reviewId);
-        UserEntity userEntity = userService.findById(userId);
-        ReviewLikeEntity reviewLikeEntity = reviewService.getReviewLikeByReviewIdAndUserId(reviewId, userId);
+        ReviewLikeEntity reviewLikeEntity = reviewService.getReviewLikeByReviewIdAndUserId(reviewId, userEntity.getId());
         if (reviewLikeEntity != null) {
             reviewService.deleteReviewLike(reviewLikeEntity);
             reviewEntity.updateLikeCount(-1);

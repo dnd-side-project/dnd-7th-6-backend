@@ -30,7 +30,9 @@ public enum ApplicationErrorType {
     FILE_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, -10008, "s3 파일업로드 실패"),
     CANNOT_BE_DELETED(HttpStatus.INTERNAL_SERVER_ERROR, -10008, "s3 파일제거 실패"),
     FILE_DOWNLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, -10008, "s3 파일 다운로드 실패"),
-    COULDNT_FIND_ANY_DATA(HttpStatus.INTERNAL_SERVER_ERROR, -10009, "cannot found any data");
+    COULDNT_FIND_ANY_DATA(HttpStatus.INTERNAL_SERVER_ERROR, -10009, "cannot found any data"),
+    EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, -100010, "expired token"),
+    EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, -100011, "expired refresh token");
 
 
     @Getter

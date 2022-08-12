@@ -21,8 +21,10 @@ import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.tag.model.mapper.TagMapper;
 import com.hot6.phopa.core.domain.tag.service.TagService;
+import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.service.UserService;
+import com.hot6.phopa.core.security.config.PrincipleDetail;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
@@ -45,12 +47,14 @@ public class PhotoBoothApiService {
     private final ReviewApiMapper reviewApiMapper;
     private final UserService userService;
 
-    public PageableResponse<PhotoBoothWithTagResponse> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, Long userId, PageableParam pageable) {
+    public PageableResponse<PhotoBoothWithTagResponse> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, PageableParam pageable) {
+        UserDTO userDto = PrincipleDetail.get();
+        UserEntity userEntity = userService.findById(userDto.getId());
         PhotoBoothWithDistanceDTO photoBoothWithDistanceDTO = photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, pageable);
         Page<PhotoBoothEntity> photoBoothEntityPage = photoBoothWithDistanceDTO.getPhotoBoothEntityPage();
         Map<Long, Double> photoBoothIdDistanceMap = photoBoothWithDistanceDTO.getPhotoBoothIdDistanceMap();
         List<Long> photoBoothIdList = photoBoothEntityPage.getContent().stream().map(PhotoBoothEntity::getId).collect(Collectors.toList());
-        Map<Long, List<PhotoBoothLikeEntity>> userLikePhotoBoothIdMap = userId != null ? photoBoothService.getPhotoBoothLikeByPhotoBoothIdListAndUserId(photoBoothIdList, userId).stream().collect(Collectors.groupingBy(photoBoothLikeEntity -> photoBoothLikeEntity.getPhotoBooth().getId())) : new HashMap<>();
+        Map<Long, List<PhotoBoothLikeEntity>> userLikePhotoBoothIdMap = userEntity != null ? photoBoothService.getPhotoBoothLikeByPhotoBoothIdListAndUserId(photoBoothIdList, userEntity.getId()).stream().collect(Collectors.groupingBy(photoBoothLikeEntity -> photoBoothLikeEntity.getPhotoBooth().getId())) : new HashMap<>();
         List<PhotoBoothWithTagResponse> photoBoothWithTagResponseList = new ArrayList<>();
         for (PhotoBoothEntity photoBoothEntity : photoBoothEntityPage.getContent()) {
             List<TagEntity> tagEntityList = photoBoothEntity.getReviewSet().stream().flatMap(r -> r.getReviewTagSet().stream().map(ReviewTagEntity::getTag)).collect(Collectors.toList());
@@ -66,10 +70,11 @@ public class PhotoBoothApiService {
         return photoBoothMapper.toDtoList(photoBoothEntityList);
     }
 
-    public void like(Long photoBoothId, Long userId) {
+    public void like(Long photoBoothId) {
+        UserDTO userDto = PrincipleDetail.get();
+        UserEntity userEntity = userService.findById(userDto.getId());
         PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBoothById(photoBoothId);
-        UserEntity userEntity = userService.findById(userId);
-        PhotoBoothLikeEntity photoBoothLikeEntity = photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBoothId, userId);
+        PhotoBoothLikeEntity photoBoothLikeEntity = photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBoothId, userEntity.getId());
         if (photoBoothLikeEntity != null) {
             photoBoothService.deletePhotoBoothLikeEntity(photoBoothLikeEntity);
             photoBoothEntity.updateLikeCount(-1);
@@ -90,10 +95,12 @@ public class PhotoBoothApiService {
         return PhotoBoothFilterFormResponse.of(brandTagDTOList, tagDTOList);
     }
 
-    public PhotoBoothWithTagResponse getPhotoBooth(Long photoBoothId, Long userId, Double latitude, Double longitude) {
+    public PhotoBoothWithTagResponse getPhotoBooth(Long photoBoothId, Double latitude, Double longitude) {
+        UserDTO userDto = PrincipleDetail.get();
+        UserEntity userEntity = userService.findById(userDto.getId());
         PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(photoBoothId);
         List<TagEntity> tagEntityList = tagService.getTagByPhotoBoothId(photoBoothId);
-        boolean isLike = userId != null & photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBoothEntity.getId(), userId) == null;
+        boolean isLike = userEntity != null & photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBoothEntity.getId(), userEntity.getId()) == null;
         Double distance = latitude != null && longitude != null ? GeometryUtil.distance(photoBoothEntity.getLatitude(), photoBoothEntity.getLongitude(), latitude, longitude) : null;
         return buildPhotoBoothWithTagResponse(photoBoothEntity, tagEntityList, isLike, distance);
     }

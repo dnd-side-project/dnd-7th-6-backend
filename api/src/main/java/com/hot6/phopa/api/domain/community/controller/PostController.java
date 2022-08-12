@@ -48,12 +48,11 @@ public class PostController {
         return postService.createPost(postCreateRequest, postImageList);
     }
 
-    @PostMapping("/{postId}/like/{userId}")
+    @PostMapping("/{postId}/like")
     public void like(
-            @PathVariable Long postId,
-            @PathVariable Long userId
+            @PathVariable Long postId
     ) {
-        postService.like(postId, userId);
+        postService.like(postId);
     }
 
     @GetMapping("/recommendation")

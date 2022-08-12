@@ -34,12 +34,10 @@ public class PostApiDTO {
         private String title;
         private String content;
         private List<Long> tagIdList;
-        private Long userId;
 
         public void validCheck() {
             Optional.ofNullable(this.getTitle()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
             Optional.ofNullable(this.getContent()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
-            Optional.ofNullable(this.getUserId()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));
         }
     }
 

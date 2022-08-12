@@ -1,4 +1,4 @@
-package com.hot6.phopa.admin.domain.view.controller;
+package com.hot6.phopa.api;
 
 import com.hot6.phopa.core.common.model.entity.CacheKeyEntity;
 import com.hot6.phopa.core.common.model.type.CacheType;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor
 public class ViewController {
     private final RedisCacheService cacheService;
-    @GetMapping("/admin/v1/login")
+    @GetMapping("/api/v1/login")
     public String loginPage(){
         return "loginForm";
     }
