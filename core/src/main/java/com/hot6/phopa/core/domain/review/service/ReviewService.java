@@ -53,6 +53,12 @@ public class ReviewService {
         return reviewLikeRepository.findOneByReviewIdAndUserId(reviewId, userId);
     }
 
+    @Transactional(readOnly = true)
+    public List<ReviewLikeEntity> getReviewLikeByReviewIdsAndUserId(List<Long> reviewIdList, Long userId) {
+        return reviewLikeRepository.findAllByReviewIdsAndUserId(reviewIdList, userId);
+    }
+    @Transactional(readOnly = true)
+
     public List<ReviewEntity> findAllByUserId(Long userId) {
         return reviewRepository.findAllByUserIdAndStatus(userId, Status.ACTIVE);
     }
