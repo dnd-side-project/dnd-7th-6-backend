@@ -30,7 +30,8 @@ public class TagApiService {
     }
 
     public TagApiResponse createTag(TagCreateRequest tagCreateRequest) {
-        return tagApiMapper.toDto(tagService.create(convertToTagEntity(tagCreateRequest)));
+        TagEntity tagEntity = tagService.getTagOrCreate(tagCreateRequest.getKeyword(),tagCreateRequest.getTitle(), tagCreateRequest.getTagType());
+        return tagApiMapper.toDto(tagEntity);
     }
 
     public List<TagApiResponse> createTagList(List<TagCreateRequest> tagCreateRequestList) {

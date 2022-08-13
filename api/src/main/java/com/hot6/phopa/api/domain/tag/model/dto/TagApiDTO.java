@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 public class TagApiDTO {
@@ -21,8 +23,10 @@ public class TagApiDTO {
     @NoArgsConstructor
     @AllArgsConstructor(staticName = "of")
     public static class TagCreateRequest {
+        @NotNull
         private String title;
         private String keyword;
+        @NotNull
         private TagType tagType;
     }
 }

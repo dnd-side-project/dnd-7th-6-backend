@@ -6,7 +6,7 @@ import java.util.List;
 
 public enum TagType {
 
-    BRAND("브랜드"), BOOTH_CONDITION("부스 필터"), PHOTO_CONDITION("사진 필터"), HEAD_COUNT("인원수"), RELATION("관계"), CONCEPT("포즈컨셉"), SITUATION("상황"), FRAME("프레임");
+    BRAND("브랜드"), BOOTH_CONDITION("부스 필터"), PHOTO_CONDITION("사진 필터"), HEAD_COUNT("인원수"), RELATION("관계"), CONCEPT("포즈컨셉"), SITUATION("상황"), FRAME("프레임"), CUSTOM("사용자 생성태그");
 
     String desc;
     public static final List<TagType> POST_TAG_LIST = new ArrayList<>(Arrays.asList(BRAND, HEAD_COUNT, RELATION, CONCEPT, SITUATION, FRAME));
