@@ -4,6 +4,7 @@ import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.type.Status;
+import com.hot6.phopa.core.domain.community.enumeration.OrderType;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostLikeEntity;
 import com.hot6.phopa.core.domain.community.repository.PostLikeRepository;
@@ -57,16 +58,8 @@ public class PostService {
         return postRepository.findAllByUserLike(userId);
     }
 
-    public Page<PostEntity> getPostByTagIdSet(Set<Long> tagIdSet, PageableParam pageable) {
-        return postRepository.getPostByTagIdSet(tagIdSet, pageable);
-    }
-
-    public Page<PostEntity> getPostByTagIdSetOrderByLikeCountDesc(Set<Long> tagIdSet, PageableParam pageable) {
-        return postRepository.getPostByTagIdSetOrderByLikeCountDesc(tagIdSet, pageable);
-    }
-
-    public Page<PostEntity> getPostByTagIdSetOrderByCreatedAtDesc(Set<Long> tagIdSet, PageableParam pageable) {
-        return postRepository.getPostByTagIdSetOrderByCreatedAtDesc(tagIdSet, pageable);
+    public Page<PostEntity> getPostByTagIdSet(Set<Long> tagIdSet, OrderType order, PageableParam pageable) {
+        return postRepository.getPostByTagIdSet(tagIdSet, order, pageable);
     }
 
     public List<PostEntity> findAllByUserId(Long userId) {

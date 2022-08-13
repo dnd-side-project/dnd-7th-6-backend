@@ -2,6 +2,7 @@ package com.hot6.phopa.core.domain.community.repository.impl;
 
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.type.Status;
+import com.hot6.phopa.core.domain.community.enumeration.OrderType;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.QPostLikeEntity;
 import com.hot6.phopa.core.domain.community.model.entity.QPostTagEntity;
@@ -10,6 +11,9 @@ import com.hot6.phopa.core.domain.tag.model.entity.QTagEntity;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.user.model.entity.QUserEntity;
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -60,13 +64,14 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 
 
     @Override
-    public Page<PostEntity> getPostByTagIdSet(Set<Long> tagIdSet, PageableParam pageable) {
+    public Page<PostEntity> getPostByTagIdSet(Set<Long> tagIdSet, OrderType order, PageableParam pageable) {
         QueryResults result = jpaQueryFactory.selectFrom(postEntity)
                 .leftJoin(postEntity.postLikeSet, postLikeEntity).fetchJoin()
                 .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
                 .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
                 .leftJoin(postLikeEntity.user, userEntity).fetchJoin()
                 .where(tagEntity.id.in(tagIdSet).and(postEntity.status.eq(Status.ACTIVE)))
+                .orderBy(getOrderByField(order))
                 .offset(pageable.getPage())
                 .limit(pageable.getPageSize())
                 .distinct()
@@ -74,35 +79,14 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
         return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
     }
 
-    @Override
-    public Page<PostEntity> getPostByTagIdSetOrderByLikeCountDesc(Set<Long> tagIdSet, PageableParam pageable) {
-        QueryResults result = jpaQueryFactory.selectFrom(postEntity)
-                .join(postEntity.postLikeSet, postLikeEntity).fetchJoin()
-                .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
-                .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
-                .leftJoin(postLikeEntity.user, userEntity).fetchJoin()
-                .where(tagEntity.id.in(tagIdSet))
-                .orderBy(postEntity.likeCount.desc())
-                .offset(pageable.getPage())
-                .limit(pageable.getPageSize())
-                .distinct()
-                .fetchResults();
-        return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
-    }
-
-    @Override
-    public Page<PostEntity> getPostByTagIdSetOrderByCreatedAtDesc(Set<Long> tagIdSet, PageableParam pageable) {
-        QueryResults result = jpaQueryFactory.selectFrom(postEntity)
-                .join(postEntity.postLikeSet, postLikeEntity).fetchJoin()
-                .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
-                .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
-                .leftJoin(postLikeEntity.user, userEntity).fetchJoin()
-                .where(tagEntity.id.in(tagIdSet))
-                .orderBy(postEntity.createdAt.desc())
-                .offset(pageable.getPage())
-                .limit(pageable.getPageSize())
-                .distinct()
-                .fetchResults();
-        return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
+    private OrderSpecifier<?> getOrderByField(OrderType type) {
+        PathBuilder expression = new PathBuilder(PostEntity.class, "post");
+        if (OrderType.popular.equals(type)) {
+            return new OrderSpecifier<>(Order.DESC, expression.get("likeCount"));
+        }
+        if(OrderType.latest.equals(type)) {
+            return new OrderSpecifier<>(Order.DESC, expression.get("createdAt"));
+        }
+        return new OrderSpecifier<>(Order.ASC, expression.get("id"));
     }
 }
