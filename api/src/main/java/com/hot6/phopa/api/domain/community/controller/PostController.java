@@ -1,10 +1,10 @@
 package com.hot6.phopa.api.domain.community.controller;
 
-import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.*;
 import com.hot6.phopa.api.domain.community.service.PostApiService;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
+import com.hot6.phopa.core.domain.community.enumeration.OrderType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -56,7 +56,7 @@ public class PostController {
     public PageableResponse<PostApiResponse> getPostsByTag(
             @RequestParam("tagIdSet") Set<Long> tagIdSet,
             PageableParam pageable,
-            @RequestParam(required = false) String order
+            @RequestParam(required = false) OrderType order
     ) {
         return postService.getPostsByTagIdSet(tagIdSet, order, pageable);
     }

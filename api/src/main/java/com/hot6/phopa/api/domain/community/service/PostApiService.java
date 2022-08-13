@@ -11,6 +11,7 @@ import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.service.S3UploadService;
+import com.hot6.phopa.core.domain.community.enumeration.OrderType;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostImageEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostLikeEntity;
@@ -156,18 +157,17 @@ public class PostApiService {
     }
 
 
-    public PageableResponse<PostApiResponse> getPostsByTagIdSet(Set<Long> tagIdSet, String order, PageableParam pageable) {
+    public PageableResponse<PostApiResponse> getPostsByTagIdSet(Set<Long> tagIdSet, OrderType order, PageableParam pageable) {
         log.info("order : {}", order);
         Page<PostEntity> postEntityPage = null;
         if(order==null) {
             postEntityPage = postService.getPostByTagIdSet(tagIdSet, pageable);
-        } else if(order.equals("popular")) {
+        } else if(order.equals(OrderType.popular)) {
             postEntityPage = postService.getPostByTagIdSetOrderByLikeCountDesc(tagIdSet, pageable);
-        } else if(order.equals("latest")) {
+        } else if(order.equals(OrderType.latest)) {
             postEntityPage = postService.getPostByTagIdSetOrderByCreatedAtDesc(tagIdSet, pageable);
         }
-        
-//        Page<PostEntity> postEntityPage = postService.getPostByTagIdSet(tagIdSet, pageable);
+
         List<PostApiResponse> postApiResponseList = postApiMapper.toDtoList(postEntityPage.getContent());
         UserDTO userDTO = PrincipleDetail.get();
         if(userDTO.getId() != null){
