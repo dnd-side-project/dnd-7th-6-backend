@@ -2,10 +2,10 @@ package com.hot6.phopa.core.security.config;
 
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import com.hot6.phopa.core.security.jwt.JwtToken;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,23 +15,28 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+
+@Getter
 public class PrincipleDetail implements UserDetails, OAuth2User {
 
     private final UserEntity user;
+
+    private JwtToken jwtToken;
     private Map<String, Object> attributes;
 
-    public PrincipleDetail(UserEntity user){
+    public PrincipleDetail(UserEntity user) {
         this.user = user;
     }
 
-    public PrincipleDetail(UserEntity user, Map<String, Object> attributes){
+    public PrincipleDetail(UserEntity user, Map<String, Object> attributes, JwtToken jwtToken) {
         this.user = user;
         this.attributes = attributes;
+        this.jwtToken = jwtToken;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.asList(new SimpleGrantedAuthority(user.getUserRole().getAuthority()));
+        return Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
     }
 
     @Override
@@ -75,18 +80,17 @@ public class PrincipleDetail implements UserDetails, OAuth2User {
         return null;
     }
 
-    public static PrincipleDetail get() {
-        PrincipleDetail userDetailDto = null;
+    public static UserDTO get() {
+        UserDTO userDTO = null;
         try {
-            if ( SecurityContextHolder.getContext().getAuthentication() != null ) {
-                userDetailDto =  (PrincipleDetail)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            if (SecurityContextHolder.getContext().getAuthentication() != null) {
+                userDTO = (UserDTO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             }
 //          request.getAttribute("user_session");
         } catch (Throwable e) {
-            throw new ApplicationErrorException(ApplicationErrorType.INTERNAL_ERROR);
-//            log.debug("", e);
+            return new UserDTO();
         }
 
-        return userDetailDto;
+        return userDTO;
     }
 }

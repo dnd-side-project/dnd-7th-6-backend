@@ -30,20 +30,18 @@ public class PhotoBoothController {
             @RequestParam Double distance,
             @RequestParam(required = false) Status status,
             @RequestParam(required = false) Set<Long> tagIdSet,
-            @RequestParam(required = false) Long userId,
             PageableParam pageable
             ){
-        return photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, userId, pageable);
+        return photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, pageable);
     }
 
     @GetMapping("/{photoBoothId}")
     public PhotoBoothWithTagResponse getPhotoBooth(
             @PathVariable @Positive Long photoBoothId,
-            @RequestParam(required = false) Long userId,
             @RequestParam(required = false) Double latitude,
             @RequestParam(required = false) Double longitude
     ){
-        return photoBoothService.getPhotoBooth(photoBoothId, userId, latitude, longitude);
+        return photoBoothService.getPhotoBooth(photoBoothId, latitude, longitude);
     }
 
     @GetMapping("/kakao-map-test")
@@ -56,12 +54,11 @@ public class PhotoBoothController {
         return photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance);
     }
 
-    @PostMapping("/{photoBoothId}/like/{userId}")
+    @PostMapping("/{photoBoothId}/like")
     public void like(
-            @PathVariable Long photoBoothId,
-            @PathVariable Long userId
+            @PathVariable Long photoBoothId
     ){
-        photoBoothService.like(photoBoothId, userId);
+        photoBoothService.like(photoBoothId);
     }
 
     @GetMapping("/filter")

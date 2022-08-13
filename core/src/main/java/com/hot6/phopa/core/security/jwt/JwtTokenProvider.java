@@ -1,0 +1,64 @@
+package com.hot6.phopa.core.security.jwt;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.Base64;
+import java.util.Date;
+
+@RequiredArgsConstructor
+@Component
+public class JwtTokenProvider {	// JWT토큰 생성 및 유효성을 검증하는 컴포넌트
+    @Value("${spring.jwt.secret}")
+    private String SECRET_KEY;
+
+    private long tokenValidMillisecond = 1000L * 60 * 60; // 1시간 토큰 유효
+    private long refreshTokenValidMillisecond = 1000L * 60 * 60 * 24; // 24시간 토큰 유효
+
+    @PostConstruct
+    protected void init() {
+        SECRET_KEY = Base64.getEncoder().encodeToString(SECRET_KEY.getBytes());
+    }
+
+    public JwtToken generateToken(String email) {
+        Claims claims = Jwts.claims().setSubject(email);
+        Date now = new Date();
+        return new JwtToken(
+                Jwts.builder()
+                        .setClaims(claims)
+                        .setIssuedAt(now)
+                        .setExpiration(new Date(now.getTime() + tokenValidMillisecond))
+                        .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                        .compact(),
+                Jwts.builder()
+                        .setClaims(claims)
+                        .setIssuedAt(now)
+                        .setExpiration(new Date(now.getTime() + refreshTokenValidMillisecond))
+                        .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                        .compact());
+    }
+
+    public boolean verifyToken(String token) {
+        try {
+            Jws<Claims> claims = Jwts.parser()
+                    .setSigningKey(SECRET_KEY)
+                    .parseClaimsJws(token);
+            return claims.getBody()
+                    .getExpiration()
+                    .after(new Date());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    public String getUid(String token) {
+        return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
+    }
+}

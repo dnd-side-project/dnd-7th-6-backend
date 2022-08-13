@@ -1,10 +1,7 @@
 package com.hot6.phopa.api.domain.community.controller;
 
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO;
-import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostApiResponse;
-import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostCreateRequest;
-import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostFilterForm;
-import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostForm;
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.*;
 import com.hot6.phopa.api.domain.community.service.PostApiService;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
@@ -48,12 +45,11 @@ public class PostController {
         return postService.createPost(postCreateRequest, postImageList);
     }
 
-    @PostMapping("/{postId}/like/{userId}")
+    @PostMapping("/{postId}/like")
     public void like(
-            @PathVariable Long postId,
-            @PathVariable Long userId
+            @PathVariable Long postId
     ) {
-        postService.like(postId, userId);
+        postService.like(postId);
     }
 
     @GetMapping("/recommendation")
@@ -73,5 +69,21 @@ public class PostController {
     @GetMapping("/form")
     public PostForm getFormData() {
         return postService.getFormData();
+    }
+
+    @DeleteMapping("/{postId}")
+    public void inactivePost(
+            @PathVariable @Positive Long postId
+    ) {
+        postService.inactivePost(postId);
+    }
+
+    @PatchMapping("/{postId}")
+    public PostApiResponse modifyPost(
+            @PathVariable @Positive Long postId,
+            @RequestPart PostUpdateRequest postUpdateRequest,
+            @RequestPart(required = false) List<MultipartFile> postImageList
+    ) {
+        return postService.modifyPost(postId, postUpdateRequest, postImageList);
     }
 }

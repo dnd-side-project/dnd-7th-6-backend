@@ -1,34 +1,76 @@
 package com.hot6.phopa.api.domain.user.controller;
 
+import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserApiResponse;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserLikeResponse;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserListResponse;
+import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserNameUpdateRequest;
 import com.hot6.phopa.api.domain.user.service.UserApiService;
+import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
+import com.hot6.phopa.core.security.jwt.JwtToken;
+import com.hot6.phopa.core.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.validation.constraints.Positive;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @RestController
 @RequestMapping(path = "/api/v1/user", produces = "application/json")
 @RequiredArgsConstructor
 public class UserController {
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserApiService userApiService;
-    @GetMapping("/{userId}/like")
+
+    @GetMapping
+    public UserApiResponse getUserDto(){
+        return userApiService.getUserDto();
+    }
+    @GetMapping("/like")
     public UserLikeResponse getLikeResponse(
-            @PathVariable @Positive Long userId
     ) {
-        return userApiService.getLikeResponse(userId);
+        return userApiService.getLikeResponse();
     }
 
-    @GetMapping("{userId}/list")
+    @GetMapping("/list")
     public UserListResponse getUserListResponse(
-            @PathVariable @Positive Long userId
     ) {
-        return userApiService.getUserListResponse(userId);
+        return userApiService.getUserListResponse();
+    }
+
+    @PatchMapping("/name")
+    public UserApiResponse updateName(
+            @RequestBody UserNameUpdateRequest userNameUpdateRequest
+            ) {
+        return userApiService.updateName(userNameUpdateRequest);
+    }
+
+    @GetMapping("/token/expired")
+    public String auth() {
+        throw new SilentApplicationErrorException(ApplicationErrorType.EXPIRED_TOKEN);
+    }
+
+    @GetMapping("/token/refresh")
+    public String refreshAuth(HttpServletRequest request, HttpServletResponse response) {
+        String token = request.getHeader("Refresh");
+
+        if (token != null && jwtTokenProvider.verifyToken(token)) {
+            String email = jwtTokenProvider.getUid(token);
+            JwtToken newToken = jwtTokenProvider.generateToken(email);
+
+            response.addHeader("Auth", newToken.getToken());
+            response.addHeader("Refresh", newToken.getRefreshToken());
+            response.setContentType("application/json;charset=UTF-8");
+
+            return "HAPPY NEW TOKEN";
+        }
+        throw new SilentApplicationErrorException(ApplicationErrorType.EXPIRED_REFRESH_TOKEN);
+    }
+
+    @DeleteMapping
+    public void inactiveUser(){
+        userApiService.inactiveUser();
     }
 }
