@@ -1,9 +1,7 @@
 package com.hot6.phopa.api.domain.user.controller;
 
-import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserApiResponse;
-import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserLikeResponse;
-import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserListResponse;
-import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserNameUpdateRequest;
+import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO;
+import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.*;
 import com.hot6.phopa.api.domain.user.service.UserApiService;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
@@ -72,5 +70,12 @@ public class UserController {
     @DeleteMapping
     public void inactiveUser(){
         userApiService.inactiveUser();
+    }
+
+    @GetMapping("/login")
+    public JwtToken login(
+            UserLoginRequest userLoginRequest
+    ){
+        return userApiService.login(userLoginRequest);
     }
 }

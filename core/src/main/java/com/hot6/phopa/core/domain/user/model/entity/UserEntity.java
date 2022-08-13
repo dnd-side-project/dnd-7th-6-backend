@@ -4,8 +4,7 @@ import com.hot6.phopa.core.common.model.entity.BaseTimeEntity;
 import com.hot6.phopa.core.domain.user.type.UserProvider;
 import com.hot6.phopa.core.domain.user.type.UserRole;
 import com.hot6.phopa.core.domain.user.type.UserStatus;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
@@ -15,6 +14,9 @@ import java.io.Serializable;
 @Setter
 @Entity
 @DynamicUpdate
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "user")
 public class UserEntity extends BaseTimeEntity implements Serializable {
     @Id

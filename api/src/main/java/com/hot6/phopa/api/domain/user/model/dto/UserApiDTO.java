@@ -53,4 +53,14 @@ public class UserApiDTO {
         private UserProvider provider;
         private String providerId;
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor(staticName = "of")
+    @NoArgsConstructor
+    public static class UserLoginRequest {
+        private String email;
+        private UserProvider provider;
+        private String providerId;
+    }
 }
