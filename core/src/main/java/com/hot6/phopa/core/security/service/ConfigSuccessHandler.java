@@ -59,8 +59,8 @@ public class ConfigSuccessHandler extends SavedRequestAwareAuthenticationSuccess
             throws IOException {
         response.setContentType("text/html;charset=UTF-8");
 
-        response.addHeader("Auth", token.getToken());
-        response.addHeader("Refresh", token.getRefreshToken());
+        response.addHeader("access-token", token.getToken());
+        response.addHeader("refresh-token", token.getRefreshToken());
         response.setContentType("application/json;charset=UTF-8");
 
         var writer = response.getWriter();
