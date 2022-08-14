@@ -1,15 +1,18 @@
 package com.hot6.phopa.core.security.jwt;
 
+import com.google.common.net.HttpHeaders;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
 
@@ -61,4 +64,18 @@ public class JwtTokenProvider {	// JWT토큰 생성 및 유효성을 검증하�
     public String getUid(String token) {
         return Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody().getSubject();
     }
+
+    public String getAuthToken(HttpServletRequest request) {
+        String accessToken = request.getHeader(HttpHeaders.AUTHORIZATION); //인증토큰 값 가져오기
+
+        if (StringUtils.startsWithIgnoreCase(accessToken, AuthTokenType.BEARER_TYPE.getTokenType())) {
+            return StringUtils.replaceIgnoreCase(accessToken, AuthTokenType.BEARER_TYPE.getTokenType(), "");
+        }
+
+        if (StringUtils.isNotEmpty(accessToken)) {
+            return accessToken;
+        }
+        return null;
+    }
+
 }
