@@ -157,14 +157,26 @@ public class PostApiService {
     }
 
 
-    public PageableResponse<PostApiResponse> getPostsByTagIdSet(Set<Long> tagIdSet, OrderType order, PageableParam pageable) {
+    public PageableResponse<PostApiResponse> getPostsByTagIdSet(
+            Set<Long> tagIdSet,
+            OrderType order,
+            PageableParam pageable
+    ) {
         Page<PostEntity> postEntityPage = postService.getPostByTagIdSet(tagIdSet, order, pageable);
         List<PostApiResponse> postApiResponseList = postApiMapper.toDtoList(postEntityPage.getContent());
         UserDTO userDTO = PrincipleDetail.get();
         if(userDTO.getId() != null){
-            List<Long> postIdList = postApiResponseList.stream().map(PostApiResponse::getId).collect(Collectors.toList());
-            List<Long> userLikePostIdList = postService.getPostLikeByPostIdsAndUserId(postIdList, userDTO.getId()).stream().map(postLike -> postLike.getPost().getId()).collect(Collectors.toList());
-            postApiResponseList.stream().forEach(post -> post.setLike(userLikePostIdList.contains(post.getId())));
+            List<Long> postIdList = postApiResponseList
+                    .stream()
+                    .map(PostApiResponse::getId)
+                    .collect(Collectors.toList());
+
+            List<Long> userLikePostIdList = postService.getPostLikeByPostIdsAndUserId(postIdList, userDTO.getId())
+                    .stream()
+                    .map(postLike -> postLike.getPost().getId())
+                    .collect(Collectors.toList());
+
+            postApiResponseList.forEach(post -> post.setLike(userLikePostIdList.contains(post.getId())));
         }
         return PageableResponse.makeResponse(postEntityPage, postApiResponseList);
     }
