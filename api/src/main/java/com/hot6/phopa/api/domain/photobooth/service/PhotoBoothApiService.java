@@ -100,7 +100,7 @@ public class PhotoBoothApiService {
         UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
         PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(photoBoothId);
         List<TagEntity> tagEntityList = tagService.getTagByPhotoBoothId(photoBoothId);
-        boolean isLike = userEntity != null & photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBoothEntity.getId(), userEntity.getId()) == null;
+        boolean isLike = userEntity != null && photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBoothEntity.getId(), userEntity.getId()) == null;
         Double distance = latitude != null && longitude != null ? GeometryUtil.distance(photoBoothEntity.getLatitude(), photoBoothEntity.getLongitude(), latitude, longitude) : null;
         return buildPhotoBoothWithTagResponse(photoBoothEntity, tagEntityList, isLike, distance);
     }
