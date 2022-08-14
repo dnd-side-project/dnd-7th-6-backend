@@ -65,7 +65,7 @@ public class PhotoBoothApiService {
     }
 
     public List<PhotoBoothApiResponse> kakaoMapTest(String keyword, Double latitude, Double longitude, Double distance) {
-        TagEntity tagEntity = tagService.getTagOrCreate(keyword, TagType.BRAND);
+        TagEntity tagEntity = tagService.getTagOrCreate(keyword, keyword, TagType.BRAND);
         List<PhotoBoothEntity> photoBoothEntityList = photoBoothService.kakaoMapTest(keyword, latitude, longitude, distance, tagEntity);
         return photoBoothMapper.toDtoList(photoBoothEntityList);
     }

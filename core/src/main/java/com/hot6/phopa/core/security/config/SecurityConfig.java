@@ -37,10 +37,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.httpBasic().disable()
                 .csrf().disable()
+                .formLogin().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/v1/user/token/**").permitAll()
+                .antMatchers("/api/v1/user/login").permitAll()
                 // 가입 및 인증 주소는 누구나 접근 가능
                 .antMatchers("/api/v1/user/**").authenticated()
                 // user 관련 api는 회원만 접근 가능
@@ -49,12 +51,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT, "/**").authenticated()
                 .antMatchers(HttpMethod.PATCH, "/**").authenticated()
                 // 나머지 POST, Delete, Put, Patch 메소드는 회원만 접근 가능
-                .anyRequest().permitAll()
+                .anyRequest().permitAll();
                 // 그 외 나머지 요청은 모두 접근 가능
-                .and()
-                .oauth2Login()
-                .successHandler(configSuccessHandler).loginPage("/api/v1/user/token/expired")
-                .userInfoEndpoint().userService(principalOauth2UserService);
+//                .and()
+//                .oauth2Login()
+//                .successHandler(configSuccessHandler).loginPage("/api/v1/user/token/expired")
+//                .userInfoEndpoint().userService(principalOauth2UserService);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

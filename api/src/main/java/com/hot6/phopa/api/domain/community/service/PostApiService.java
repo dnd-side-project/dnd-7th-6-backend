@@ -11,6 +11,7 @@ import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.service.S3UploadService;
+import com.hot6.phopa.core.domain.community.enumeration.OrderType;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostImageEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostLikeEntity;
@@ -156,8 +157,8 @@ public class PostApiService {
     }
 
 
-    public PageableResponse<PostApiResponse> getPostsByTagIdSet(Set<Long> tagIdSet, PageableParam pageable) {
-        Page<PostEntity> postEntityPage = postService.getPostByTagIdSet(tagIdSet, pageable);
+    public PageableResponse<PostApiResponse> getPostsByTagIdSet(Set<Long> tagIdSet, OrderType order, PageableParam pageable) {
+        Page<PostEntity> postEntityPage = postService.getPostByTagIdSet(tagIdSet, order, pageable);
         List<PostApiResponse> postApiResponseList = postApiMapper.toDtoList(postEntityPage.getContent());
         UserDTO userDTO = PrincipleDetail.get();
         if(userDTO.getId() != null){

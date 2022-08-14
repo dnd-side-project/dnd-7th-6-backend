@@ -25,12 +25,13 @@ public class TagService {
     public List<TagEntity> getTagListByTagTypeList(List<TagType> tagTypeList, Boolean onlyKeyword) { return tagRepository.findAllByTagTypeList(tagTypeList, onlyKeyword); }
 
 
-    public TagEntity getTagOrCreate(String keyword, TagType tagType) {
+    public TagEntity getTagOrCreate(String title, String keyword, TagType tagType) {
         TagEntity tagEntity = tagRepository.findOneByTitleAndTagType(keyword, tagType);
         if(tagEntity == null){
             tagEntity = tagRepository.save(
                     TagEntity.builder()
-                            .title(keyword)
+                            .title(title)
+                            .keyword(keyword != null ? keyword : title)
                             .postCount(0)
                             .reviewCount(0)
                             .photoBoothCount(0)
