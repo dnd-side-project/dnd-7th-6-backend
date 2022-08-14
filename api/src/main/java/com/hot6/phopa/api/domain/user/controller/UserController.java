@@ -52,14 +52,14 @@ public class UserController {
 
     @GetMapping("/token/refresh")
     public String refreshAuth(HttpServletRequest request, HttpServletResponse response) {
-        String token = request.getHeader("Refresh");
+        String token = request.getHeader("refresh-token");
 
         if (token != null && jwtTokenProvider.verifyToken(token)) {
             String email = jwtTokenProvider.getUid(token);
             JwtToken newToken = jwtTokenProvider.generateToken(email);
 
-            response.addHeader("Auth", newToken.getToken());
-            response.addHeader("Refresh", newToken.getRefreshToken());
+            response.addHeader("access-token", newToken.getToken());
+            response.addHeader("refresh-token", newToken.getRefreshToken());
             response.setContentType("application/json;charset=UTF-8");
 
             return "HAPPY NEW TOKEN";
