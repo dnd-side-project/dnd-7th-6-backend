@@ -75,7 +75,7 @@ public class PhotoBoothService {
         return photoBoothRepository.findById(photoBoothId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
 
-    public PhotoBoothLikeEntity createReviewLikeEntity(PhotoBoothLikeEntity photoBoothLikeEntity) {
+    public PhotoBoothLikeEntity createPhotoBoothLikeEntity(PhotoBoothLikeEntity photoBoothLikeEntity) {
         return photoBoothLikeRepository.save(photoBoothLikeEntity);
     }
 

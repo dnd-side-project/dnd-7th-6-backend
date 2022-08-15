@@ -5,6 +5,7 @@ import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserApiResponse;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.domain.review.model.dto.ReviewDTO;
+import com.hot6.phopa.core.domain.review.model.dto.ReviewImageDTO;
 import com.hot6.phopa.core.domain.tag.enumeration.TagType;
 import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
 import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
@@ -26,7 +27,6 @@ public class ReviewApiDTO {
         Set<ReviewTagApiResponse> reviewTagSet;
         Set<ReviewImageResponse> reviewImageSet;
         UserApiResponse user;
-        boolean isLike;
     }
 
     @Getter
@@ -74,6 +74,7 @@ public class ReviewApiDTO {
         private Long id;
         private String imageUrl;
         private Integer imageOrder;
+        private boolean isLike;
     }
     @Getter
     @Setter

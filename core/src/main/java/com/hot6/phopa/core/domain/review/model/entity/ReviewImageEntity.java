@@ -27,7 +27,14 @@ public class ReviewImageEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "image_order")
     private Integer imageOrder;
 
+    @Column(name = "like_count")
+    private Integer likeCount;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "review_id", nullable = false)
     private ReviewEntity review;
+
+    public void updateLikeCount(int count) {
+        this.likeCount += count;
+    }
 }

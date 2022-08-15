@@ -1,9 +1,6 @@
 package com.hot6.phopa.api.domain.review.service;
 
-import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
-import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewCreateRequest;
-import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewFormResponse;
-import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewUpdateRequest;
+import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.*;
 import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
@@ -16,7 +13,7 @@ import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
-import com.hot6.phopa.core.domain.review.model.entity.ReviewLikeEntity;
+import com.hot6.phopa.core.domain.review.model.entity.ReviewImageLikeEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewTagEntity;
 import com.hot6.phopa.core.domain.review.service.ReviewService;
 import com.hot6.phopa.core.domain.tag.enumeration.TagType;
@@ -69,12 +66,6 @@ public class ReviewApiService {
     public PageableResponse<ReviewApiResponse> getReview(long photoBoothId, PageableParam pageable) {
         Page<ReviewEntity> reviewEntityPage = reviewService.getReview(photoBoothId, pageable);
         List<ReviewApiResponse> reviewApiResponseList = reviewApiMapper.toDtoList(reviewEntityPage.getContent());
-        UserDTO userDTO = PrincipleDetail.get();
-        if(userDTO.getId() != null){
-            List<Long> reviewIdList = reviewApiResponseList.stream().map(ReviewApiResponse::getId).collect(Collectors.toList());
-            List<Long> userLikeReviewIdList = reviewService.getReviewLikeByReviewIdsAndUserId(reviewIdList, userDTO.getId()).stream().map(reviewLike -> reviewLike.getReview().getId()).collect(Collectors.toList());
-            reviewApiResponseList.stream().forEach(review -> review.setLike(userLikeReviewIdList.contains(review.getId())));
-        }
         return PageableResponse.makeResponse(reviewEntityPage, reviewApiResponseList);
     }
 
@@ -87,7 +78,6 @@ public class ReviewApiService {
         ReviewEntity reviewEntity = ReviewEntity.builder()
                 .title(reviewCreateRequest.getTitle())
                 .content(reviewCreateRequest.getContent())
-                .likeCount(0)
                 .status(Status.ACTIVE)
                 .starScore(reviewCreateRequest.getStarScore())
                 .user(userEntity)
@@ -126,8 +116,9 @@ public class ReviewApiService {
                             ReviewImageEntity.builder()
                                     .review(reviewEntity)
                                     .imageUrl(imageUrl)
-                                    .imageOrder(index++).
-                                    build()
+                                    .imageOrder(index++)
+                                    .likeCount(0)
+                                    .build()
                     );
                 }
             } catch (Exception e) {
@@ -149,21 +140,21 @@ public class ReviewApiService {
         }
     }
 
-    public void like(Long reviewId) {
+    public void like(Long reviewImageId) {
         UserDTO userDTO = PrincipleDetail.get();
         UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
-        ReviewEntity reviewEntity = reviewService.getReviewById(reviewId);
-        ReviewLikeEntity reviewLikeEntity = reviewService.getReviewLikeByReviewIdAndUserId(reviewId, userEntity.getId());
-        if (reviewLikeEntity != null) {
-            reviewService.deleteReviewLike(reviewLikeEntity);
-            reviewEntity.updateLikeCount(-1);
+        ReviewImageEntity reviewImageEntity = reviewService.getReviewImageById(reviewImageId);
+        ReviewImageLikeEntity reviewImageLikeEntity = reviewService.getReviewImageLikeByReviewImageIdAndUserId(reviewImageEntity.getId(), userEntity.getId());
+        if (reviewImageLikeEntity != null) {
+            reviewService.deleteReviewImageLike(reviewImageLikeEntity);
+            reviewImageEntity.updateLikeCount(-1);
         } else {
-            reviewLikeEntity = ReviewLikeEntity.builder()
-                    .review(reviewEntity)
+            reviewImageLikeEntity = ReviewImageLikeEntity.builder()
+                    .reviewImage(reviewImageEntity)
                     .user(userEntity)
                     .build();
-            reviewService.createReviewLikeEntity(reviewLikeEntity);
-            reviewEntity.updateLikeCount(1);
+            reviewService.createReviewImageLikeEntity(reviewImageLikeEntity);
+            reviewImageEntity.updateLikeCount(1);
         }
     }
 
@@ -175,15 +166,7 @@ public class ReviewApiService {
 
     public ReviewApiResponse getReview(Long reviewId) {
         ReviewEntity reviewEntity = reviewService.getReviewById(reviewId);
-        UserDTO userDTO = PrincipleDetail.get();
-        boolean isLike = false;
-        if(userDTO.getId() != null){
-            if(reviewService.getReviewLikeByReviewIdAndUserId(reviewId, userDTO.getId()) != null){
-                isLike = true;
-            }
-        }
         ReviewApiResponse reviewApiResponse = reviewApiMapper.toDto(reviewEntity);
-        reviewApiResponse.setLike(isLike);
         return reviewApiResponse;
     }
 
@@ -242,8 +225,9 @@ public class ReviewApiService {
                         ReviewImageEntity.builder()
                                 .review(reviewEntity)
                                 .imageUrl(imageUrl)
-                                .imageOrder(index).
-                                build()
+                                .imageOrder(index)
+                                .likeCount(0)
+                                .build()
                 );
             }
         } catch (Exception e) {
@@ -274,5 +258,17 @@ public class ReviewApiService {
             );
             tagEntity.updateReviewCount(1);
         }
+    }
+
+    public PageableResponse<ReviewImageResponse> getReviewImages(Long photoBoothId, PageableParam pageable) {
+        Page<ReviewImageEntity> reviewImageEntityPage = reviewService.getReviewImageByPhotoBoothId(photoBoothId, pageable);
+        List<ReviewImageResponse> reviewImageResponseList = reviewApiMapper.toImageEntityDto(reviewImageEntityPage.getContent());
+        UserDTO userDTO = PrincipleDetail.get();
+        if(userDTO.getId() != null){
+            List<Long> reviewImageIdList = reviewImageResponseList.stream().map(ReviewImageResponse::getId).collect(Collectors.toList());
+            List<Long> userLikeReviewImageIdList = reviewService.getReviewImageLikeByReviewIdsAndUserId(reviewImageIdList, userDTO.getId()).stream().map(reviewImageLike -> reviewImageLike.getReviewImage().getId()).collect(Collectors.toList());
+            reviewImageResponseList.stream().forEach(reviewImage -> reviewImage.setLike(userLikeReviewImageIdList.contains(reviewImage.getId())));
+        }
+        return PageableResponse.makeResponse(reviewImageEntityPage, reviewImageResponseList);
     }
 }

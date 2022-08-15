@@ -27,7 +27,7 @@ public class PhotoBoothDTO {
 
     protected Integer reviewCount;
 
-    protected Float starCount;
+    protected Float startScore;
 
     protected Status status;
 }

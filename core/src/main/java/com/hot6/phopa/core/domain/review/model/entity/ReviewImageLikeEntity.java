@@ -15,16 +15,16 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @DynamicUpdate
-@Table(name = "review_like")
-public class ReviewLikeEntity extends BaseTimeEntity implements Serializable {
+@Table(name = "review_image_like")
+public class ReviewImageLikeEntity extends BaseTimeEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "review_id", nullable = false)
-    private ReviewEntity review;
+    @JoinColumn(name = "review_image_id", nullable = false)
+    private ReviewImageEntity reviewImage;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
