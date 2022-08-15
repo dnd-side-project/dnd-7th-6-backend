@@ -12,6 +12,7 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -32,11 +33,12 @@ public class TagCustomRepositoryImpl extends QuerydslRepositorySupport implement
         this.jpaQueryFactory = jpaQueryFactory;
     }
     @Override
-    public List<TagEntity> findByPhotoBoothId(Long photoBoothId) {
+    public List<TagEntity> findByPhotoBoothId(Long photoBoothId, List<TagType> tagTypeList) {
         return from(tagEntity)
                 .join(tagEntity.reviewTagSet, reviewTagEntity).fetchJoin()
                 .join(reviewTagEntity.review, reviewEntity).fetchJoin()
                 .where(reviewTagEntity.photoBoothId.eq(photoBoothId))
+                .where(buildPredicate(null, tagTypeList))
                 .distinct()
                 .fetch();
     }
@@ -45,7 +47,7 @@ public class TagCustomRepositoryImpl extends QuerydslRepositorySupport implement
     public Page<TagEntity> getTagByKeyword(String keyword, TagType tagType, PageableParam pageable) {
         QueryResults result = jpaQueryFactory
                 .selectFrom(tagEntity)
-                .where(buildPredicate(tagType))
+                .where(buildPredicate(tagType, null))
                 .where(tagEntity.keyword.contains(keyword))
                 .limit(pageable.getPageSize())
                 .offset(pageable.getPage())
@@ -71,10 +73,13 @@ public class TagCustomRepositoryImpl extends QuerydslRepositorySupport implement
     }
 
 
-    private Predicate buildPredicate(TagType tagType){
+    private Predicate buildPredicate(TagType tagType, List<TagType> tagTypeList){
         BooleanBuilder builder = new BooleanBuilder();
         if(tagType != null){
             builder.and(tagEntity.tagType.eq(tagType));
+        }
+        if(CollectionUtils.isNotEmpty(tagTypeList)){
+            builder.and(tagEntity.tagType.in(tagTypeList));
         }
         return builder.getValue();
     }
