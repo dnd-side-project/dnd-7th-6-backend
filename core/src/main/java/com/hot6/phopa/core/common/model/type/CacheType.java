@@ -6,7 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 @Getter
 public enum CacheType {
-    User("user", 5, TimeUnit.MINUTES, "User ID");
+    User("user", 5, TimeUnit.MINUTES, "User ID"),
+    PhotoBoothById("photoBoothById", 1, TimeUnit.DAYS, "User ID");
 
     private final String name;
     private final long ttl;
