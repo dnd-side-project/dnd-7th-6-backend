@@ -35,4 +35,6 @@ public abstract class ReviewApiMapper {
 
     @IterableMapping(qualifiedByName = "reviewImageResponse")
     public abstract Set<ReviewImageResponse> toImageEntityDtoSet(Set<ReviewImageEntity> reviewImageEntitySet);
+    @IterableMapping(qualifiedByName = "reviewImageResponse")
+    public abstract List<ReviewImageResponse> toImageEntityDto(List<ReviewImageEntity> reviewImageEntityList);
 }

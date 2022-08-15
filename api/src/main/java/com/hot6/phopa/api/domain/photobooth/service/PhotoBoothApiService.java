@@ -84,7 +84,7 @@ public class PhotoBoothApiService {
                     .photoBooth(photoBoothEntity)
                     .user(userEntity)
                     .build();
-            photoBoothService.createReviewLikeEntity(photoBoothLikeEntity);
+            photoBoothService.createPhotoBoothLikeEntity(photoBoothLikeEntity);
             photoBoothEntity.updateLikeCount(1);
         }
     }

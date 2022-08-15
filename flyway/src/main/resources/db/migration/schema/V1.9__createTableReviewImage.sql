@@ -8,6 +8,7 @@ CREATE TABLE `review_image` (
   `review_id` bigint NOT NULL COMMENT 'review id',
   `image_url` varchar(200) NOT NULL COMMENT 'image url',
   `image_order` int NOT NULL default 1 COMMENT 'image 순서',
+  `like_count` int NOT NULL default 0 COMMENT '좋아요 수',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
   `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
   PRIMARY KEY (`id`),

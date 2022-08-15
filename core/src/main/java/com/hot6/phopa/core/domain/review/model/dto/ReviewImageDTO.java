@@ -14,5 +14,7 @@ public class ReviewImageDTO {
 
     private String imageUrl;
 
+    private Integer likeCount;
+
     private Integer imageOrder;
 }

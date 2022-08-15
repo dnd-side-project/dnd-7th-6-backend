@@ -33,9 +33,6 @@ public class ReviewEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "like_count")
-    private Integer likeCount;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
@@ -56,10 +53,6 @@ public class ReviewEntity extends BaseTimeEntity implements Serializable {
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "review", orphanRemoval = true)
     private Set<ReviewImageEntity> reviewImageSet;
-
-    public void updateLikeCount(int count) {
-        this.likeCount += count;
-    }
 
     public void updateStatus(Status status) {
         this.status = status;

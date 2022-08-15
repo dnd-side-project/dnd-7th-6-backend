@@ -6,11 +6,10 @@ import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
-import com.hot6.phopa.core.domain.review.model.entity.ReviewLikeEntity;
+import com.hot6.phopa.core.domain.review.model.entity.ReviewImageLikeEntity;
 import com.hot6.phopa.core.domain.review.repository.ReviewImageRepository;
-import com.hot6.phopa.core.domain.review.repository.ReviewLikeRepository;
+import com.hot6.phopa.core.domain.review.repository.ReviewImageLikeRepository;
 import com.hot6.phopa.core.domain.review.repository.ReviewRepository;
-import com.hot6.phopa.core.domain.tag.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ import java.util.List;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
 
-    private final ReviewLikeRepository reviewLikeRepository;
+    private final ReviewImageLikeRepository reviewImageLikeRepository;
 
     private final ReviewImageRepository reviewImageRepository;
 
@@ -42,22 +41,18 @@ public class ReviewService {
         return reviewRepository.findById(reviewId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
 
-    public ReviewLikeEntity createReviewLikeEntity(ReviewLikeEntity reviewLikeEntity) {
-        return reviewLikeRepository.save(reviewLikeEntity);
+    public ReviewImageLikeEntity createReviewImageLikeEntity(ReviewImageLikeEntity reviewImageLikeEntity) {
+        return reviewImageLikeRepository.save(reviewImageLikeEntity);
     }
 
-    public void deleteReviewLike(ReviewLikeEntity reviewLikeEntity) {
-        reviewLikeRepository.delete(reviewLikeEntity);
+    public void deleteReviewImageLike(ReviewImageLikeEntity reviewImageLikeEntity) {
+        reviewImageLikeRepository.delete(reviewImageLikeEntity);
     }
 
-    @Transactional(readOnly = true)
-    public ReviewLikeEntity getReviewLikeByReviewIdAndUserId(Long reviewId, Long userId) {
-        return reviewLikeRepository.findOneByReviewIdAndUserId(reviewId, userId);
-    }
 
     @Transactional(readOnly = true)
-    public List<ReviewLikeEntity> getReviewLikeByReviewIdsAndUserId(List<Long> reviewIdList, Long userId) {
-        return reviewLikeRepository.findAllByReviewIdsAndUserId(reviewIdList, userId);
+    public List<ReviewImageLikeEntity> getReviewImageLikeByReviewIdsAndUserId(List<Long> reviewIdList, Long userId) {
+        return reviewImageLikeRepository.findAllByReviewImageIdsAndUserId(reviewIdList, userId);
     }
     @Transactional(readOnly = true)
 
@@ -67,5 +62,18 @@ public class ReviewService {
 
     public List<ReviewImageEntity> getReviewImageByPhotoBoothId(Long photoBoothId, int limitSize) {
         return reviewImageRepository.findByPhotoBoothIdAndLimit(photoBoothId, limitSize);
+    }
+
+    public ReviewImageEntity getReviewImageById(Long reviewImageId) {
+        return reviewImageRepository.findById(reviewImageId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
+    }
+
+    @Transactional(readOnly = true)
+    public ReviewImageLikeEntity getReviewImageLikeByReviewImageIdAndUserId(Long reviewImageId, Long userId) {
+        return reviewImageLikeRepository.findOneByReviewImageIdAndUserId(reviewImageId, userId);
+    }
+
+    public Page<ReviewImageEntity> getReviewImageByPhotoBoothId(Long photoBoothId, PageableParam pageable) {
+        return reviewImageRepository.findAllByPhotoBoothId(photoBoothId, pageable);
     }
 }
