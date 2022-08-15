@@ -8,6 +8,7 @@ CREATE TABLE `tag` (
   `title` varchar(50) NOT NULL COMMENT 'tag title',
   `keyword` varchar(50) NOT NULL COMMENT 'tag keyword',
   `review_count` int NOT NULL default 0  COMMENT 'tag 리뷰수',
+  `tag_icon_image_url` varchar(200) NULL  COMMENT 'tag icon image url',
   `post_count` int NOT NULL default 0 COMMENT 'tag 포스트수',
   `photo_booth_count` int NOT NULL default 0 COMMENT 'tag photoBooth 수',
   `tag_type` varchar(50) NOT NULL COMMENT 'tag type',
