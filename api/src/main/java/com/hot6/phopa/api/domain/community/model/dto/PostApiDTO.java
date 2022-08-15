@@ -37,6 +37,7 @@ public class PostApiDTO {
         private String title;
         private String content;
         private List<Long> tagIdList;
+//        private Boolean publicScope;
 
         public void validCheck() {
             Optional.ofNullable(this.getTitle()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));

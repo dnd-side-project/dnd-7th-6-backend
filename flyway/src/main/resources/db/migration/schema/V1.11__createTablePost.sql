@@ -9,6 +9,7 @@ CREATE TABLE `post` (
   `content` varchar(50) NOT NULL COMMENT 'post content',
   `like_count` int NOT NULL default 0 COMMENT 'post like',
   `status` varchar(100) NOT NULL COMMENT '상태값',
+  `isPublic` boolean NOT NULL DEFAULT '공개 여부',
   `user_id` bigint NOT NULL COMMENT 'user_id',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
   `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
