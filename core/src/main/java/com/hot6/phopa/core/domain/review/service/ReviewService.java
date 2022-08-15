@@ -5,7 +5,9 @@ import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
+import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewLikeEntity;
+import com.hot6.phopa.core.domain.review.repository.ReviewImageRepository;
 import com.hot6.phopa.core.domain.review.repository.ReviewLikeRepository;
 import com.hot6.phopa.core.domain.review.repository.ReviewRepository;
 import com.hot6.phopa.core.domain.tag.repository.TagRepository;
@@ -22,9 +24,9 @@ import java.util.List;
 public class ReviewService {
     private final ReviewRepository reviewRepository;
 
-    private final TagRepository tagRepository;
-
     private final ReviewLikeRepository reviewLikeRepository;
+
+    private final ReviewImageRepository reviewImageRepository;
 
     @Transactional(readOnly = true)
     public Page<ReviewEntity> getReview(long photoBoothId, PageableParam pageable) {
@@ -61,5 +63,9 @@ public class ReviewService {
 
     public List<ReviewEntity> findAllByUserId(Long userId) {
         return reviewRepository.findAllByUserIdAndStatus(userId, Status.ACTIVE);
+    }
+
+    public List<ReviewImageEntity> getReviewImageByPhotoBoothId(Long photoBoothId, int limitSize) {
+        return reviewImageRepository.findByPhotoBoothIdAndLimit(photoBoothId, limitSize);
     }
 }
