@@ -77,6 +77,10 @@ public class PostApiService {
         UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
         postCreateRequest.validCheck();
         fileInvalidCheck(postImageList);
+        List<TagEntity> newTagList = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(postCreateRequest.getNewTagList())){
+            newTagList = tagService.createCustomTagList(postCreateRequest.getNewTagList());
+        }
         PostEntity postEntity = PostEntity.builder()
                 .title(postCreateRequest.getTitle())
                 .content(postCreateRequest.getContent())
@@ -88,6 +92,7 @@ public class PostApiService {
         if (CollectionUtils.isNotEmpty(postCreateRequest.getTagIdList())) {
             Set<PostTagEntity> postTagEntitySet = new HashSet<>();
             List<TagEntity> tagEntityList = tagService.getTagList(postCreateRequest.getTagIdList());
+            tagEntityList.addAll(newTagList);
             for (TagEntity tagEntity : tagEntityList) {
                 postTagEntitySet.add(
                         PostTagEntity.builder()

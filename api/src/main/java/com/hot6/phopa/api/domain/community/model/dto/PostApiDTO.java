@@ -38,6 +38,7 @@ public class PostApiDTO {
         private String title;
         private String content;
         private List<Long> tagIdList;
+        private List<String> newTagList;
         private Boolean isPublic;
 
         public void validCheck() {
