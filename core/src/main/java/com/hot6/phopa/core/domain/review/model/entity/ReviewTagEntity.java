@@ -29,4 +29,7 @@ public class ReviewTagEntity extends BaseTimeEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "tag_id", nullable = false)
     private TagEntity tag;
+
+    @Column(name = "photo_booth_id")
+    private Long photoBoothId;
 }

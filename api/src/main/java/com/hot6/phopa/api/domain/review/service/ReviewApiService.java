@@ -101,6 +101,7 @@ public class ReviewApiService {
                         ReviewTagEntity.builder()
                                 .review(reviewEntity)
                                 .tag(tagEntity)
+                                .photoBoothId(photoBoothEntity.getId())
                                 .build()
                 );
                 if (tagEntity.getReviewTagSet().stream().anyMatch(r -> r.getReview().getPhotoBooth().getId().equals(photoBoothEntity.getId())) == false) {

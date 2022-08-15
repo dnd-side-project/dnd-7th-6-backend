@@ -36,8 +36,7 @@ public class TagCustomRepositoryImpl extends QuerydslRepositorySupport implement
         return from(tagEntity)
                 .join(tagEntity.reviewTagSet, reviewTagEntity).fetchJoin()
                 .join(reviewTagEntity.review, reviewEntity).fetchJoin()
-                .join(reviewEntity.photoBooth, photoBoothEntity).fetchJoin()
-                .where(photoBoothEntity.id.eq(photoBoothId))
+                .where(reviewTagEntity.photoBoothId.eq(photoBoothId))
                 .distinct()
                 .fetch();
     }

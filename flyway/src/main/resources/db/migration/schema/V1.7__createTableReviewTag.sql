@@ -7,6 +7,7 @@ CREATE TABLE `review_tag` (
   `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'review tag id',
   `review_id` bigint NOT NULL COMMENT 'review id',
   `tag_id` bigint NOT NULL COMMENT 'tag id',
+  `photo_booth_id` bigint NOT NULL COMMENT 'photo_booth id',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
   `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
   PRIMARY KEY (`id`),
