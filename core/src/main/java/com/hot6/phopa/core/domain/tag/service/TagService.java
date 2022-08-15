@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,5 +57,16 @@ public class TagService {
 
     public List<TagEntity> createAll(List<TagEntity> tagEntityList) {
         return tagRepository.saveAll(tagEntityList);
+    }
+
+    public List<TagEntity> createCustomTagList(List<String> newTagList) {
+        List<TagEntity> tagEntityList = newTagList.stream().map( keyword ->
+                TagEntity.builder()
+                .title(keyword)
+                .keyword(keyword)
+                .tagType(TagType.CUSTOM)
+                .build()
+        ).collect(Collectors.toList());
+        return createAll(tagEntityList);
     }
 }
