@@ -28,8 +28,8 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
 
     @Transactional(readOnly = true)
-    public List<PostEntity> getAllPost() {
-        return postRepository.findAll();
+    public Page<PostEntity> getPosts(Long userId, Long photoBoothId, PageableParam pageable) {
+        return postRepository.findPost(userId, photoBoothId, pageable);
     }
 
     public PostEntity createPost(PostEntity postEntity) {

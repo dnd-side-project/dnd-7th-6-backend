@@ -10,9 +10,11 @@ import com.hot6.phopa.core.domain.community.repository.PostCustomRepository;
 import com.hot6.phopa.core.domain.tag.model.entity.QTagEntity;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.user.model.entity.QUserEntity;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.data.domain.Page;
@@ -77,6 +79,34 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
                 .distinct()
                 .fetchResults();
         return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
+    }
+
+    @Override
+    public Page<PostEntity> findPost(Long userId, Long photoBoothId, PageableParam pageable) {
+        QueryResults result = jpaQueryFactory.selectFrom(postEntity)
+                .leftJoin(postEntity.postLikeSet, postLikeEntity).fetchJoin()
+                .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
+                .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
+                .leftJoin(postEntity.user, userEntity).fetchJoin()
+                .where(postEntity.status.eq(Status.ACTIVE))
+                .where(buildPredicate(userId, photoBoothId))
+                .orderBy(postEntity.id.desc())
+                .offset(pageable.getPage())
+                .limit(pageable.getPageSize())
+                .distinct()
+                .fetchResults();
+        return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
+    }
+
+    private Predicate buildPredicate(Long userId, Long photoBoothId) {
+        BooleanBuilder builder = new BooleanBuilder();
+        if(userId != null){
+            builder.and(userEntity.id.eq(userId));
+        }
+        if(photoBoothId != null){
+            builder.and(postEntity.id.eq(photoBoothId).not());
+        }
+        return builder.getValue();
     }
 
     private OrderSpecifier<?> getOrderByField(OrderType type) {
