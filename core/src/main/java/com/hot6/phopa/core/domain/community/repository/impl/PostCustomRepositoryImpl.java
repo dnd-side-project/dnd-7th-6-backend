@@ -89,6 +89,7 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
                 .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
                 .leftJoin(postEntity.user, userEntity).fetchJoin()
                 .where(postEntity.status.eq(Status.ACTIVE))
+                .where(postEntity.isPublic.eq(true))
                 .where(buildPredicate(userId, photoBoothId))
                 .orderBy(postEntity.id.desc())
                 .offset(pageable.getPage())
