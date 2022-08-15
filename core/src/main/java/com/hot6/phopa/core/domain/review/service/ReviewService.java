@@ -3,6 +3,8 @@ package com.hot6.phopa.core.domain.review.service;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
+import com.hot6.phopa.core.common.model.entity.CacheKeyEntity;
+import com.hot6.phopa.core.common.model.type.CacheType;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
@@ -10,6 +12,7 @@ import com.hot6.phopa.core.domain.review.model.entity.ReviewImageLikeEntity;
 import com.hot6.phopa.core.domain.review.repository.ReviewImageRepository;
 import com.hot6.phopa.core.domain.review.repository.ReviewImageLikeRepository;
 import com.hot6.phopa.core.domain.review.repository.ReviewRepository;
+import com.hot6.phopa.core.service.RedisCacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -27,12 +30,15 @@ public class ReviewService {
 
     private final ReviewImageRepository reviewImageRepository;
 
+    private final RedisCacheService cacheService;
+
     @Transactional(readOnly = true)
     public Page<ReviewEntity> getReview(long photoBoothId, PageableParam pageable) {
         return reviewRepository.findByPhotoBoothId(photoBoothId, pageable);
     }
 
     public ReviewEntity createReview(ReviewEntity reviewEntity) {
+        cacheService.del(CacheKeyEntity.valueKey(CacheType.PhotoBoothById, reviewEntity.getPhotoBooth().getId()));
         return reviewRepository.save(reviewEntity);
     }
 

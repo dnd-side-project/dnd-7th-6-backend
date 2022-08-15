@@ -7,6 +7,8 @@ import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse
 import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
+import com.hot6.phopa.core.common.model.entity.CacheKeyEntity;
+import com.hot6.phopa.core.common.model.type.CacheType;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.utils.GeometryUtil;
 import com.hot6.phopa.core.common.utils.S3UrlUtil;
@@ -27,6 +29,7 @@ import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.service.UserService;
 import com.hot6.phopa.core.security.config.PrincipleDetail;
+import com.hot6.phopa.core.service.RedisCacheService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
@@ -47,6 +50,8 @@ public class PhotoBoothApiService {
     private final TagMapper tagMapper;
     private final ReviewService reviewService;
     private final UserService userService;
+
+    private final RedisCacheService cacheService;
 
     public PageableResponse<PhotoBoothWithTagResponse> getPhotoBoothNearByUserGeo(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet, PageableParam pageable) {
         UserDTO userDTO = PrincipleDetail.get();
@@ -97,14 +102,18 @@ public class PhotoBoothApiService {
     }
 
     public PhotoBoothDetailResponse getPhotoBooth(Long photoBoothId, Double latitude, Double longitude) {
+        PhotoBoothDetailResponse photoBoothDetailResponse = cacheService.get(CacheKeyEntity.valueKey(CacheType.PhotoBoothById, photoBoothId),
+                () -> getPhotoBoothDetailResponse(photoBoothId), PhotoBoothDetailResponse.class);
+        PhotoBoothApiResponse photoBooth = photoBoothDetailResponse.getPhotoBooth();
+        Double distance = latitude != null && longitude != null ? GeometryUtil.distance(photoBooth.getLatitude(), photoBooth.getLongitude(), latitude, longitude) : null;
+        photoBoothDetailResponse.setDistance(distance);
         UserDTO userDTO = PrincipleDetail.get();
-        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
-        PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(photoBoothId);
-        boolean isLike = userEntity != null && photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBoothEntity.getId(), userEntity.getId()) == null;
-        Double distance = latitude != null && longitude != null ? GeometryUtil.distance(photoBoothEntity.getLatitude(), photoBoothEntity.getLongitude(), latitude, longitude) : null;
-        List<ReviewImageEntity> reviewImageEntityList = reviewService.getReviewImageByPhotoBoothId(photoBoothEntity.getId(), 8);
-        List<TagEntity> tagEntity = tagService.getTagByPhotoBoothId(photoBoothEntity.getId());
-        return buildPhotoBoothDetailResponse(photoBoothEntity, isLike, distance, reviewImageEntityList, tagEntity);
+        if(userDTO.getId() != null){
+            UserEntity userEntity = userService.findById(userDTO.getId());
+            boolean isLike = userEntity != null && photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBooth.getId(), userEntity.getId()) == null;
+            photoBoothDetailResponse.setLike(isLike);
+        }
+        return photoBoothDetailResponse;
     }
 
     private PhotoBoothWithTagResponse buildPhotoBoothWithTagResponse(PhotoBoothEntity photoBoothEntity, List<TagEntity> tagList, boolean isLike, Double distance) {
@@ -123,5 +132,12 @@ public class PhotoBoothApiService {
             tagSummary.put(entry.getKey(), tagResponseList);
         }
         return PhotoBoothDetailResponse.of(photoBooth, isLike, distance, reviewImageUrlList, tagSummary);
+    }
+
+    private PhotoBoothDetailResponse getPhotoBoothDetailResponse(Long photoBoothId){
+        PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(photoBoothId);
+        List<ReviewImageEntity> reviewImageEntityList = reviewService.getReviewImageByPhotoBoothId(photoBoothEntity.getId(), 8);
+        List<TagEntity> tagEntity = tagService.getTagByPhotoBoothId(photoBoothEntity.getId());
+        return buildPhotoBoothDetailResponse(photoBoothEntity, false, null, reviewImageEntityList, tagEntity);
     }
 }
