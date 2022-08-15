@@ -9,6 +9,7 @@ import com.hot6.phopa.core.security.jwt.JwtToken;
 import com.hot6.phopa.core.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +44,14 @@ public class UserController {
             @RequestBody UserNameUpdateRequest userNameUpdateRequest
             ) {
         return userApiService.updateName(userNameUpdateRequest);
+    }
+
+    @GetMapping("/name-valid")
+    public ResponseEntity vaildeName(
+            @RequestParam String name
+    ) {
+        userApiService.vaildName(name);
+        return ResponseEntity.ok("pass valid check");
     }
 
     @GetMapping("/token/expired")
