@@ -140,8 +140,11 @@ public class PostApiService {
 
     public void like(Long postId) {
         UserDTO userDTO = PrincipleDetail.get();
-        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
+        UserEntity userEntity = userService.findById(userDTO.getId());
         PostEntity postEntity = postService.getPostById(postId);
+        if(userEntity.getId().equals(postEntity.getUser().getId())){
+            throw new SilentApplicationErrorException(ApplicationErrorType.CANNOT_BE_CREATED_USER);
+        }
         PostLikeEntity postLikeEntity = postService.getPostLikeByPostIdAndUserId(postId, userEntity.getId());
         if (postLikeEntity != null) {
             postService.deletePostLikeEntity(postLikeEntity);
