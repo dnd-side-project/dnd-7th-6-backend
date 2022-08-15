@@ -17,4 +17,5 @@ public interface PostCustomRepository {
 
     Page<PostEntity> getPostByTagIdSet(Set<Long> tagIdSet, OrderType order, PageableParam pageable);
 
+    Page<PostEntity> findPost(Long userId, Long photoBoothId, PageableParam pageable);
 }

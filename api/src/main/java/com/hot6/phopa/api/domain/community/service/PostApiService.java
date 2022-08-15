@@ -62,9 +62,14 @@ public class PostApiService {
     private String reviewPath;
 
     @Transactional(readOnly = true)
-    public List<PostApiResponse> getPosts() {
-        List<PostEntity> postEntityList = postService.getAllPost();
-        return postApiMapper.toDtoList(postEntityList);
+    public PageableResponse<PostApiResponse> getPosts(Long userId, Long photoBoothId, PageableParam pageable) {
+        Page<PostEntity> postEntityPage = postService.getPosts(userId, photoBoothId, pageable);
+        List<PostApiResponse> postApiResponseList = postApiMapper.toDtoList(postEntityPage.getContent());
+        UserDTO userDTO = PrincipleDetail.get();
+        if(userDTO.getId() != null){
+            postApiResponseList = setUserLike(postApiResponseList, userDTO.getId());
+        }
+        return PageableResponse.makeResponse(postEntityPage, postApiResponseList);
     }
 
     public PostApiResponse createPost(PostCreateRequest postCreateRequest, List<MultipartFile> postImageList) {
@@ -166,17 +171,7 @@ public class PostApiService {
         List<PostApiResponse> postApiResponseList = postApiMapper.toDtoList(postEntityPage.getContent());
         UserDTO userDTO = PrincipleDetail.get();
         if(userDTO.getId() != null){
-            List<Long> postIdList = postApiResponseList
-                    .stream()
-                    .map(PostApiResponse::getId)
-                    .collect(Collectors.toList());
-
-            List<Long> userLikePostIdList = postService.getPostLikeByPostIdsAndUserId(postIdList, userDTO.getId())
-                    .stream()
-                    .map(postLike -> postLike.getPost().getId())
-                    .collect(Collectors.toList());
-
-            postApiResponseList.forEach(post -> post.setLike(userLikePostIdList.contains(post.getId())));
+            postApiResponseList = setUserLike(postApiResponseList, userDTO.getId());
         }
         return PageableResponse.makeResponse(postEntityPage, postApiResponseList);
     }
@@ -287,5 +282,19 @@ public class PostApiService {
             );
             tagEntity.updatePostCount(1);
         }
+    }
+    private List<PostApiResponse> setUserLike(List<PostApiResponse> postApiResponseList, Long userId){
+        List<Long> postIdList = postApiResponseList
+                .stream()
+                .map(PostApiResponse::getId)
+                .collect(Collectors.toList());
+
+        List<Long> userLikePostIdList = postService.getPostLikeByPostIdsAndUserId(postIdList, userId)
+                .stream()
+                .map(postLike -> postLike.getPost().getId())
+                .collect(Collectors.toList());
+
+        postApiResponseList.forEach(post -> post.setLike(userLikePostIdList.contains(post.getId())));
+        return postApiResponseList;
     }
 }

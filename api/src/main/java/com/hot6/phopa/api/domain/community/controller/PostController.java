@@ -24,9 +24,12 @@ public class PostController {
     private final PostApiService postService;
 
     @GetMapping
-    public List<PostApiResponse> getPosts(
+    public PageableResponse<PostApiResponse> getPosts(
+            @RequestParam(required = false) @Positive Long userId,
+            @RequestParam(required = false) @Positive Long photoBoothId,
+            PageableParam pageable
     ) {
-        return postService.getPosts();
+        return postService.getPosts(userId, photoBoothId, pageable);
     }
 
     @GetMapping("/{postId}")
