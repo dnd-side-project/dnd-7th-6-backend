@@ -43,8 +43,8 @@ public class TagService {
         return tagEntity;
     }
 
-    public List<TagEntity> getTagByPhotoBoothId(Long photoBoothId) {
-        return tagRepository.findByPhotoBoothId(photoBoothId);
+    public List<TagEntity> getTagByPhotoBoothId(Long photoBoothId, List<TagType> tagTypeList) {
+        return tagRepository.findByPhotoBoothId(photoBoothId, tagTypeList);
     }
     @Transactional(readOnly = true)
     public Page<TagEntity> getTagByKeyword(String keyword, TagType tagType, PageableParam pageable) {

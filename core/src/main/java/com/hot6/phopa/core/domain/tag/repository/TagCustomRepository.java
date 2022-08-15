@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface TagCustomRepository {
-    List<TagEntity> findByPhotoBoothId(Long photoBoothId);
+    List<TagEntity> findByPhotoBoothId(Long photoBoothId, List<TagType> tagTypeList);
 
     Page<TagEntity> getTagByKeyword(String keyword, TagType tagType, PageableParam pageable);
 
