@@ -35,7 +35,8 @@ public enum ApplicationErrorType {
     EXPIRED_TOKEN(HttpStatus.FORBIDDEN, -100010, "expired token"),
     EXPIRED_REFRESH_TOKEN(HttpStatus.FORBIDDEN, -100011, "expired refresh token"),
     ALREADY_NAME(HttpStatus.BAD_REQUEST, -100012, "이미 있는 닉네임입니다. \n 다른 이름으로 수정해주세요."),
-    DIFF_USER(HttpStatus.BAD_REQUEST, -100013, "작성자가 아닙니다.");
+    DIFF_USER(HttpStatus.BAD_REQUEST, -100013, "작성자가 아닙니다."),
+    CANNOT_BE_CREATED_USER(HttpStatus.BAD_REQUEST, -100014, "자신의 글에는 좋아요를 누를 수 없습니다.");
 
 
     @Getter

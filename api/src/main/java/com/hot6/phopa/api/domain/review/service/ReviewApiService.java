@@ -142,8 +142,11 @@ public class ReviewApiService {
 
     public void like(Long reviewImageId) {
         UserDTO userDTO = PrincipleDetail.get();
-        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
+        UserEntity userEntity = userService.findById(userDTO.getId());
         ReviewImageEntity reviewImageEntity = reviewService.getReviewImageById(reviewImageId);
+        if(reviewImageEntity.getReview().getUser().getId().equals(userEntity.getId())){
+            throw new SilentApplicationErrorException(ApplicationErrorType.CANNOT_BE_CREATED_USER);
+        }
         ReviewImageLikeEntity reviewImageLikeEntity = reviewService.getReviewImageLikeByReviewImageIdAndUserId(reviewImageEntity.getId(), userEntity.getId());
         if (reviewImageLikeEntity != null) {
             reviewService.deleteReviewImageLike(reviewImageLikeEntity);
