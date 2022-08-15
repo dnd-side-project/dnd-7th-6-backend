@@ -105,4 +105,11 @@ public class UserApiService {
                 .providerId(userLoginRequest.getProviderId())
                 .build();
     }
+
+    public void vaildName(String name) {
+        UserEntity userEntity = userService.getByName(name);
+        if (userEntity != null) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.ALREADY_NAME);
+        }
+    }
 }
