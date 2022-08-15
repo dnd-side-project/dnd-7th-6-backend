@@ -41,6 +41,9 @@ public class TagEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "photo_booth_count")
     private int photoBoothCount;
 
+    @Column(name = "tag_icon_image_url")
+    private String tagIconImageUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "tag_type")
     private TagType tagType;

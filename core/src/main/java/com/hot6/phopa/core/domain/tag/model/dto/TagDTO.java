@@ -17,5 +17,6 @@ public class TagDTO {
     protected Integer photoBoothCount;
     protected Integer reviewCount;
     protected Integer postCount;
+    protected String tagIconImageUrl;
     protected TagType tagType;
 }
