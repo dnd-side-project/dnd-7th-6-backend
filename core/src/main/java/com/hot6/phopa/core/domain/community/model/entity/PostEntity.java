@@ -39,6 +39,9 @@ public class PostEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "status")
     private Status status;
 
+    @Column(name = "is_public")
+    private Boolean isPublic;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;

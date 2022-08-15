@@ -82,6 +82,7 @@ public class PostApiService {
                 .content(postCreateRequest.getContent())
                 .likeCount(0)
                 .status(Status.ACTIVE)
+                .isPublic(postCreateRequest.getIsPublic())
                 .user(userEntity)
                 .build();
         if (CollectionUtils.isNotEmpty(postCreateRequest.getTagIdList())) {
@@ -125,7 +126,7 @@ public class PostApiService {
     public void fileInvalidCheck(List<MultipartFile> imageList) {
         if (CollectionUtils.isNotEmpty(imageList)) {
             for (MultipartFile file : imageList) {
-                if (Arrays.asList("jpg", "jpeg", "png").contains(FilenameUtils.getExtension(file.getOriginalFilename())) == false) {
+                if (Arrays.asList("jpg", "jpeg", "png", "gif", "JPG", "JPEG", "PNG", "GIF").contains(FilenameUtils.getExtension(file.getOriginalFilename())) == false) {
                     throw new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST);
                 }
             }

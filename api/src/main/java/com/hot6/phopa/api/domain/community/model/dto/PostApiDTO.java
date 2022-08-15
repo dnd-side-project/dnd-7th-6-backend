@@ -27,6 +27,7 @@ public class PostApiDTO {
         Set<PostImageResponse> postImageSet;
         UserApiResponse user;
         boolean isLike;
+        boolean isPublic;
     }
 
     @Getter
@@ -37,6 +38,7 @@ public class PostApiDTO {
         private String title;
         private String content;
         private List<Long> tagIdList;
+        private Boolean isPublic;
 
         public void validCheck() {
             Optional.ofNullable(this.getTitle()).orElseThrow(() -> new ApplicationErrorException(ApplicationErrorType.INVALID_REQUEST));

@@ -14,6 +14,7 @@ public class PostDTO {
     protected String content;
     protected Integer likeCount;
     protected Status status;
+    protected Boolean isPublic;
     protected LocalDateTime createdAt;
     protected LocalDateTime updatedAt;
 }
