@@ -12,5 +12,5 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<PostEntity, Long>, PostCustomRepository {
     List<PostEntity> getAllByUserIdAndStatus(Long userId, Status status);
 
-    Optional<PostEntity> findByIdAndStatus(Long postId, Status status);
+    Optional<PostEntity> findByIdAndStatusAndAndIsPublic(Long postId, Status status, Boolean isPublic);
 }
