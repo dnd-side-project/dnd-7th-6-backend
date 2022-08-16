@@ -31,6 +31,7 @@ import com.hot6.phopa.core.security.config.PrincipleDetail;
 import com.hot6.phopa.core.security.jwt.JwtToken;
 import com.hot6.phopa.core.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,13 +55,6 @@ public class UserApiService {
     private final UserApiMapper userApiMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-
-    public UserLikeResponse getLikeResponse() {
-        UserDTO userDTO = PrincipleDetail.get();
-        List<PhotoBoothEntity> photoBoothEntityList = photoBoothService.findAllByUserLike(userDTO.getId());
-        List<PostEntity> postEntityList = postService.findAllByUserLike(userDTO.getId());
-        return UserLikeResponse.of(photoBoothMapper.toDtoList(photoBoothEntityList), postApiMapper.toDtoList(postEntityList));
-    }
 
     public UserListResponse getUserListResponse() {
         UserDTO userDTO = PrincipleDetail.get();
@@ -110,6 +104,12 @@ public class UserApiService {
         return userLikeImageResponseList.stream().sorted(Comparator.comparing(UserLikeImageResponse::getCreatedAt).reversed()).collect(Collectors.toList());
     }
 
+
+    public List<UserLikePhotoBoothResponse> getLikePhotoBoothResponse() {
+        UserDTO userDTO = PrincipleDetail.get();
+        return photoBoothService.findAllByUserLike(userDTO.getId()).stream().map(photoBooth -> convertToUserLikePhotoBoothResponse(photoBooth)).sorted(Comparator.comparing(UserLikePhotoBoothResponse::getCreatedAt)).collect(Collectors.toList());
+    }
+
     public JwtToken login(UserLoginRequest userLoginRequest) {
         UserEntity userEntity = userService.getUser(userLoginRequest.getEmail());
         if (userEntity == null) {
@@ -139,10 +139,24 @@ public class UserApiService {
         }
     }
 
-    public UserLikeImageResponse convertToUserLikeImageResponse(PostImageEntity postImageEntity){
+    private UserLikeImageResponse convertToUserLikeImageResponse(PostImageEntity postImageEntity){
         return UserLikeImageResponse.of(postImageEntity.getPost().getId(), UserLikeType.POST, S3UrlUtil.convertToS3Url(postImageEntity.getImageUrl()), postImageEntity.getCreatedAt(), true);
     }
-    public UserLikeImageResponse convertToUserLikeImageResponse(ReviewImageEntity reviewImageEntity){
+    private UserLikeImageResponse convertToUserLikeImageResponse(ReviewImageEntity reviewImageEntity){
         return UserLikeImageResponse.of(reviewImageEntity.getReview().getId(), UserLikeType.REVIEW, S3UrlUtil.convertToS3Url(reviewImageEntity.getImageUrl()), reviewImageEntity.getCreatedAt(), true);
+    }
+
+    private UserLikePhotoBoothResponse convertToUserLikePhotoBoothResponse(PhotoBoothEntity photoBooth) {
+        UserLikePhotoBoothResponse userLikePhotoBoothResponse = userApiMapper.toDto(photoBooth);
+        userLikePhotoBoothResponse.setLike(true);
+        userLikePhotoBoothResponse.setCreatedAt(photoBooth.getCreatedAt());
+        ReviewImageEntity reviewImageEntity = photoBooth.getReviewSet().stream()
+                .filter(review -> CollectionUtils.isNotEmpty(review.getReviewImageSet()))
+                .map(review-> review.getReviewImageSet().stream().findFirst().orElse(null))
+                .findFirst().orElse(null);
+        if(reviewImageEntity != null){
+            userLikePhotoBoothResponse.setImageUrl(S3UrlUtil.convertToS3Url(reviewImageEntity.getImageUrl()));
+        }
+        return userLikePhotoBoothResponse;
     }
 }

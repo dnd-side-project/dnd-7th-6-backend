@@ -28,16 +28,17 @@ public class UserController {
     public UserApiResponse getUserDto(){
         return userApiService.getUserDto();
     }
-    @GetMapping("/like")
-    public UserLikeResponse getLikeResponse(
-    ) {
-        return userApiService.getLikeResponse();
-    }
-
+    
     @GetMapping("/like/image")
     public List<UserLikeImageResponse> getLikeImageResponse(
     ) {
         return userApiService.getLikeImageResponse();
+    }
+
+    @GetMapping("/like/photo-booth")
+    public List<UserLikePhotoBoothResponse> getLikePhotoBoothResponse(
+    ) {
+        return userApiService.getLikePhotoBoothResponse();
     }
 
     @GetMapping("/list")
@@ -61,11 +62,6 @@ public class UserController {
         return ResponseEntity.ok("pass valid check");
     }
 
-    @GetMapping("/token/eㅛㅡㅓㅜ" +
-            "xpired")
-    public String auth() {
-        throw new SilentApplicationErrorException(ApplicationErrorType.EXPIRED_TOKEN);
-    }
 
     @GetMapping("/token/refresh")
     public String refreshAuth(HttpServletRequest request, HttpServletResponse response) {

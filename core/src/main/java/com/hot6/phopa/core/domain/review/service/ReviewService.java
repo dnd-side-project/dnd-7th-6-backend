@@ -82,4 +82,8 @@ public class ReviewService {
     public Page<ReviewImageEntity> getReviewImageByPhotoBoothId(Long photoBoothId, PageableParam pageable) {
         return reviewImageRepository.findAllByPhotoBoothId(photoBoothId, pageable);
     }
+
+    public List<ReviewImageEntity> getReviewImageByUserId(Long userId) {
+        return reviewImageRepository.findAllByUserLike(userId);
+    }
 }
