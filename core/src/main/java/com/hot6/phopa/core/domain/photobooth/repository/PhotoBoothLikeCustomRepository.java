@@ -7,4 +7,6 @@ import java.util.Map;
 
 public interface PhotoBoothLikeCustomRepository {
     List<PhotoBoothLikeEntity> findAllByPhotoBoothIdListAndUserId(List<Long> photoBoothIdList, Long userId);
+
+    List<PhotoBoothLikeEntity> findAllByUserId(Long userId);
 }

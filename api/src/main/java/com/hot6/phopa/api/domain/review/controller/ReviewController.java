@@ -37,7 +37,7 @@ public class ReviewController {
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ReviewApiResponse createPhotoBoothReview(
             @RequestPart ReviewCreateRequest reviewCreateRequest,
-            @RequestPart List<MultipartFile> reviewImageList
+            @RequestPart(required = false) List<MultipartFile> reviewImageList
     ) {
         return reviewService.createReview(reviewCreateRequest, reviewImageList);
     }

@@ -1,6 +1,7 @@
 package com.hot6.phopa.api.domain.user.model.dto;
 
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO;
+import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.PostApiResponse;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
 import com.hot6.phopa.api.domain.user.model.enumeration.UserLikeType;
 import com.hot6.phopa.core.domain.photobooth.model.dto.PhotoBoothDTO;
@@ -22,8 +23,8 @@ public class UserApiDTO {
     @Setter
     @AllArgsConstructor(staticName = "of")
     public static class UserLikeResponse {
-        List<PhotoBoothDTO> photoBoothList;
-        List<PostApiDTO.PostApiResponse> postList;
+        List<UserLikeImageResponse> imageList;
+        List<UserLikePhotoBoothResponse> photoBoothList;
     }
 
     @Getter
@@ -52,7 +53,7 @@ public class UserApiDTO {
     @AllArgsConstructor(staticName = "of")
     public static class UserListResponse {
         List<ReviewApiResponse> reviewList;
-        List<PostApiDTO.PostApiResponse> postList;
+        List<PostApiResponse> postList;
     }
 
     @Getter

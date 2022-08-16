@@ -31,4 +31,13 @@ public class PhotoBoothLikeCustomRepositoryImpl extends QuerydslRepositorySuppor
                 .where(photoBoothEntity.id.in(photoBoothIdList).and(userEntity.id.eq(userId)))
                 .fetch();
     }
+
+    @Override
+    public List<PhotoBoothLikeEntity> findAllByUserId(Long userId) {
+        return from(photoBoothLikeEntity)
+                .join(photoBoothLikeEntity.photoBooth, photoBoothEntity).fetchJoin()
+                .join(photoBoothLikeEntity.user, userEntity).fetchJoin()
+                .where(userEntity.id.eq(userId))
+                .fetch();
+    }
 }

@@ -92,9 +92,12 @@ public class PhotoBoothService {
     public List<PhotoBoothLikeEntity> getPhotoBoothLikeByPhotoBoothIdListAndUserId(List<Long> photoBoothIdList, Long userId) {
         return photoBoothLikeRepository.findAllByPhotoBoothIdListAndUserId(photoBoothIdList, userId);
     }
-
+    @Transactional(readOnly = true)
     public List<PhotoBoothEntity> findAllByUserLike(Long userId) {
         return photoBoothRepository.findAllByUserLike(userId);
     }
-
+    @Transactional(readOnly = true)
+    public List<PhotoBoothLikeEntity> findPhotoBoothLikeByUserId(Long userId) {
+        return photoBoothLikeRepository.findAllByUserId(userId);
+    }
 }
