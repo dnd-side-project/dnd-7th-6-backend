@@ -10,4 +10,6 @@ public interface ReviewImageCustomRepository {
     List<ReviewImageEntity> findByPhotoBoothIdAndLimit(Long photoBoothId, int limitSize);
 
     Page<ReviewImageEntity> findAllByPhotoBoothId(Long photoBoothId, PageableParam pageable);
+
+    List<ReviewImageEntity> findAllByUserLike(Long userId);
 }

@@ -12,6 +12,9 @@ import java.util.List;
 public interface ReviewImageLikeRepository extends JpaRepository<ReviewImageLikeEntity, Long> {
     ReviewImageLikeEntity findOneByReviewImageIdAndUserId(Long reviewImageId, Long userId);
 
-    @Query("SELECT reviewImageLike FROM ReviewImageLikeEntity reviewImageLike where reviewImageLike.user.id = :userId and reviewImageLike.reviewImage.id in :reviewImageIdList")
+    @Query("SELECT reviewImageLike FROM ReviewImageLikeEntity reviewImageLike where reviewImageLike.user.id = :userId and reviewImageLike.reviewImage.id in :reviewImageIdList and reviewImageLike.reviewImage.review.status = 'ACTIVE'")
     List<ReviewImageLikeEntity> findAllByReviewImageIdsAndUserId(@Param("reviewImageIdList") List<Long> reviewImageIdList, @Param("userId") Long userId);
+
+    @Query("SELECT reviewImageLike FROM ReviewImageLikeEntity reviewImageLike where reviewImageLike.user.id = :userId and reviewImageLike.reviewImage.review.status = 'ACTIVE'")
+    List<ReviewImageLikeEntity> findAllByUserId(@Param("userId") Long userId);
 }

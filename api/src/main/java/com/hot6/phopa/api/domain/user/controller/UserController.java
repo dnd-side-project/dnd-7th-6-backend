@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -27,10 +28,17 @@ public class UserController {
     public UserApiResponse getUserDto(){
         return userApiService.getUserDto();
     }
-    @GetMapping("/like")
-    public UserLikeResponse getLikeResponse(
+    
+    @GetMapping("/like/image")
+    public List<UserLikeImageResponse> getLikeImageResponse(
     ) {
-        return userApiService.getLikeResponse();
+        return userApiService.getLikeImageResponse();
+    }
+
+    @GetMapping("/like/photo-booth")
+    public List<UserLikePhotoBoothResponse> getLikePhotoBoothResponse(
+    ) {
+        return userApiService.getLikePhotoBoothResponse();
     }
 
     @GetMapping("/list")
@@ -54,10 +62,6 @@ public class UserController {
         return ResponseEntity.ok("pass valid check");
     }
 
-    @GetMapping("/token/expired")
-    public String auth() {
-        throw new SilentApplicationErrorException(ApplicationErrorType.EXPIRED_TOKEN);
-    }
 
     @GetMapping("/token/refresh")
     public String refreshAuth(HttpServletRequest request, HttpServletResponse response) {

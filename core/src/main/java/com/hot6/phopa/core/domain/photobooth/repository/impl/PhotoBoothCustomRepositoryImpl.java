@@ -69,7 +69,7 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
         return from(photoBoothEntity)
                 .join(photoBoothEntity.photoBoothLikeSet, photoBoothLikeEntity).fetchJoin()
                 .join(photoBoothLikeEntity.user, userEntity).fetchJoin()
-                .where(userEntity.id.eq(userId).and(userEntity.status.eq(UserStatus.ACTIVE)))
+                .where(userEntity.id.eq(userId).and(photoBoothEntity.status.eq(Status.ACTIVE)))
                 .fetch();
     }
 

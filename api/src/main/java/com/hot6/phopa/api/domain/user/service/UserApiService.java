@@ -4,17 +4,23 @@ import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
 import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.*;
+import com.hot6.phopa.api.domain.user.model.enumeration.UserLikeType;
 import com.hot6.phopa.api.domain.user.model.mapper.UserApiMapper;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.service.PrincipleDetailService;
+import com.hot6.phopa.core.common.utils.S3UrlUtil;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
+import com.hot6.phopa.core.domain.community.model.entity.PostImageEntity;
+import com.hot6.phopa.core.domain.community.model.entity.PostLikeEntity;
 import com.hot6.phopa.core.domain.community.service.PostService;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.model.mapper.PhotoBoothMapper;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
+import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
+import com.hot6.phopa.core.domain.review.model.entity.ReviewImageLikeEntity;
 import com.hot6.phopa.core.domain.review.service.ReviewService;
 import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
@@ -25,11 +31,15 @@ import com.hot6.phopa.core.security.config.PrincipleDetail;
 import com.hot6.phopa.core.security.jwt.JwtToken;
 import com.hot6.phopa.core.security.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,13 +55,6 @@ public class UserApiService {
     private final UserApiMapper userApiMapper;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-
-    public UserLikeResponse getLikeResponse() {
-        UserDTO userDTO = PrincipleDetail.get();
-        List<PhotoBoothEntity> photoBoothEntityList = photoBoothService.findAllByUserLike(userDTO.getId());
-        List<PostEntity> postEntityList = postService.findAllByUserLike(userDTO.getId());
-        return UserLikeResponse.of(photoBoothMapper.toDtoList(photoBoothEntityList), postApiMapper.toDtoList(postEntityList));
-    }
 
     public UserListResponse getUserListResponse() {
         UserDTO userDTO = PrincipleDetail.get();
@@ -78,10 +81,33 @@ public class UserApiService {
 
     public void inactiveUser() {
         UserDTO userDTO = PrincipleDetail.get();
-        UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
+        UserEntity userEntity = userService.findById(userDTO.getId()) ;
         postService.findAllByUserId(userEntity.getId()).forEach(post -> post.updateStatus(Status.INACTIVE));
         reviewService.findAllByUserId(userEntity.getId()).forEach(review -> review.updateStatus(Status.INACTIVE));
         userEntity.updateStatus(UserStatus.INACTIVE);
+    }
+
+
+    public List<UserLikeImageResponse> getLikeImageResponse() {
+        UserDTO userDTO = PrincipleDetail.get();
+        List<UserLikeImageResponse> userLikeImageResponseList = new ArrayList<>();
+        userLikeImageResponseList.addAll(
+                postService.getPostImageByUserLike(userDTO.getId())
+                        .stream().map(postImage -> convertToUserLikeImageResponse(postImage))
+                        .collect(Collectors.toList())
+        );
+        userLikeImageResponseList.addAll(
+                reviewService.getReviewImageByUserId(userDTO.getId())
+                        .stream().map(reviewImage -> convertToUserLikeImageResponse(reviewImage))
+                        .collect(Collectors.toList())
+        );
+        return userLikeImageResponseList.stream().sorted(Comparator.comparing(UserLikeImageResponse::getCreatedAt).reversed()).collect(Collectors.toList());
+    }
+
+
+    public List<UserLikePhotoBoothResponse> getLikePhotoBoothResponse() {
+        UserDTO userDTO = PrincipleDetail.get();
+        return photoBoothService.findAllByUserLike(userDTO.getId()).stream().map(photoBooth -> convertToUserLikePhotoBoothResponse(photoBooth)).sorted(Comparator.comparing(UserLikePhotoBoothResponse::getCreatedAt)).collect(Collectors.toList());
     }
 
     public JwtToken login(UserLoginRequest userLoginRequest) {
@@ -111,5 +137,26 @@ public class UserApiService {
         if (userEntity != null) {
             throw new SilentApplicationErrorException(ApplicationErrorType.ALREADY_NAME);
         }
+    }
+
+    private UserLikeImageResponse convertToUserLikeImageResponse(PostImageEntity postImageEntity){
+        return UserLikeImageResponse.of(postImageEntity.getPost().getId(), UserLikeType.POST, S3UrlUtil.convertToS3Url(postImageEntity.getImageUrl()), postImageEntity.getCreatedAt(), true);
+    }
+    private UserLikeImageResponse convertToUserLikeImageResponse(ReviewImageEntity reviewImageEntity){
+        return UserLikeImageResponse.of(reviewImageEntity.getReview().getId(), UserLikeType.REVIEW, S3UrlUtil.convertToS3Url(reviewImageEntity.getImageUrl()), reviewImageEntity.getCreatedAt(), true);
+    }
+
+    private UserLikePhotoBoothResponse convertToUserLikePhotoBoothResponse(PhotoBoothEntity photoBooth) {
+        UserLikePhotoBoothResponse userLikePhotoBoothResponse = userApiMapper.toDto(photoBooth);
+        userLikePhotoBoothResponse.setLike(true);
+        userLikePhotoBoothResponse.setCreatedAt(photoBooth.getCreatedAt());
+        ReviewImageEntity reviewImageEntity = photoBooth.getReviewSet().stream()
+                .filter(review -> CollectionUtils.isNotEmpty(review.getReviewImageSet()))
+                .map(review-> review.getReviewImageSet().stream().findFirst().orElse(null))
+                .findFirst().orElse(null);
+        if(reviewImageEntity != null){
+            userLikePhotoBoothResponse.setImageUrl(S3UrlUtil.convertToS3Url(reviewImageEntity.getImageUrl()));
+        }
+        return userLikePhotoBoothResponse;
     }
 }
