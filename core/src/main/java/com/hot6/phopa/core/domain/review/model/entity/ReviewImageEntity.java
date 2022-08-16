@@ -6,6 +6,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -33,6 +34,9 @@ public class ReviewImageEntity extends BaseTimeEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "review_id", nullable = false)
     private ReviewEntity review;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "reviewImage", orphanRemoval = true)
+    private Set<ReviewImageLikeEntity> reviewImageLikeSet;
 
     public void updateLikeCount(int count) {
         this.likeCount += count;

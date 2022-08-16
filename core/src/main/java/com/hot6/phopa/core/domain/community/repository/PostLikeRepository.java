@@ -11,6 +11,9 @@ import java.util.List;
 @Repository
 public interface PostLikeRepository extends JpaRepository<PostLikeEntity, Long> {
     PostLikeEntity findOneByPostIdAndUserId(Long postId, Long userId);
-    @Query("SELECT postLike FROM PostLikeEntity postLike where postLike.user.id = :userId and postLike.post.id in :postIdList")
+    @Query("SELECT postLike FROM PostLikeEntity postLike where postLike.user.id = :userId and postLike.post.id in :postIdList and postLike.post.status = 'ACTIVE'")
     List<PostLikeEntity> findAllByPostIdsAndUserId(@Param("postIdList") List<Long> postIdList, @Param("userId") Long userId);
+
+    @Query("SELECT postLike FROM PostLikeEntity postLike where postLike.user.id = :userId and postLike.post.status = 'ACTIVE'")
+    List<PostLikeEntity> findAllByUserId(@Param("userId") Long userId);
 }

@@ -6,7 +6,9 @@ import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.community.enumeration.OrderType;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
+import com.hot6.phopa.core.domain.community.model.entity.PostImageEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostLikeEntity;
+import com.hot6.phopa.core.domain.community.repository.PostImageRepository;
 import com.hot6.phopa.core.domain.community.repository.PostLikeRepository;
 import com.hot6.phopa.core.domain.community.repository.PostRepository;
 import com.hot6.phopa.core.domain.tag.repository.TagRepository;
@@ -24,8 +26,9 @@ import java.util.Set;
 @Transactional
 public class PostService {
     private final PostRepository postRepository;
-    private final TagRepository tagRepository;
     private final PostLikeRepository postLikeRepository;
+
+    private final PostImageRepository postImageRepository;
 
     @Transactional(readOnly = true)
     public Page<PostEntity> getPosts(Long userId, Long photoBoothId, PageableParam pageable) {
@@ -68,5 +71,13 @@ public class PostService {
 
     public List<PostLikeEntity> getPostLikeByPostIdsAndUserId(List<Long> postIdList, Long userId) {
         return postLikeRepository.findAllByPostIdsAndUserId(postIdList, userId);
+    }
+
+    public List<PostLikeEntity> getPostLikeBydUserId(Long userId) {
+        return postLikeRepository.findAllByUserId(userId);
+    }
+
+    public List<PostImageEntity> getPostImageByUserLike(Long userId) {
+        return postImageRepository.findPostImageByUserLike(userId);
     }
 }
