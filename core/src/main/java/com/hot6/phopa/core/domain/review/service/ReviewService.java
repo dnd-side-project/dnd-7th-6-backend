@@ -65,11 +65,11 @@ public class ReviewService {
     public List<ReviewEntity> findAllByUserId(Long userId) {
         return reviewRepository.findAllByUserIdAndStatus(userId, Status.ACTIVE);
     }
-
+    @Transactional(readOnly = true)
     public List<ReviewImageEntity> getReviewImageByPhotoBoothId(Long photoBoothId, int limitSize) {
         return reviewImageRepository.findByPhotoBoothIdAndLimit(photoBoothId, limitSize);
     }
-
+    @Transactional(readOnly = true)
     public ReviewImageEntity getReviewImageById(Long reviewImageId) {
         return reviewImageRepository.findById(reviewImageId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
@@ -79,10 +79,15 @@ public class ReviewService {
         return reviewImageLikeRepository.findOneByReviewImageIdAndUserId(reviewImageId, userId);
     }
 
+    @Transactional(readOnly = true)
+    public List<ReviewImageLikeEntity> getReviewImageLikeByUserId(Long userId) {
+        return reviewImageLikeRepository.findAllByUserId(userId);
+    }
+    @Transactional(readOnly = true)
     public Page<ReviewImageEntity> getReviewImageByPhotoBoothId(Long photoBoothId, PageableParam pageable) {
         return reviewImageRepository.findAllByPhotoBoothId(photoBoothId, pageable);
     }
-
+    @Transactional(readOnly = true)
     public List<ReviewImageEntity> getReviewImageByUserId(Long userId) {
         return reviewImageRepository.findAllByUserLike(userId);
     }

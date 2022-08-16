@@ -1,5 +1,6 @@
 package com.hot6.phopa.api.domain.user.controller;
 
+import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.*;
 import com.hot6.phopa.api.domain.user.service.UserApiService;
@@ -28,7 +29,11 @@ public class UserController {
     public UserApiResponse getUserDto(){
         return userApiService.getUserDto();
     }
-    
+
+    @GetMapping("/like")
+    public UserLikeResponse getUserLikeResponse(){
+        return userApiService.getUserLikeResponse();
+    }
     @GetMapping("/like/image")
     public List<UserLikeImageResponse> getLikeImageResponse(
     ) {
