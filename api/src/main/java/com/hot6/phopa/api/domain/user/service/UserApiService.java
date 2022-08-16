@@ -107,7 +107,7 @@ public class UserApiService {
 
     public List<UserLikePhotoBoothResponse> getLikePhotoBoothResponse() {
         UserDTO userDTO = PrincipleDetail.get();
-        return photoBoothService.findAllByUserLike(userDTO.getId()).stream().map(photoBooth -> convertToUserLikePhotoBoothResponse(photoBooth)).sorted(Comparator.comparing(UserLikePhotoBoothResponse::getCreatedAt)).collect(Collectors.toList());
+        return photoBoothService.findAllByUserLike(userDTO.getId()).stream().map(photoBooth -> convertToUserLikePhotoBoothResponse(photoBooth)).sorted(Comparator.comparing(UserLikePhotoBoothResponse::getCreatedAt).reversed()).collect(Collectors.toList());
     }
 
     public JwtToken login(UserLoginRequest userLoginRequest) {
