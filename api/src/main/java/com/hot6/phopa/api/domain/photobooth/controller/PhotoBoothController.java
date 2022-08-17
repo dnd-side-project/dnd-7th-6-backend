@@ -68,10 +68,10 @@ public class PhotoBoothController {
     }
 
     @PostMapping("/{photoBoothId}/like")
-    public void like(
+    public ResponseEntity like(
             @PathVariable Long photoBoothId
     ){
-        photoBoothService.like(photoBoothId);
+        return ResponseEntity.ok(photoBoothService.like(photoBoothId));
     }
 
     @GetMapping("/filter")

@@ -4,6 +4,7 @@ import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.*;
 import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
+import com.hot6.phopa.core.common.enumeration.LikeType;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
@@ -138,7 +139,7 @@ public class PostApiService {
         }
     }
 
-    public void like(Long postId) {
+    public LikeType like(Long postId) {
         UserDTO userDTO = PrincipleDetail.get();
         UserEntity userEntity = userService.findById(userDTO.getId());
         PostEntity postEntity = postService.getPostById(postId);
@@ -149,6 +150,7 @@ public class PostApiService {
         if (postLikeEntity != null) {
             postService.deletePostLikeEntity(postLikeEntity);
             postEntity.updateLikeCount(-1);
+            return LikeType.UNLIKE;
         } else {
             postLikeEntity = PostLikeEntity.builder()
                     .post(postEntity)
@@ -156,6 +158,7 @@ public class PostApiService {
                     .build();
             postService.createPostLikeEntity(postLikeEntity);
             postEntity.updateLikeCount(1);
+            return LikeType.LIKE;
         }
     }
 

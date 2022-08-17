@@ -2,6 +2,7 @@ package com.hot6.phopa.api.domain.review.service;
 
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.*;
 import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
+import com.hot6.phopa.core.common.enumeration.LikeType;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
@@ -141,7 +142,7 @@ public class ReviewApiService {
         }
     }
 
-    public void like(Long reviewImageId) {
+    public LikeType like(Long reviewImageId) {
         UserDTO userDTO = PrincipleDetail.get();
         UserEntity userEntity = userService.findById(userDTO.getId());
         ReviewImageEntity reviewImageEntity = reviewService.getReviewImageById(reviewImageId);
@@ -152,6 +153,7 @@ public class ReviewApiService {
         if (reviewImageLikeEntity != null) {
             reviewService.deleteReviewImageLike(reviewImageLikeEntity);
             reviewImageEntity.updateLikeCount(-1);
+            return LikeType.UNLIKE;
         } else {
             reviewImageLikeEntity = ReviewImageLikeEntity.builder()
                     .reviewImage(reviewImageEntity)
@@ -159,6 +161,7 @@ public class ReviewApiService {
                     .build();
             reviewService.createReviewImageLikeEntity(reviewImageLikeEntity);
             reviewImageEntity.updateLikeCount(1);
+            return LikeType.LIKE;
         }
     }
 
