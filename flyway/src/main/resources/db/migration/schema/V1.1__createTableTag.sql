@@ -17,4 +17,4 @@ CREATE TABLE `tag` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='태그 테이블';
 create unique index tag_keyword_tag_type_uindex
-    on tag (keyword, tag_type);
+    on tag (tag_type, keyword);

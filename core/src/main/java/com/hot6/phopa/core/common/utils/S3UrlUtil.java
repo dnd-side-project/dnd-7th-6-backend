@@ -1,6 +1,7 @@
 package com.hot6.phopa.core.common.utils;
 
 import com.hot6.phopa.core.common.service.S3UploadService;
+import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +36,13 @@ public class S3UrlUtil {
         }
 
         return s3StaticUploadService.generatePreSignedURL(path);
+    }
+
+    public static String convertToS3Url(ReviewImageEntity reviewImageEntity) {
+        if (reviewImageEntity == null){
+            return null;
+        }
+        return convertToS3Url(reviewImageEntity.getImageUrl());
     }
 
     public static String convertToS3Url(String path, int expirationHour) {

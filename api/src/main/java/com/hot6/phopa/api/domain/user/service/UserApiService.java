@@ -2,14 +2,12 @@ package com.hot6.phopa.api.domain.user.service;
 
 import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
 import com.hot6.phopa.api.domain.review.model.mapper.ReviewApiMapper;
-import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.*;
 import com.hot6.phopa.api.domain.user.model.enumeration.UserLikeType;
 import com.hot6.phopa.api.domain.user.model.mapper.UserApiMapper;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.model.type.Status;
-import com.hot6.phopa.core.common.service.PrincipleDetailService;
 import com.hot6.phopa.core.common.utils.S3UrlUtil;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostImageEntity;
@@ -82,7 +80,7 @@ public class UserApiService {
 
     public void inactiveUser() {
         UserDTO userDTO = PrincipleDetail.get();
-        UserEntity userEntity = userService.findById(userDTO.getId()) ;
+        UserEntity userEntity = userService.findById(userDTO.getId());
         postService.findAllByUserId(userEntity.getId()).forEach(post -> post.updateStatus(Status.INACTIVE));
         reviewService.findAllByUserId(userEntity.getId()).forEach(review -> review.updateStatus(Status.INACTIVE));
         userEntity.updateStatus(UserStatus.INACTIVE);
@@ -148,18 +146,18 @@ public class UserApiService {
         }
     }
 
-    private UserLikeImageResponse convertToUserLikeImageResponse(PostLikeEntity postLikeEntity){
+    private UserLikeImageResponse convertToUserLikeImageResponse(PostLikeEntity postLikeEntity) {
         PostEntity postEntity = postLikeEntity.getPost();
         //postImage는 필수값이기 때문에 findFirst get 가능
         PostImageEntity postImageEntity = postEntity.getPostImageSet().stream().findFirst().get();
         return UserLikeImageResponse.of(postImageEntity.getPost().getId(), UserLikeType.POST, S3UrlUtil.convertToS3Url(postImageEntity.getImageUrl()), postEntity.getCreatedAt(), true);
     }
 
-    private UserLikeImageResponse convertToUserLikeImageResponse(ReviewImageLikeEntity reviewImageLikeEntity){
+    private UserLikeImageResponse convertToUserLikeImageResponse(ReviewImageLikeEntity reviewImageLikeEntity) {
         ReviewImageEntity reviewImageEntity = reviewImageLikeEntity.getReviewImage();
         return UserLikeImageResponse.of(reviewImageEntity.getReview().getId(), UserLikeType.REVIEW, S3UrlUtil.convertToS3Url(reviewImageEntity.getImageUrl()), reviewImageLikeEntity.getCreatedAt(), true);
     }
-    
+
 
     private UserLikePhotoBoothResponse convertToUserLikePhotoBoothResponse(PhotoBoothLikeEntity photoBoothLikeEntity) {
         PhotoBoothEntity photoBoothEntity = photoBoothLikeEntity.getPhotoBooth();
@@ -168,9 +166,9 @@ public class UserApiService {
         userLikePhotoBoothResponse.setCreatedAt(photoBoothLikeEntity.getCreatedAt());
         ReviewImageEntity reviewImageEntity = photoBoothEntity.getReviewSet().stream()
                 .filter(review -> CollectionUtils.isNotEmpty(review.getReviewImageSet()))
-                .map(review-> review.getReviewImageSet().stream().findFirst().orElse(null))
+                .map(review -> review.getReviewImageSet().stream().findFirst().orElse(null))
                 .findFirst().orElse(null);
-        if(reviewImageEntity != null){
+        if (reviewImageEntity != null) {
             userLikePhotoBoothResponse.setImageUrl(S3UrlUtil.convertToS3Url(reviewImageEntity.getImageUrl()));
         }
         return userLikePhotoBoothResponse;

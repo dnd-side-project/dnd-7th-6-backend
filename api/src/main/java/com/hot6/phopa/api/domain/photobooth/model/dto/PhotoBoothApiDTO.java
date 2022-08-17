@@ -1,5 +1,7 @@
 package com.hot6.phopa.api.domain.photobooth.model.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.ReviewApiResponse;
 import com.hot6.phopa.core.domain.photobooth.model.dto.PhotoBoothDTO;
 import com.hot6.phopa.core.domain.tag.enumeration.TagType;
@@ -17,7 +19,9 @@ public class PhotoBoothApiDTO {
     @Getter
     @Setter
     @AllArgsConstructor
+    @NoArgsConstructor
     public static class PhotoBoothApiResponse extends PhotoBoothDTO{
+        String imageUrl;
     }
     @AllArgsConstructor(staticName = "of")
     @NoArgsConstructor

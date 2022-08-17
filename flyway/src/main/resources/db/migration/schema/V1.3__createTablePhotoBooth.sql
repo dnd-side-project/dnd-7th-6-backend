@@ -16,6 +16,7 @@ CREATE TABLE `photo_booth` (
   `star_score` float NOT NULL default 0 COMMENT '평균 별점',
   `total_star_score` float NOT NULL default 0 COMMENT '총 별점',
   `tag_id` bigint NOT NULL COMMENT 'tag id',
+  `review_image_id` bigint COMMENT 'review 대표 image',
   `status` varchar(100) default 'ACTIVE' NOT NULL COMMENT '상태값',
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
   `updated_at` datetime NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
