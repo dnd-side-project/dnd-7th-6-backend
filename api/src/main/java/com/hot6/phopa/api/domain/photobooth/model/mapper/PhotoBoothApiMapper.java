@@ -16,6 +16,7 @@ public abstract class PhotoBoothApiMapper {
     @Mapping(source = "photoBoothEntity.roadAddress", target = "roadAddress")
     @Mapping(source = "photoBoothEntity.latitude", target = "latitude")
     @Mapping(source = "photoBoothEntity.longitude", target = "longitude")
+    @Mapping(target = "imageUrl", expression = "java(com.hot6.phopa.core.common.utils.S3UrlUtil.convertToS3Url(photoBoothEntity.getReviewImage()))")
     public abstract PhotoBoothApiResponse toDto(PhotoBoothEntity photoBoothEntity);
 
     public abstract List<PhotoBoothApiResponse> toDtoList(List<PhotoBoothEntity> photoBoothEntityList);

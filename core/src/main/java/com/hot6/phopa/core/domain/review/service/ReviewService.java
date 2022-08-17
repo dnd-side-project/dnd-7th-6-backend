@@ -41,7 +41,7 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public ReviewEntity getReviewById(Long reviewId) {
-        return reviewRepository.findById(reviewId).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
+        return reviewRepository.findByIdAndStatus(reviewId, Status.ACTIVE).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
 
     public ReviewImageLikeEntity createReviewImageLikeEntity(ReviewImageLikeEntity reviewImageLikeEntity) {

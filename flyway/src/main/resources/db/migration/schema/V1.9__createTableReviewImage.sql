@@ -14,3 +14,4 @@ CREATE TABLE `review_image` (
   PRIMARY KEY (`id`),
   FOREIGN KEY (review_id) REFERENCES review(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='포토부스 리뷰 이미지 테이블';
+ALTER TABLE photo_booth ADD FOREIGN KEY (review_image_id) REFERENCES review_image(id);

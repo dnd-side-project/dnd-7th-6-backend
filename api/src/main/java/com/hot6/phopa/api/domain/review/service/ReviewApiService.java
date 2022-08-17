@@ -116,6 +116,9 @@ public class ReviewApiService {
                                     .likeCount(0)
                                     .build()
                     );
+                    if (photoBoothEntity.getReviewImage() == null) {
+                        photoBoothEntity.updateReviewImage(reviewImageEntitySet.stream().findFirst().get());
+                    }
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());
@@ -126,7 +129,6 @@ public class ReviewApiService {
         cacheService.del(CacheKeyEntity.valueKey(CacheType.PhotoBoothById, reviewEntity.getPhotoBooth().getId()));
         return reviewApiMapper.toDto(reviewService.createReview(reviewEntity));
     }
-
 
 
     public void fileInvalidCheck(List<MultipartFile> imageList) {
@@ -143,7 +145,7 @@ public class ReviewApiService {
         UserDTO userDTO = PrincipleDetail.get();
         UserEntity userEntity = userService.findById(userDTO.getId());
         ReviewImageEntity reviewImageEntity = reviewService.getReviewImageById(reviewImageId);
-        if(reviewImageEntity.getReview().getUser().getId().equals(userEntity.getId())){
+        if (reviewImageEntity.getReview().getUser().getId().equals(userEntity.getId())) {
             throw new SilentApplicationErrorException(ApplicationErrorType.CANNOT_BE_CREATED_USER);
         }
         ReviewImageLikeEntity reviewImageLikeEntity = reviewService.getReviewImageLikeByReviewImageIdAndUserId(reviewImageEntity.getId(), userEntity.getId());
@@ -179,12 +181,17 @@ public class ReviewApiService {
             throw new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA);
         }
         ReviewEntity reviewEntity = reviewService.getReviewById(reviewId);
+        PhotoBoothEntity photoBoothEntity = reviewEntity.getPhotoBooth();
         if (reviewEntity.getUser().getId() != userEntity.getId()) {
             throw new SilentApplicationErrorException(ApplicationErrorType.DIFF_USER);
         }
-        reviewEntity.getPhotoBooth().updateReviewCount(-1);
-        reviewEntity.getPhotoBooth().updateStarScore(reviewEntity.getPhotoBooth().getTotalStarScore() - reviewEntity.getStarScore());
+        if (photoBoothEntity.getReviewImage() != null && reviewEntity.getReviewImageSet().contains(photoBoothEntity.getReviewImage())) {
+            reviewEntity.getPhotoBooth().updateReviewImage(null);
+        }
+        photoBoothEntity.updateReviewCount(-1);
+        photoBoothEntity.updateStarScore(photoBoothEntity.getTotalStarScore() - reviewEntity.getStarScore());
         reviewEntity.updateStatus(Status.INACTIVE);
+        cacheService.del(CacheKeyEntity.valueKey(CacheType.PhotoBoothById, reviewEntity.getPhotoBooth().getId()));
     }
 
     public ReviewApiResponse modifyReview(Long reviewId, ReviewUpdateRequest reviewUpdateRequest, List<MultipartFile> reviewImageList) {
@@ -195,6 +202,7 @@ public class ReviewApiService {
             throw new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA);
         }
         ReviewEntity reviewEntity = reviewService.getReviewById(reviewId);
+        PhotoBoothEntity photoBoothEntity = reviewEntity.getPhotoBooth();
         if (reviewEntity.getUser().getId() != userEntity.getId()) {
             throw new SilentApplicationErrorException(ApplicationErrorType.DIFF_USER);
         }
@@ -203,16 +211,22 @@ public class ReviewApiService {
         }
         //이미지 수정되었을 경우, 이전 이미지 지움.
         if (CollectionUtils.isNotEmpty(reviewUpdateRequest.getDeleteImageIdList())) {
+            if (photoBoothEntity.getReviewImage() != null && reviewUpdateRequest.getDeleteImageIdList().stream().anyMatch(id -> photoBoothEntity.getReviewImage().getId().equals(id))) {
+                photoBoothEntity.updateReviewImage(null);
+            }
             reviewEntity.deleteImage(reviewUpdateRequest.getDeleteImageIdList());
-            reviewEntity.getPhotoBooth().updateReviewImageCount(reviewUpdateRequest.getDeleteImageIdList().size() * -1);
+            photoBoothEntity.updateReviewImageCount(reviewUpdateRequest.getDeleteImageIdList().size() * -1);
         }
         //수정된 이미지가 있을 경우, 새로 생성.
         if (CollectionUtils.isNotEmpty(reviewImageList)) {
             updateImageList(reviewEntity, reviewImageList);
-            reviewEntity.getPhotoBooth().updateReviewImageCount(reviewImageList.size());
+            photoBoothEntity.updateReviewImageCount(reviewImageList.size());
+            if (photoBoothEntity.getReviewImage() == null) {
+                photoBoothEntity.updateReviewImage(reviewEntity.getReviewImageSet().stream().findFirst().get());
+            }
         }
-        reviewEntity = setReviewOptionRequest(reviewEntity, reviewUpdateRequest);
-        cacheService.del(CacheKeyEntity.valueKey(CacheType.PhotoBoothById, reviewEntity.getPhotoBooth().getId()));
+        reviewEntity = setReviewOptionRequest(reviewEntity, photoBoothEntity, reviewUpdateRequest);
+        cacheService.del(CacheKeyEntity.valueKey(CacheType.PhotoBoothById, photoBoothEntity.getId()));
         return reviewApiMapper.toDto(reviewEntity);
     }
 
@@ -220,7 +234,7 @@ public class ReviewApiService {
         Page<ReviewImageEntity> reviewImageEntityPage = reviewService.getReviewImageByPhotoBoothId(photoBoothId, pageable);
         List<ReviewImageResponse> reviewImageResponseList = reviewApiMapper.toImageEntityDto(reviewImageEntityPage.getContent());
         UserDTO userDTO = PrincipleDetail.get();
-        if(userDTO.getId() != null){
+        if (userDTO.getId() != null) {
             List<Long> reviewImageIdList = reviewImageResponseList.stream().map(ReviewImageResponse::getId).collect(Collectors.toList());
             List<Long> userLikeReviewImageIdList = reviewService.getReviewImageLikeByReviewIdsAndUserId(reviewImageIdList, userDTO.getId()).stream().map(reviewImageLike -> reviewImageLike.getReviewImage().getId()).collect(Collectors.toList());
             reviewImageResponseList.stream().forEach(reviewImage -> reviewImage.setLike(userLikeReviewImageIdList.contains(reviewImage.getId())));
@@ -245,7 +259,7 @@ public class ReviewApiService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        for(ReviewImageEntity reviewImageEntity : reviewEntity.getReviewImageSet()){
+        for (ReviewImageEntity reviewImageEntity : reviewEntity.getReviewImageSet()) {
             reviewImageEntity.setImageOrder(index++);
         }
     }
@@ -283,11 +297,11 @@ public class ReviewApiService {
                 .build();
     }
 
-    private ReviewEntity setReviewOptionRequest(ReviewEntity reviewEntity, ReviewUpdateRequest reviewUpdateRequest) {
+    private ReviewEntity setReviewOptionRequest(ReviewEntity reviewEntity, PhotoBoothEntity photoBoothEntity, ReviewUpdateRequest reviewUpdateRequest) {
         Optional.ofNullable(reviewUpdateRequest.getTitle()).ifPresent(title -> reviewEntity.updateTitle(title));
         Optional.ofNullable(reviewUpdateRequest.getContent()).ifPresent(content -> reviewEntity.updateContent(content));
         Optional.ofNullable(reviewUpdateRequest.getStarScore()).ifPresent(starScore -> {
-            reviewEntity.getPhotoBooth().updateStarScore(reviewEntity.getPhotoBooth().getTotalStarScore() - reviewEntity.getStarScore() + starScore);
+            photoBoothEntity.updateStarScore(photoBoothEntity.getTotalStarScore() - reviewEntity.getStarScore() + starScore);
             reviewEntity.updateStarScore(starScore);
         });
         return reviewEntity;

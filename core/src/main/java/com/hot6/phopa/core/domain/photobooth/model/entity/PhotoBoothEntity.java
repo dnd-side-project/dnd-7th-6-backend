@@ -3,6 +3,7 @@ package com.hot6.phopa.core.domain.photobooth.model.entity;
 import com.hot6.phopa.core.common.model.entity.BaseTimeEntity;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
+import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -52,6 +53,10 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "star_score")
     private Float starScore;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "review_image_id", nullable = true)
+    private ReviewImageEntity reviewImage;
+
     @Column(name = "total_star_score")
     private Float totalStarScore;
 
@@ -80,10 +85,14 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
 
     public void updateStarScore(Float totalStarScore) {
         this.totalStarScore = totalStarScore;
-        this.starScore = this.totalStarScore/this.reviewCount;
+        this.starScore = this.totalStarScore == 0.0f ? 0.0f : this.totalStarScore / this.reviewCount;
     }
 
     public void updateReviewImageCount(int count) {
         this.reviewImageCount += count;
+    }
+
+    public void updateReviewImage(ReviewImageEntity reviewImageEntity) {
+        this.reviewImage = reviewImageEntity;
     }
 }
