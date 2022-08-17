@@ -2,6 +2,7 @@ package com.hot6.phopa.api.domain.photobooth.service;
 
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.*;
 import com.hot6.phopa.api.domain.photobooth.model.mapper.PhotoBoothApiMapper;
+import com.hot6.phopa.core.common.enumeration.LikeType;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import com.hot6.phopa.core.common.model.entity.CacheKeyEntity;
@@ -72,7 +73,7 @@ public class PhotoBoothApiService {
         return photoBoothMapper.toDtoList(photoBoothEntityList);
     }
 
-    public void like(Long photoBoothId) {
+    public LikeType like(Long photoBoothId) {
         UserDTO userDTO = PrincipleDetail.get();
         UserEntity userEntity = userDTO.getId() != null ? userService.findById(userDTO.getId()) : null;
         PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBoothById(photoBoothId);
@@ -80,6 +81,7 @@ public class PhotoBoothApiService {
         if (photoBoothLikeEntity != null) {
             photoBoothService.deletePhotoBoothLikeEntity(photoBoothLikeEntity);
             photoBoothEntity.updateLikeCount(-1);
+            return LikeType.UNLIKE;
         } else {
             photoBoothLikeEntity = PhotoBoothLikeEntity.builder()
                     .photoBooth(photoBoothEntity)
@@ -87,6 +89,7 @@ public class PhotoBoothApiService {
                     .build();
             photoBoothService.createPhotoBoothLikeEntity(photoBoothLikeEntity);
             photoBoothEntity.updateLikeCount(1);
+            return LikeType.LIKE;
         }
     }
 

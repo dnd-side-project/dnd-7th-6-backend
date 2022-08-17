@@ -1,16 +1,13 @@
 package com.hot6.phopa.api.domain.review.controller;
 
-import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO;
-import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
 import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO.*;
 import com.hot6.phopa.api.domain.review.service.ReviewApiService;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
-import com.hot6.phopa.core.domain.review.model.dto.ReviewImageDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,10 +40,10 @@ public class ReviewController {
     }
 
     @PostMapping("/image/{reviewImageId}/like")
-    public void like(
+    public ResponseEntity like(
            @PathVariable Long reviewImageId
     ){
-        reviewService.like(reviewImageId);
+        return ResponseEntity.ok(reviewService.like(reviewImageId));
     }
 
     @GetMapping("/form")
