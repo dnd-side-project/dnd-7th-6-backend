@@ -3,17 +3,12 @@ package com.hot6.phopa.core.domain.photobooth.repository.impl;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.utils.PointUtil;
-import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.repository.PhotoBoothCustomRepository;
-import com.hot6.phopa.core.domain.user.type.UserStatus;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.PathBuilder;
-import com.querydsl.core.types.dsl.Wildcard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
@@ -106,6 +101,19 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
                 .fetch()
                 .size();
         return new PageImpl<>(result, PageRequest.of(pageable.getPage(), pageable.getPageSize()), totalCount);
+    }
+
+    @Override
+    public Integer getCountByPhotoBoothIdAndColumn(List<Long> photoBoothIdList, Status status, Set<Long> tagIdSet) {
+        return from(photoBoothEntity)
+                .leftJoin(photoBoothEntity.reviewSet, reviewEntity).fetchJoin()
+                .leftJoin(reviewEntity.reviewTagSet, reviewTagEntity).fetchJoin()
+                .leftJoin(reviewTagEntity.tag, tagEntity).fetchJoin()
+                .where(photoBoothEntity.id.in(photoBoothIdList).and(photoBoothEntity.status.eq(Status.ACTIVE)))
+                .where(buildPredicate(status, tagIdSet))
+                .distinct()
+                .fetch()
+                .size();
     }
 
     private Predicate buildPredicate(Status status, Set<Long> tagIdSet) {

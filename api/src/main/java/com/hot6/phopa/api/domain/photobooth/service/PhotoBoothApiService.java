@@ -112,6 +112,11 @@ public class PhotoBoothApiService {
         return photoBoothDetailResponse;
     }
 
+
+    public Integer getPhotoBoothNearByUserGeoCount(Double latitude, Double longitude, Double distance, Status status, Set<Long> tagIdSet) {
+        return photoBoothService.getPhotoBoothNearByUserGeoCount(latitude, longitude, distance, status, tagIdSet);
+    }
+
     private PhotoBoothWithTagResponse buildPhotoBoothWithTagResponse(PhotoBoothEntity photoBoothEntity, List<TagEntity> tagList, boolean isLike, Double distance) {
         PhotoBoothApiResponse photoBooth = photoBoothMapper.toDto(photoBoothEntity);
         List<TagDTO> tagDTOList = CollectionUtils.isNotEmpty(tagList) ? tagMapper.toDtoList(tagList) : null;

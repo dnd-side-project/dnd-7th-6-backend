@@ -1,6 +1,5 @@
 package com.hot6.phopa.api.domain.photobooth.controller;
 
-import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothApiResponse;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothDetailResponse;
 import com.hot6.phopa.api.domain.photobooth.model.dto.PhotoBoothApiDTO.PhotoBoothFilterFormResponse;
@@ -11,6 +10,7 @@ import com.hot6.phopa.core.common.model.dto.PageableResponse;
 import com.hot6.phopa.core.common.model.type.Status;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Positive;
@@ -35,6 +35,17 @@ public class PhotoBoothController {
             PageableParam pageable
             ){
         return photoBoothService.getPhotoBoothNearByUserGeo(latitude, longitude, distance, status, tagIdSet, pageable);
+    }
+
+    @GetMapping("/near-by/count")
+    public ResponseEntity getPhotoBoothNearByUserGeoCount(
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            @RequestParam Double distance,
+            @RequestParam(required = false) Status status,
+            @RequestParam(required = false) Set<Long> tagIdSet
+    ){
+        return ResponseEntity.ok(photoBoothService.getPhotoBoothNearByUserGeoCount(latitude, longitude, distance, status, tagIdSet));
     }
 
     @GetMapping("/{photoBoothId}")
