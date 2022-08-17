@@ -1,13 +1,11 @@
 package com.hot6.phopa.api.domain.user.controller;
 
-import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
-import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.*;
 import com.hot6.phopa.api.domain.user.service.UserApiService;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
-import com.hot6.phopa.core.security.jwt.JwtToken;
-import com.hot6.phopa.core.security.jwt.JwtTokenProvider;
+import com.hot6.phopa.core.security.jwt.token.JwtToken;
+import com.hot6.phopa.core.security.jwt.token.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

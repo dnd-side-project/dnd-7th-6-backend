@@ -1,10 +1,8 @@
 package com.hot6.phopa.core.security.config;
 
-import com.hot6.phopa.core.common.exception.ApplicationErrorException;
-import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
-import com.hot6.phopa.core.security.jwt.JwtToken;
+import com.hot6.phopa.core.security.jwt.token.JwtToken;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

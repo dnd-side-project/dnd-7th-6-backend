@@ -27,8 +27,8 @@ import com.hot6.phopa.core.domain.user.service.UserService;
 import com.hot6.phopa.core.domain.user.type.UserRole;
 import com.hot6.phopa.core.domain.user.type.UserStatus;
 import com.hot6.phopa.core.security.config.PrincipleDetail;
-import com.hot6.phopa.core.security.jwt.JwtToken;
-import com.hot6.phopa.core.security.jwt.JwtTokenProvider;
+import com.hot6.phopa.core.security.jwt.token.JwtToken;
+import com.hot6.phopa.core.security.jwt.token.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -84,6 +84,7 @@ public class UserApiService {
         postService.findAllByUserId(userEntity.getId()).forEach(post -> post.updateStatus(Status.INACTIVE));
         reviewService.findAllByUserId(userEntity.getId()).forEach(review -> review.updateStatus(Status.INACTIVE));
         userEntity.updateStatus(UserStatus.INACTIVE);
+        userEntity.updateUserRole(UserRole.INACTIVE_USER);
     }
 
     public UserLikeResponse getUserLikeResponse() {
@@ -122,6 +123,9 @@ public class UserApiService {
         if (userEntity == null) {
             userEntity = userService.createUser(convertToUserEntity(userLoginRequest));
             userEntity.setName("photalks_user_" + userEntity.getId());
+        }
+        if(UserRole.USER.equals(userEntity.getUserRole()) == false || UserStatus.INACTIVE.equals(userEntity.getStatus())){
+            throw new SilentApplicationErrorException(ApplicationErrorType.INACTIVE_USER);
         }
         return (jwtTokenProvider.generateToken(userEntity.getEmail()));
     }

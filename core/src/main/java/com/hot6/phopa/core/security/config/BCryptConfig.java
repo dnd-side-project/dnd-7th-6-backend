@@ -6,7 +6,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
-@Order(0)
+@Order(1)
 public class BCryptConfig {
     @Bean
     public BCryptPasswordEncoder passwordEncoder(){

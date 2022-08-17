@@ -1,10 +1,12 @@
-package com.hot6.phopa.core.security.jwt;
+package com.hot6.phopa.core.security.jwt.filter;
 
+import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.model.mapper.UserMapper;
 import com.hot6.phopa.core.domain.user.service.UserService;
-import com.hot6.phopa.core.domain.user.type.UserRole;
+import com.hot6.phopa.core.security.jwt.token.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,12 +17,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -41,9 +42,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && jwtTokenProvider.verifyToken(token)) {
             String email = jwtTokenProvider.getUid(token);
-            UserEntity userEntity = userService.getUser(email);
-
-            Authentication auth = getAuthentication(userMapper.toDto(userEntity));
+            Optional<UserEntity> userEntity = userService.getUserByStatus(email);
+            if(userEntity.isEmpty()) {
+                throw new SilentApplicationErrorException(ApplicationErrorType.UNAUTHORIZED_USER);
+            }
+            Authentication auth = getAuthentication(userMapper.toDto(userEntity.get()));
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
         filterChain.doFilter(request, response);
@@ -51,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public Authentication getAuthentication(UserDTO user) {
         return new UsernamePasswordAuthenticationToken(user, "",
-                Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+                Arrays.asList(new SimpleGrantedAuthority(user.getUserRole().getAuthority())));
     }
 }
 

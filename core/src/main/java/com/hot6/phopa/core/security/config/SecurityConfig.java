@@ -1,10 +1,7 @@
 package com.hot6.phopa.core.security.config;
 
-import com.hot6.phopa.core.domain.user.type.UserRole;
-import com.hot6.phopa.core.security.jwt.JwtAuthenticationFilter;
-import com.hot6.phopa.core.security.jwt.JwtTokenProvider;
-import com.hot6.phopa.core.security.service.ConfigSuccessHandler;
-import com.hot6.phopa.core.security.service.PrincipalOauth2UserService;
+import com.hot6.phopa.core.security.jwt.filter.ExceptionHandlerFilter;
+import com.hot6.phopa.core.security.jwt.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,9 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final PrincipalOauth2UserService principalOauth2UserService;
-
-    private final ConfigSuccessHandler configSuccessHandler;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -53,11 +48,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // 나머지 POST, Delete, Put, Patch 메소드는 회원만 접근 가능
                 .anyRequest().permitAll();
                 // 그 외 나머지 요청은 모두 접근 가능
-//                .and()
-//                .oauth2Login()
-//                .successHandler(configSuccessHandler).loginPage("/api/v1/user/token/expired")
-//                .userInfoEndpoint().userService(principalOauth2UserService);
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(exceptionHandlerFilter, JwtAuthenticationFilter.class);
     }
 }
 
