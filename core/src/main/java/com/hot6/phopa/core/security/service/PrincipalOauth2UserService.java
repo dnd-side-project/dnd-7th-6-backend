@@ -8,7 +8,7 @@ import com.hot6.phopa.core.domain.user.type.UserProvider;
 import com.hot6.phopa.core.domain.user.type.UserRole;
 import com.hot6.phopa.core.domain.user.type.UserStatus;
 import com.hot6.phopa.core.security.config.PrincipleDetail;
-import com.hot6.phopa.core.security.jwt.JwtTokenProvider;
+import com.hot6.phopa.core.security.jwt.token.JwtTokenProvider;
 import lombok.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -19,7 +19,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashMap;
 import java.util.Map;
 
 @Service

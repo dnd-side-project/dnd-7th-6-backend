@@ -1,6 +1,7 @@
-package com.hot6.phopa.core.security.jwt;
+package com.hot6.phopa.core.security.jwt.token;
 
 import com.google.common.net.HttpHeaders;
+import com.hot6.phopa.core.security.jwt.enumeration.AuthTokenType;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -8,7 +9,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;

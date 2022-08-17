@@ -1,4 +1,4 @@
-package com.hot6.phopa.core.security.jwt;
+package com.hot6.phopa.core.security.jwt.token;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
