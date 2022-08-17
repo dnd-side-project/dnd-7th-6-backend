@@ -17,4 +17,6 @@ public interface PhotoBoothCustomRepository {
     PhotoBoothEntity findByIdWithTag(Long photoBoothId);
 
     Page<PhotoBoothEntity> findByPhotoBoothIdAndColumn(List<Long> photoBoothIds, Status status, Set<Long> tagIdSet, PageableParam pageable);
+
+    Integer getCountByPhotoBoothIdAndColumn(List<Long> photoBoothIdList, Status status, Set<Long> tagIdSet);
 }
