@@ -7,6 +7,8 @@ import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.dto.PageableResponse;
+import com.hot6.phopa.core.common.model.entity.CacheKeyEntity;
+import com.hot6.phopa.core.common.model.type.CacheType;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.common.service.S3UploadService;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
@@ -25,6 +27,7 @@ import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import com.hot6.phopa.core.domain.user.model.entity.UserEntity;
 import com.hot6.phopa.core.domain.user.service.UserService;
 import com.hot6.phopa.core.security.config.PrincipleDetail;
+import com.hot6.phopa.core.service.RedisCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -59,6 +62,8 @@ public class ReviewApiService {
 
     private final TagMapper tagMapper;
 
+    private final RedisCacheService cacheService;
+
     @Value("${cloud.aws.s3.upload.path.review}")
     private String reviewPath;
 
@@ -75,14 +80,7 @@ public class ReviewApiService {
         reviewCreateRequest.validCheck();
         fileInvalidCheck(reviewImageList);
         PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(reviewCreateRequest.getPhotoBoothId());
-        ReviewEntity reviewEntity = ReviewEntity.builder()
-                .title(reviewCreateRequest.getTitle())
-                .content(reviewCreateRequest.getContent())
-                .status(Status.ACTIVE)
-                .starScore(reviewCreateRequest.getStarScore())
-                .user(userEntity)
-                .photoBooth(photoBoothEntity)
-                .build();
+        ReviewEntity reviewEntity = convertToReviewEntity(reviewCreateRequest, photoBoothEntity, userEntity);
         if (CollectionUtils.isNotEmpty(reviewCreateRequest.getTagIdList())) {
             Set<ReviewTagEntity> reviewTagEntitySet = new HashSet<>();
             List<TagEntity> tagEntityList = tagService.getTagList(reviewCreateRequest.getTagIdList());
@@ -101,8 +99,6 @@ public class ReviewApiService {
             }
             reviewEntity.setReviewTagSet(reviewTagEntitySet);
             photoBoothEntity.updateReviewCount(1);
-
-            Integer reviewCount = photoBoothEntity.getReviewCount();
             photoBoothEntity.updateStarScore(photoBoothEntity.getTotalStarScore() + reviewEntity.getStarScore());
         }
 
@@ -125,10 +121,13 @@ public class ReviewApiService {
                 log.error(e.getMessage());
             }
             reviewEntity.setReviewImageSet(reviewImageEntitySet);
+            photoBoothEntity.updateReviewImageCount(reviewImageEntitySet.size());
         }
-
+        cacheService.del(CacheKeyEntity.valueKey(CacheType.PhotoBoothById, reviewEntity.getPhotoBooth().getId()));
         return reviewApiMapper.toDto(reviewService.createReview(reviewEntity));
     }
+
+
 
     public void fileInvalidCheck(List<MultipartFile> imageList) {
         if (CollectionUtils.isNotEmpty(imageList)) {
@@ -205,18 +204,28 @@ public class ReviewApiService {
         //이미지 수정되었을 경우, 이전 이미지 지움.
         if (CollectionUtils.isNotEmpty(reviewUpdateRequest.getDeleteImageIdList())) {
             reviewEntity.deleteImage(reviewUpdateRequest.getDeleteImageIdList());
+            reviewEntity.getPhotoBooth().updateReviewImageCount(reviewUpdateRequest.getDeleteImageIdList().size() * -1);
         }
         //수정된 이미지가 있을 경우, 새로 생성.
         if (CollectionUtils.isNotEmpty(reviewImageList)) {
             updateImageList(reviewEntity, reviewImageList);
+            reviewEntity.getPhotoBooth().updateReviewImageCount(reviewImageList.size());
         }
-        Optional.ofNullable(reviewUpdateRequest.getTitle()).ifPresent(title -> reviewEntity.updateTitle(title));
-        Optional.ofNullable(reviewUpdateRequest.getContent()).ifPresent(content -> reviewEntity.updateContent(content));
-        Optional.ofNullable(reviewUpdateRequest.getStarScore()).ifPresent(starScore -> {
-            reviewEntity.getPhotoBooth().updateStarScore(reviewEntity.getPhotoBooth().getTotalStarScore() - reviewEntity.getStarScore() + starScore);
-            reviewEntity.updateStarScore(starScore);
-        });
+        reviewEntity = setReviewOptionRequest(reviewEntity, reviewUpdateRequest);
+        cacheService.del(CacheKeyEntity.valueKey(CacheType.PhotoBoothById, reviewEntity.getPhotoBooth().getId()));
         return reviewApiMapper.toDto(reviewEntity);
+    }
+
+    public PageableResponse<ReviewImageResponse> getReviewImages(Long photoBoothId, PageableParam pageable) {
+        Page<ReviewImageEntity> reviewImageEntityPage = reviewService.getReviewImageByPhotoBoothId(photoBoothId, pageable);
+        List<ReviewImageResponse> reviewImageResponseList = reviewApiMapper.toImageEntityDto(reviewImageEntityPage.getContent());
+        UserDTO userDTO = PrincipleDetail.get();
+        if(userDTO.getId() != null){
+            List<Long> reviewImageIdList = reviewImageResponseList.stream().map(ReviewImageResponse::getId).collect(Collectors.toList());
+            List<Long> userLikeReviewImageIdList = reviewService.getReviewImageLikeByReviewIdsAndUserId(reviewImageIdList, userDTO.getId()).stream().map(reviewImageLike -> reviewImageLike.getReviewImage().getId()).collect(Collectors.toList());
+            reviewImageResponseList.stream().forEach(reviewImage -> reviewImage.setLike(userLikeReviewImageIdList.contains(reviewImage.getId())));
+        }
+        return PageableResponse.makeResponse(reviewImageEntityPage, reviewImageResponseList);
     }
 
     private void updateImageList(ReviewEntity reviewEntity, List<MultipartFile> reviewImageList) {
@@ -263,15 +272,24 @@ public class ReviewApiService {
         }
     }
 
-    public PageableResponse<ReviewImageResponse> getReviewImages(Long photoBoothId, PageableParam pageable) {
-        Page<ReviewImageEntity> reviewImageEntityPage = reviewService.getReviewImageByPhotoBoothId(photoBoothId, pageable);
-        List<ReviewImageResponse> reviewImageResponseList = reviewApiMapper.toImageEntityDto(reviewImageEntityPage.getContent());
-        UserDTO userDTO = PrincipleDetail.get();
-        if(userDTO.getId() != null){
-            List<Long> reviewImageIdList = reviewImageResponseList.stream().map(ReviewImageResponse::getId).collect(Collectors.toList());
-            List<Long> userLikeReviewImageIdList = reviewService.getReviewImageLikeByReviewIdsAndUserId(reviewImageIdList, userDTO.getId()).stream().map(reviewImageLike -> reviewImageLike.getReviewImage().getId()).collect(Collectors.toList());
-            reviewImageResponseList.stream().forEach(reviewImage -> reviewImage.setLike(userLikeReviewImageIdList.contains(reviewImage.getId())));
-        }
-        return PageableResponse.makeResponse(reviewImageEntityPage, reviewImageResponseList);
+    private ReviewEntity convertToReviewEntity(ReviewCreateRequest reviewCreateRequest, PhotoBoothEntity photoBoothEntity, UserEntity userEntity) {
+        return ReviewEntity.builder()
+                .title(reviewCreateRequest.getTitle())
+                .content(reviewCreateRequest.getContent())
+                .status(Status.ACTIVE)
+                .starScore(reviewCreateRequest.getStarScore())
+                .user(userEntity)
+                .photoBooth(photoBoothEntity)
+                .build();
+    }
+
+    private ReviewEntity setReviewOptionRequest(ReviewEntity reviewEntity, ReviewUpdateRequest reviewUpdateRequest) {
+        Optional.ofNullable(reviewUpdateRequest.getTitle()).ifPresent(title -> reviewEntity.updateTitle(title));
+        Optional.ofNullable(reviewUpdateRequest.getContent()).ifPresent(content -> reviewEntity.updateContent(content));
+        Optional.ofNullable(reviewUpdateRequest.getStarScore()).ifPresent(starScore -> {
+            reviewEntity.getPhotoBooth().updateStarScore(reviewEntity.getPhotoBooth().getTotalStarScore() - reviewEntity.getStarScore() + starScore);
+            reviewEntity.updateStarScore(starScore);
+        });
+        return reviewEntity;
     }
 }

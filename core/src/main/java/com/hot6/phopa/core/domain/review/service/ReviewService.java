@@ -30,15 +30,12 @@ public class ReviewService {
 
     private final ReviewImageRepository reviewImageRepository;
 
-    private final RedisCacheService cacheService;
-
     @Transactional(readOnly = true)
     public Page<ReviewEntity> getReview(long photoBoothId, PageableParam pageable) {
         return reviewRepository.findByPhotoBoothId(photoBoothId, pageable);
     }
 
     public ReviewEntity createReview(ReviewEntity reviewEntity) {
-        cacheService.del(CacheKeyEntity.valueKey(CacheType.PhotoBoothById, reviewEntity.getPhotoBooth().getId()));
         return reviewRepository.save(reviewEntity);
     }
 
