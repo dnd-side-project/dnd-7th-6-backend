@@ -49,6 +49,7 @@ public class KakaoMapService {
                             .longitude(Double.valueOf(document.getX()))
                             .likeCount(0)
                             .reviewCount(0)
+                            .reviewImageCount(0)
                             .starScore(0.0F)
                             .totalStarScore(0.0F)
                             .status(Status.ACTIVE)

@@ -46,6 +46,9 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "review_count")
     private Integer reviewCount;
 
+    @Column(name = "review_image_count")
+    private Integer reviewImageCount;
+
     @Column(name = "star_score")
     private Float starScore;
 
@@ -78,5 +81,9 @@ public class PhotoBoothEntity extends BaseTimeEntity implements Serializable {
     public void updateStarScore(Float totalStarScore) {
         this.totalStarScore = totalStarScore;
         this.starScore = this.totalStarScore/this.reviewCount;
+    }
+
+    public void updateReviewImageCount(int count) {
+        this.reviewImageCount += count;
     }
 }

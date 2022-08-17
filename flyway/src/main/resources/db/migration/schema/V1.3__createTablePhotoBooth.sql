@@ -12,6 +12,7 @@ CREATE TABLE `photo_booth` (
   `longitude` DOUBLE NOT NULL COMMENT 'geometry',
   `like_count` int NOT NULL default 0 COMMENT '좋아요수',
   `review_count` int NOT NULL default 0 COMMENT '리뷰 수',
+  `review_image_count` int NOT NULL default 0 COMMENT '리뷰 이미지 수',
   `star_score` float NOT NULL default 0 COMMENT '평균 별점',
   `total_star_score` float NOT NULL default 0 COMMENT '총 별점',
   `tag_id` bigint NOT NULL COMMENT 'tag id',
