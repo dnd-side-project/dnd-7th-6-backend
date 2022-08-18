@@ -41,4 +41,8 @@ public class PageableParam {
             pageSize = MAX_PAGE_SIZE;
         }
     }
+
+    public int getOffset() {
+        return this.getPage() * this.getPageSize();
+    }
 }
