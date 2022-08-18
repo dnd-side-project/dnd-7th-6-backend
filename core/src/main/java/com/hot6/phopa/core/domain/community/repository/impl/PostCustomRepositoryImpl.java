@@ -112,7 +112,7 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
     }
 
     private OrderSpecifier<?> getOrderByField(OrderType type) {
-        PathBuilder expression = new PathBuilder(PostEntity.class, "post");
+        PathBuilder expression = new PathBuilder(PostEntity.class, "postEntity");
         if (OrderType.popular.equals(type)) {
             return new OrderSpecifier<>(Order.DESC, expression.get("likeCount"));
         }
