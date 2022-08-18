@@ -75,7 +75,7 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
                 .where(tagEntity.id.in(tagIdSet).and(postEntity.status.eq(Status.ACTIVE)))
                 .where(postEntity.isPublic.eq(true))
                 .orderBy(getOrderByField(order))
-                .offset(pageable.getPage())
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .distinct()
                 .fetchResults();
@@ -93,7 +93,7 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
                 .where(postEntity.isPublic.eq(true))
                 .where(buildPredicate(userId, photoBoothId))
                 .orderBy(postEntity.id.desc())
-                .offset(pageable.getPage())
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .distinct()
                 .fetchResults();
@@ -102,10 +102,10 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
 
     private Predicate buildPredicate(Long userId, Long photoBoothId) {
         BooleanBuilder builder = new BooleanBuilder();
-        if(userId != null){
+        if (userId != null) {
             builder.and(userEntity.id.eq(userId));
         }
-        if(photoBoothId != null){
+        if (photoBoothId != null) {
             builder.and(postEntity.id.eq(photoBoothId).not());
         }
         return builder.getValue();
@@ -116,7 +116,7 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
         if (OrderType.popular.equals(type)) {
             return new OrderSpecifier<>(Order.DESC, expression.get("likeCount"));
         }
-        if(OrderType.latest.equals(type)) {
+        if (OrderType.latest.equals(type)) {
             return new OrderSpecifier<>(Order.DESC, expression.get("createdAt"));
         }
         return new OrderSpecifier<>(Order.ASC, expression.get("id"));
