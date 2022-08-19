@@ -80,7 +80,7 @@ public class PostApiService {
         fileInvalidCheck(postImageList);
         List<TagEntity> newTagList = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(postCreateRequest.getNewTagList())){
-            newTagList = tagService.createCustomTagList(postCreateRequest.getNewTagList());
+            newTagList = postCreateRequest.getNewTagList().stream().map(tagRequest -> tagService.getTagOrCreate(tagRequest, tagRequest, TagType.CUSTOM)).collect(Collectors.toList());
         }
         PostEntity postEntity = PostEntity.builder()
                 .title(postCreateRequest.getTitle())
