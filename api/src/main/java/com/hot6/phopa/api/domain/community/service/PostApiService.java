@@ -1,9 +1,7 @@
 package com.hot6.phopa.api.domain.community.service;
 
-import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.*;
 import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
-import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
 import com.hot6.phopa.core.common.enumeration.LikeType;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
@@ -80,7 +78,7 @@ public class PostApiService {
         fileInvalidCheck(postImageList);
         List<TagEntity> newTagList = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(postCreateRequest.getNewTagList())){
-            newTagList = tagService.createCustomTagList(postCreateRequest.getNewTagList());
+            newTagList = postCreateRequest.getNewTagList().stream().map(tagRequest -> tagService.getTagOrCreate(tagRequest, tagRequest, TagType.CUSTOM)).collect(Collectors.toList());
         }
         PostEntity postEntity = PostEntity.builder()
                 .title(postCreateRequest.getTitle())
