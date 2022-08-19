@@ -50,7 +50,7 @@ public class TagCustomRepositoryImpl extends QuerydslRepositorySupport implement
                 .where(buildPredicate(tagType, null))
                 .where(tagEntity.keyword.contains(keyword))
                 .limit(pageable.getPageSize())
-                .offset(pageable.getPage())
+                .offset(pageable.getOffset())
                 .fetchResults();
         return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
     }

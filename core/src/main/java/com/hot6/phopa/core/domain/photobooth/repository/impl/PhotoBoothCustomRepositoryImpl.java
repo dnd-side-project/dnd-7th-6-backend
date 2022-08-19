@@ -87,7 +87,7 @@ public class PhotoBoothCustomRepositoryImpl extends QuerydslRepositorySupport im
                 .where(photoBoothEntity.id.in(photoBoothIdList).and(photoBoothEntity.status.eq(Status.ACTIVE)))
                 .where(buildPredicate(status, tagIdSet))
                 .orderBy(orderByFieldList(photoBoothIdList))
-                .offset(pageable.getPage())
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .distinct()
                 .fetch();

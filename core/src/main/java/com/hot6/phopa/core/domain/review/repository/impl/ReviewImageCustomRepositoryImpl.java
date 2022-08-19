@@ -48,7 +48,7 @@ public class ReviewImageCustomRepositoryImpl extends QuerydslRepositorySupport i
                 .join(reviewEntity.photoBooth, photoBoothEntity).fetchJoin()
                 .where(photoBoothEntity.id.eq(photoBoothId).and(reviewEntity.status.eq(Status.ACTIVE)))
                 .orderBy(reviewImageEntity.id.desc())
-                .offset(pageable.getPage())
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .distinct().fetchResults();
         return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
