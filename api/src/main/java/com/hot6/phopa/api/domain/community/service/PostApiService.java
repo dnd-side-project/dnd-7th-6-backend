@@ -253,6 +253,7 @@ public class PostApiService {
         }
         Optional.ofNullable(postUpdateRequest.getTitle()).ifPresent(title -> postEntity.updateTitle(title));
         Optional.ofNullable(postUpdateRequest.getContent()).ifPresent(content -> postEntity.updateContent(content));
+        Optional.ofNullable(postUpdateRequest.getIsPublic()).ifPresent(isPublic -> postEntity.updateIsPublic(isPublic));
         return postApiMapper.toDto(postEntity);
     }
 

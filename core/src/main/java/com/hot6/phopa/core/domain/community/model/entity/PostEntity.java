@@ -74,4 +74,8 @@ public class PostEntity extends BaseTimeEntity implements Serializable {
     public void updateContent(String content) {
         this.content = content;
     }
+
+    public void updateIsPublic(Boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 }

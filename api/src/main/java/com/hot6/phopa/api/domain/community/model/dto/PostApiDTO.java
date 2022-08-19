@@ -57,6 +57,7 @@ public class PostApiDTO {
         private String content;
         private List<Long> tagIdList;
         private List<Long> deleteImageIdList;
+        private Boolean isPublic;
     }
 
     @Getter
