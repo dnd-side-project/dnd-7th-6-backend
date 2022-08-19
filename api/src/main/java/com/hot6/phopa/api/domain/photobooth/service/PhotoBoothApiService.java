@@ -109,7 +109,7 @@ public class PhotoBoothApiService {
         UserDTO userDTO = PrincipleDetail.get();
         if (userDTO.getId() != null) {
             UserEntity userEntity = userService.findById(userDTO.getId());
-            boolean isLike = userEntity != null && photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBooth.getId(), userEntity.getId()) == null;
+            boolean isLike = userEntity != null && photoBoothService.getPhotoBoothLikeByPhotoBoothIdAndUserId(photoBooth.getId(), userEntity.getId()) != null;
             photoBoothDetailResponse.setLike(isLike);
         }
         return photoBoothDetailResponse;
