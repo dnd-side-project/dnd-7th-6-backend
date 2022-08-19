@@ -239,7 +239,7 @@ public class PostApiService {
             throw new SilentApplicationErrorException(ApplicationErrorType.DIFF_USER);
         }
         if (CollectionUtils.isNotEmpty(postUpdateRequest.getTagIdList())) {
-            updateTagList(postEntity, postUpdateRequest.getTagIdList());
+            updateTagList(postEntity, postUpdateRequest.getTagIdList(), postUpdateRequest.getNewTagKeywordList());
         }
         //이미지 수정되었을 경우, 이전 이미지 지움.
         if (CollectionUtils.isNotEmpty(postUpdateRequest.getDeleteImageIdList())) {
@@ -273,7 +273,7 @@ public class PostApiService {
         }
     }
 
-    private void updateTagList(PostEntity postEntity, List<Long> tagIdList) {
+    private void updateTagList(PostEntity postEntity, List<Long> tagIdList, List<String> newTagKeywordList) {
         Map<Long, PostTagEntity> tagIdPostTagMap = postEntity.getPostTagSet().stream().collect(Collectors.toMap(postTag -> postTag.getTag().getId(), Function.identity()));
         // postEntity에 없는 tagIdList
         List<Long> newTagIdList = tagIdList.stream().filter(tagId -> tagIdPostTagMap.containsKey(tagId) == false).collect(Collectors.toList());
@@ -284,6 +284,10 @@ public class PostApiService {
             postEntity.getPostTagSet().remove(postTagEntity);
         }
         List<TagEntity> tagEntityList = tagService.getTagList(newTagIdList);
+        tagEntityList.addAll(
+                newTagKeywordList.stream()
+                        .map(tagRequest -> tagService.getTagOrCreate(tagRequest, tagRequest, TagType.CUSTOM))
+                        .collect(Collectors.toList()));
         for (TagEntity tagEntity : tagEntityList) {
             postEntity.getPostTagSet().add(
                     PostTagEntity.builder()
