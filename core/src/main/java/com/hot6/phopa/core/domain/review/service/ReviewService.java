@@ -3,22 +3,20 @@ package com.hot6.phopa.core.domain.review.service;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.common.exception.SilentApplicationErrorException;
 import com.hot6.phopa.core.common.model.dto.PageableParam;
-import com.hot6.phopa.core.common.model.entity.CacheKeyEntity;
-import com.hot6.phopa.core.common.model.type.CacheType;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewImageLikeEntity;
-import com.hot6.phopa.core.domain.review.repository.ReviewImageRepository;
 import com.hot6.phopa.core.domain.review.repository.ReviewImageLikeRepository;
+import com.hot6.phopa.core.domain.review.repository.ReviewImageRepository;
 import com.hot6.phopa.core.domain.review.repository.ReviewRepository;
-import com.hot6.phopa.core.service.RedisCacheService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -41,7 +39,7 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public ReviewEntity getReviewById(Long reviewId) {
-        return reviewRepository.findByIdAndStatus(reviewId, Status.ACTIVE).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
+        return Optional.ofNullable(reviewRepository.findByIdAndStatus(reviewId, Status.ACTIVE)).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
     }
 
     public ReviewImageLikeEntity createReviewImageLikeEntity(ReviewImageLikeEntity reviewImageLikeEntity) {

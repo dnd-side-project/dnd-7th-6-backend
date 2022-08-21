@@ -82,9 +82,14 @@ public class ReviewApiService {
         fileInvalidCheck(reviewImageList);
         PhotoBoothEntity photoBoothEntity = photoBoothService.getPhotoBooth(reviewCreateRequest.getPhotoBoothId());
         ReviewEntity reviewEntity = convertToReviewEntity(reviewCreateRequest, photoBoothEntity, userEntity);
+        List<TagEntity> newTagList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(reviewCreateRequest.getNewTagKeywordList())) {
+            newTagList = reviewCreateRequest.getNewTagKeywordList().stream().map(tagRequest -> tagService.getTagOrCreate(tagRequest, tagRequest, TagType.CUSTOM)).collect(Collectors.toList());
+        }
         if (CollectionUtils.isNotEmpty(reviewCreateRequest.getTagIdList())) {
             Set<ReviewTagEntity> reviewTagEntitySet = new HashSet<>();
             List<TagEntity> tagEntityList = tagService.getTagList(reviewCreateRequest.getTagIdList());
+            tagEntityList.addAll(newTagList);
             for (TagEntity tagEntity : tagEntityList) {
                 reviewTagEntitySet.add(
                         ReviewTagEntity.builder()
@@ -93,12 +98,14 @@ public class ReviewApiService {
                                 .photoBoothId(photoBoothEntity.getId())
                                 .build()
                 );
-                if (tagEntity.getReviewTagSet().stream().anyMatch(r -> r.getReview().getPhotoBooth().getId().equals(photoBoothEntity.getId())) == false) {
-                    tagEntity.updatePhotoBoothCount(1);
-                }
                 tagEntity.updateReviewCount(1);
             }
             reviewEntity.setReviewTagSet(reviewTagEntitySet);
+            tagEntityList.forEach(tagEntity -> {
+                if(CollectionUtils.isEmpty(tagEntity.getReviewTagSet()) || (tagEntity.getReviewTagSet().stream().anyMatch(r -> r.getReview().getPhotoBooth().getId().equals(photoBoothEntity.getId())) == false)){
+                    tagEntity.updatePhotoBoothCount(1);
+                }
+            });
             photoBoothEntity.updateReviewCount(1);
             photoBoothEntity.updateStarScore(photoBoothEntity.getTotalStarScore() + reviewEntity.getStarScore());
         }
@@ -209,9 +216,7 @@ public class ReviewApiService {
         if (reviewEntity.getUser().getId() != userEntity.getId()) {
             throw new SilentApplicationErrorException(ApplicationErrorType.DIFF_USER);
         }
-        if (CollectionUtils.isNotEmpty(reviewUpdateRequest.getTagIdList())) {
-            updateTagList(reviewEntity, reviewUpdateRequest.getTagIdList());
-        }
+        updateTagList(reviewEntity, reviewUpdateRequest.getTagIdList(), reviewUpdateRequest.getNewTagKeywordList());
         //이미지 수정되었을 경우, 이전 이미지 지움.
         if (CollectionUtils.isNotEmpty(reviewUpdateRequest.getDeleteImageIdList())) {
             if (photoBoothEntity.getReviewImage() != null && reviewUpdateRequest.getDeleteImageIdList().stream().anyMatch(id -> photoBoothEntity.getReviewImage().getId().equals(id))) {
@@ -267,22 +272,32 @@ public class ReviewApiService {
         }
     }
 
-    private void updateTagList(ReviewEntity reviewEntity, List<Long> tagIdList) {
-        Map<Long, ReviewTagEntity> tagIdPostTagMap = reviewEntity.getReviewTagSet().stream().collect(Collectors.toMap(reviewTag -> reviewTag.getTag().getId(), Function.identity()));
-        // postEntity에 없는 tagIdList
-        List<Long> newTagIdList = tagIdList.stream().filter(tagId -> tagIdPostTagMap.containsKey(tagId) == false).collect(Collectors.toList());
-        // postEntity에 있지만, request에 없는 tag인 경우 제거
-        Set<ReviewTagEntity> deletePostTagSet = reviewEntity.getReviewTagSet().stream().filter(reviewTag -> tagIdList.contains(reviewTag.getTag().getId()) == false).collect(Collectors.toSet());
-        for (ReviewTagEntity reviewTagEntity : deletePostTagSet) {
-            reviewTagEntity.getTag().updateReviewCount(-1);
-            reviewEntity.getReviewTagSet().remove(reviewTagEntity);
+    private void updateTagList(ReviewEntity reviewEntity, List<Long> tagIdList, List<String> newTagKeywordList) {
+        Map<Long, ReviewTagEntity> tagIdReviewTagMap = reviewEntity.getReviewTagSet().stream().collect(Collectors.toMap(reviewTag -> reviewTag.getTag().getId(), Function.identity()));
+        List<TagEntity> tagEntityList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(tagIdList)) {
+            // reviewEntity에 없는 tagIdList
+            List<Long> newTagIdList = tagIdList.stream().filter(tagId -> tagIdReviewTagMap.containsKey(tagId) == false).collect(Collectors.toList());
+            // reviewEntity에 있지만, request에 없는 tag인 경우 제거
+            Set<ReviewTagEntity> deleteReviewTagSet = reviewEntity.getReviewTagSet().stream().filter(postTag -> tagIdList.contains(postTag.getTag().getId()) == false).collect(Collectors.toSet());
+            for (ReviewTagEntity reviewTagEntity : deleteReviewTagSet) {
+                reviewTagEntity.getTag().updatePostCount(-1);
+                reviewEntity.getReviewTagSet().remove(reviewTagEntity);
+            }
+            tagEntityList.addAll(tagService.getTagList(newTagIdList));
         }
-        List<TagEntity> tagEntityList = tagService.getTagList(newTagIdList);
+        if (CollectionUtils.isNotEmpty(newTagKeywordList)) {
+            List<TagEntity> newTagEntityList = newTagKeywordList.stream()
+                    .map(tagRequest -> tagService.getTagOrCreate(tagRequest, tagRequest, TagType.CUSTOM))
+                    .collect(Collectors.toList());
+            tagEntityList.addAll(newTagEntityList);
+        }
         for (TagEntity tagEntity : tagEntityList) {
             reviewEntity.getReviewTagSet().add(
                     ReviewTagEntity.builder()
                             .review(reviewEntity)
                             .tag(tagEntity)
+                            .photoBoothId(reviewEntity.getPhotoBooth().getId())
                             .build()
             );
             tagEntity.updateReviewCount(1);

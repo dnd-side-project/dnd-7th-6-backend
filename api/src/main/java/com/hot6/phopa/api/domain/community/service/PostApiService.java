@@ -1,9 +1,7 @@
 package com.hot6.phopa.api.domain.community.service;
 
-import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO;
 import com.hot6.phopa.api.domain.community.model.dto.PostApiDTO.*;
 import com.hot6.phopa.api.domain.community.model.mapper.PostApiMapper;
-import com.hot6.phopa.api.domain.review.model.dto.ReviewApiDTO;
 import com.hot6.phopa.core.common.enumeration.LikeType;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
@@ -67,7 +65,7 @@ public class PostApiService {
         Page<PostEntity> postEntityPage = postService.getPosts(userId, photoBoothId, pageable);
         List<PostApiResponse> postApiResponseList = postApiMapper.toDtoList(postEntityPage.getContent());
         UserDTO userDTO = PrincipleDetail.get();
-        if(userDTO.getId() != null){
+        if (userDTO.getId() != null) {
             postApiResponseList = setUserLike(postApiResponseList, userDTO.getId());
         }
         return PageableResponse.makeResponse(postEntityPage, postApiResponseList);
@@ -79,8 +77,8 @@ public class PostApiService {
         postCreateRequest.validCheck();
         fileInvalidCheck(postImageList);
         List<TagEntity> newTagList = new ArrayList<>();
-        if(CollectionUtils.isNotEmpty(postCreateRequest.getNewTagList())){
-            newTagList = postCreateRequest.getNewTagList().stream().map(tagRequest -> tagService.getTagOrCreate(tagRequest, tagRequest, TagType.CUSTOM)).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(postCreateRequest.getNewTagKeywordList())) {
+            newTagList = postCreateRequest.getNewTagKeywordList().stream().map(tagRequest -> tagService.getTagOrCreate(tagRequest, tagRequest, TagType.CUSTOM)).collect(Collectors.toList());
         }
         PostEntity postEntity = PostEntity.builder()
                 .title(postCreateRequest.getTitle())
@@ -143,7 +141,7 @@ public class PostApiService {
         UserDTO userDTO = PrincipleDetail.get();
         UserEntity userEntity = userService.findById(userDTO.getId());
         PostEntity postEntity = postService.getPostById(postId);
-        if(userEntity.getId().equals(postEntity.getUser().getId())){
+        if (userEntity.getId().equals(postEntity.getUser().getId())) {
             throw new SilentApplicationErrorException(ApplicationErrorType.CANNOT_BE_CREATED_USER);
         }
         PostLikeEntity postLikeEntity = postService.getPostLikeByPostIdAndUserId(postId, userEntity.getId());
@@ -166,7 +164,7 @@ public class PostApiService {
         PostApiResponse postApiResponse = postApiMapper.toDto(postService.getPostById(postId));
         UserDTO userDTO = PrincipleDetail.get();
         boolean isLike = false;
-        if(userDTO.getId() != null){
+        if (userDTO.getId() != null) {
             isLike = postService.getPostLikeByPostIdAndUserId(postApiResponse.getId(), userDTO.getId()) != null;
         }
         postApiResponse.setLike(isLike);
@@ -182,7 +180,7 @@ public class PostApiService {
         Page<PostEntity> postEntityPage = postService.getPostByTagIdSet(tagIdSet, order, pageable);
         List<PostApiResponse> postApiResponseList = postApiMapper.toDtoList(postEntityPage.getContent());
         UserDTO userDTO = PrincipleDetail.get();
-        if(userDTO.getId() != null){
+        if (userDTO.getId() != null) {
             postApiResponseList = setUserLike(postApiResponseList, userDTO.getId());
         }
         return PageableResponse.makeResponse(postEntityPage, postApiResponseList);
@@ -240,9 +238,7 @@ public class PostApiService {
         if (postEntity.getUser().getId() != userEntity.getId()) {
             throw new SilentApplicationErrorException(ApplicationErrorType.DIFF_USER);
         }
-        if (CollectionUtils.isNotEmpty(postUpdateRequest.getTagIdList())) {
-            updateTagList(postEntity, postUpdateRequest.getTagIdList(), postUpdateRequest.getNewTagKeywordList());
-        }
+        updateTagList(postEntity, postUpdateRequest.getTagIdList(), postUpdateRequest.getNewTagKeywordList());
         //이미지 수정되었을 경우, 이전 이미지 지움.
         if (CollectionUtils.isNotEmpty(postUpdateRequest.getDeleteImageIdList())) {
             postEntity.deleteImage(postUpdateRequest.getDeleteImageIdList());
@@ -277,19 +273,24 @@ public class PostApiService {
 
     private void updateTagList(PostEntity postEntity, List<Long> tagIdList, List<String> newTagKeywordList) {
         Map<Long, PostTagEntity> tagIdPostTagMap = postEntity.getPostTagSet().stream().collect(Collectors.toMap(postTag -> postTag.getTag().getId(), Function.identity()));
-        // postEntity에 없는 tagIdList
-        List<Long> newTagIdList = tagIdList.stream().filter(tagId -> tagIdPostTagMap.containsKey(tagId) == false).collect(Collectors.toList());
-        // postEntity에 있지만, request에 없는 tag인 경우 제거
-        Set<PostTagEntity> deletePostTagSet = postEntity.getPostTagSet().stream().filter(postTag -> tagIdList.contains(postTag.getTag().getId()) == false).collect(Collectors.toSet());
-        for (PostTagEntity postTagEntity : deletePostTagSet) {
-            postTagEntity.getTag().updatePostCount(-1);
-            postEntity.getPostTagSet().remove(postTagEntity);
+        List<TagEntity> tagEntityList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(tagIdList)) {
+            // postEntity에 없는 tagIdList
+            List<Long> newTagIdList = tagIdList.stream().filter(tagId -> tagIdPostTagMap.containsKey(tagId) == false).collect(Collectors.toList());
+            // postEntity에 있지만, request에 없는 tag인 경우 제거
+            Set<PostTagEntity> deletePostTagSet = postEntity.getPostTagSet().stream().filter(postTag -> tagIdList.contains(postTag.getTag().getId()) == false).collect(Collectors.toSet());
+            for (PostTagEntity postTagEntity : deletePostTagSet) {
+                postTagEntity.getTag().updatePostCount(-1);
+                postEntity.getPostTagSet().remove(postTagEntity);
+            }
+            tagEntityList.addAll(tagService.getTagList(newTagIdList));
         }
-        List<TagEntity> tagEntityList = tagService.getTagList(newTagIdList);
-        tagEntityList.addAll(
-                newTagKeywordList.stream()
-                        .map(tagRequest -> tagService.getTagOrCreate(tagRequest, tagRequest, TagType.CUSTOM))
-                        .collect(Collectors.toList()));
+        if (CollectionUtils.isNotEmpty(newTagKeywordList)) {
+            List<TagEntity> newTagEntityList = newTagKeywordList.stream()
+                    .map(tagRequest -> tagService.getTagOrCreate(tagRequest, tagRequest, TagType.CUSTOM))
+                    .collect(Collectors.toList());
+            tagEntityList.addAll(newTagEntityList);
+        }
         for (TagEntity tagEntity : tagEntityList) {
             postEntity.getPostTagSet().add(
                     PostTagEntity.builder()
@@ -300,7 +301,8 @@ public class PostApiService {
             tagEntity.updatePostCount(1);
         }
     }
-    private List<PostApiResponse> setUserLike(List<PostApiResponse> postApiResponseList, Long userId){
+
+    private List<PostApiResponse> setUserLike(List<PostApiResponse> postApiResponseList, Long userId) {
         List<Long> postIdList = postApiResponseList
                 .stream()
                 .map(PostApiResponse::getId)
