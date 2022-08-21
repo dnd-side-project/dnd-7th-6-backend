@@ -13,8 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 import static com.hot6.phopa.core.domain.photobooth.model.entity.QPhotoBoothEntity.photoBoothEntity;
 import static com.hot6.phopa.core.domain.review.model.entity.QReviewEntity.reviewEntity;
 import static com.hot6.phopa.core.domain.review.model.entity.QReviewImageEntity.reviewImageEntity;
@@ -44,5 +42,13 @@ public class ReviewCustomRepositoryImpl extends QuerydslRepositorySupport implem
                 .limit(pageable.getPageSize())
                 .distinct().fetchResults();
         return new PageImpl<>(result.getResults(), PageRequest.of(pageable.getPage(), pageable.getPageSize()), result.getTotal());
+    }
+
+    @Override
+    public ReviewEntity findByIdAndStatus(Long reviewId, Status status) {
+        return from(reviewEntity)
+                .join(reviewEntity.photoBooth, photoBoothEntity).fetchJoin()
+                .where(reviewEntity.id.eq(reviewId).and(reviewEntity.status.eq(status)))
+                .fetchFirst();
     }
 }

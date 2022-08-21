@@ -297,6 +297,7 @@ public class ReviewApiService {
                     ReviewTagEntity.builder()
                             .review(reviewEntity)
                             .tag(tagEntity)
+                            .photoBoothId(reviewEntity.getPhotoBooth().getId())
                             .build()
             );
             tagEntity.updateReviewCount(1);
