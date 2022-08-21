@@ -1,14 +1,11 @@
 package com.hot6.phopa.api.domain.review.model.dto;
 
-import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserApiResponse;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
 import com.hot6.phopa.core.domain.review.model.dto.ReviewDTO;
-import com.hot6.phopa.core.domain.review.model.dto.ReviewImageDTO;
 import com.hot6.phopa.core.domain.tag.enumeration.TagType;
 import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
-import com.hot6.phopa.core.domain.user.model.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +34,7 @@ public class ReviewApiDTO {
         private String title;
         private String content;
         private List<Long> tagIdList;
+        private List<String> newTagKeywordList;
         private Long photoBoothId;
         private Float starScore;
 
@@ -56,6 +54,7 @@ public class ReviewApiDTO {
         private String title;
         private String content;
         private List<Long> tagIdList;
+        private List<String> newTagKeywordList;
         private Float starScore;
         private List<Long> deleteImageIdList;
     }
