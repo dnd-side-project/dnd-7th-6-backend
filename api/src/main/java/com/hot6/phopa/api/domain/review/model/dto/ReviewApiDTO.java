@@ -3,6 +3,7 @@ package com.hot6.phopa.api.domain.review.model.dto;
 import com.hot6.phopa.api.domain.user.model.dto.UserApiDTO.UserApiResponse;
 import com.hot6.phopa.core.common.exception.ApplicationErrorException;
 import com.hot6.phopa.core.common.exception.ApplicationErrorType;
+import com.hot6.phopa.core.domain.photobooth.model.dto.PhotoBoothDTO;
 import com.hot6.phopa.core.domain.review.model.dto.ReviewDTO;
 import com.hot6.phopa.core.domain.tag.enumeration.TagType;
 import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
@@ -23,6 +24,7 @@ public class ReviewApiDTO {
     public static class ReviewApiResponse extends ReviewDTO {
         Set<ReviewTagApiResponse> reviewTagSet;
         Set<ReviewImageResponse> reviewImageSet;
+        PhotoBoothDTO photoBooth;
         UserApiResponse user;
     }
 
