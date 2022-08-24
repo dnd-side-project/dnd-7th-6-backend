@@ -1,12 +1,12 @@
 package com.hot6.phopa.core.domain.tag.model.mapper;
 
-import com.hot6.phopa.core.common.mapper.GenericMapper;
 import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper(componentModel = "spring")
 public abstract class TagMapper{
@@ -14,4 +14,5 @@ public abstract class TagMapper{
     public abstract TagDTO toDto(TagEntity tagEntity);
 
     public abstract List<TagDTO> toDtoList(List<TagEntity> tagEntityList);
+    public abstract List<TagDTO> toDtoList(Set<TagEntity> tagEntitySet);
 }

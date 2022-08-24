@@ -4,12 +4,7 @@ import com.hot6.phopa.core.common.model.dto.PageableParam;
 import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.community.enumeration.OrderType;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
-import com.hot6.phopa.core.domain.community.model.entity.QPostLikeEntity;
-import com.hot6.phopa.core.domain.community.model.entity.QPostTagEntity;
 import com.hot6.phopa.core.domain.community.repository.PostCustomRepository;
-import com.hot6.phopa.core.domain.tag.model.entity.QTagEntity;
-import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
-import com.hot6.phopa.core.domain.user.model.entity.QUserEntity;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Order;
@@ -17,10 +12,10 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
@@ -31,7 +26,7 @@ import static com.hot6.phopa.core.domain.community.model.entity.QPostEntity.post
 import static com.hot6.phopa.core.domain.community.model.entity.QPostImageEntity.postImageEntity;
 import static com.hot6.phopa.core.domain.community.model.entity.QPostLikeEntity.postLikeEntity;
 import static com.hot6.phopa.core.domain.community.model.entity.QPostTagEntity.postTagEntity;
-import static com.hot6.phopa.core.domain.tag.model.entity.QTagEntity.*;
+import static com.hot6.phopa.core.domain.tag.model.entity.QTagEntity.tagEntity;
 import static com.hot6.phopa.core.domain.user.model.entity.QUserEntity.userEntity;
 
 @Repository
@@ -72,8 +67,8 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
                 .leftJoin(postEntity.postTagSet, postTagEntity).fetchJoin()
                 .leftJoin(postTagEntity.tag, tagEntity).fetchJoin()
                 .leftJoin(postLikeEntity.user, userEntity).fetchJoin()
-                .where(tagEntity.id.in(tagIdSet).and(postEntity.status.eq(Status.ACTIVE)))
-                .where(postEntity.isPublic.eq(true))
+                .where(buildPredicate(tagIdSet))
+                .where(postEntity.status.eq(Status.ACTIVE).and(postEntity.isPublic.eq(true)))
                 .orderBy(getOrderByField(order))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -107,6 +102,14 @@ public class PostCustomRepositoryImpl extends QuerydslRepositorySupport implemen
         }
         if (photoBoothId != null) {
             builder.and(postEntity.id.eq(photoBoothId).not());
+        }
+        return builder.getValue();
+    }
+
+    private Predicate buildPredicate(Set<Long> tagIdSet) {
+        BooleanBuilder builder = new BooleanBuilder();
+        if (CollectionUtils.isNotEmpty(tagIdSet)) {
+            builder.and(tagEntity.id.in(tagIdSet));
         }
         return builder.getValue();
     }
