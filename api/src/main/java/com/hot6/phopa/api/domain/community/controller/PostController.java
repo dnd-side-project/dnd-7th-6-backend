@@ -58,7 +58,7 @@ public class PostController {
 
     @GetMapping("/recommendation")
     public PageableResponse<PostApiResponse> getPostsByTag(
-            @RequestParam("tagIdSet") Set<Long> tagIdSet,
+            @RequestParam(required = false) Set<Long> tagIdSet,
             PageableParam pageable,
             @RequestParam(required = false) OrderType order
     ) {
