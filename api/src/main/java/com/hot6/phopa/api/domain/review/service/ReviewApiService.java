@@ -199,6 +199,7 @@ public class ReviewApiService {
             reviewEntity.getPhotoBooth().updateReviewImage(null);
         }
         photoBoothEntity.updateReviewCount(-1);
+        photoBoothEntity.updateReviewImageCount(reviewEntity.getReviewImageSet().size() * 1);
         photoBoothEntity.updateStarScore(photoBoothEntity.getTotalStarScore() - reviewEntity.getStarScore());
         reviewEntity.updateStatus(Status.INACTIVE);
         cacheService.del(CacheKeyEntity.valueKey(CacheType.PhotoBoothById, reviewEntity.getPhotoBooth().getId()));
