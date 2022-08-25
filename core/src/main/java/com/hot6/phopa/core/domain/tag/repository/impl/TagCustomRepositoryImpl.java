@@ -1,11 +1,8 @@
 package com.hot6.phopa.core.domain.tag.repository.impl;
 
 import com.hot6.phopa.core.common.model.dto.PageableParam;
-import com.hot6.phopa.core.domain.photobooth.model.entity.QPhotoBoothEntity;
-import com.hot6.phopa.core.domain.review.model.entity.QReviewEntity;
-import com.hot6.phopa.core.domain.review.model.entity.QReviewTagEntity;
+import com.hot6.phopa.core.common.model.type.Status;
 import com.hot6.phopa.core.domain.tag.enumeration.TagType;
-import com.hot6.phopa.core.domain.tag.model.entity.QTagEntity;
 import com.hot6.phopa.core.domain.tag.model.entity.TagEntity;
 import com.hot6.phopa.core.domain.tag.repository.TagCustomRepository;
 import com.querydsl.core.BooleanBuilder;
@@ -20,7 +17,6 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 
 import java.util.List;
 
-import static com.hot6.phopa.core.domain.photobooth.model.entity.QPhotoBoothEntity.photoBoothEntity;
 import static com.hot6.phopa.core.domain.review.model.entity.QReviewEntity.reviewEntity;
 import static com.hot6.phopa.core.domain.review.model.entity.QReviewTagEntity.reviewTagEntity;
 import static com.hot6.phopa.core.domain.tag.model.entity.QTagEntity.tagEntity;
@@ -39,6 +35,7 @@ public class TagCustomRepositoryImpl extends QuerydslRepositorySupport implement
                 .join(reviewTagEntity.review, reviewEntity).fetchJoin()
                 .where(reviewTagEntity.photoBoothId.eq(photoBoothId))
                 .where(buildPredicate(null, tagTypeList))
+                .where(reviewEntity.status.eq(Status.ACTIVE))
                 .distinct()
                 .fetch();
     }
