@@ -6,6 +6,11 @@ spring:
       - oauth
     active: development
     ## Security
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
   security:
     permit-url: /api-docs/**,/configuration/**,/webjars/**,/health
     filter-skip: /health,/configuration,/webjars

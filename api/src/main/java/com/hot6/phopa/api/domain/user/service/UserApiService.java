@@ -119,7 +119,7 @@ public class UserApiService {
     }
 
     public JwtToken login(UserLoginRequest userLoginRequest) {
-        UserEntity userEntity = userService.getUser(userLoginRequest.getEmail());
+        UserEntity userEntity = userService.getUser(userLoginRequest.getProvider(), userLoginRequest.getProviderId());
         if (userEntity == null) {
             userEntity = userService.createUser(convertToUserEntity(userLoginRequest));
             userEntity.setName("photalks_user_" + userEntity.getId());
