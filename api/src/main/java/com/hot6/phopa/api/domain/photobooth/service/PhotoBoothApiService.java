@@ -95,7 +95,7 @@ public class PhotoBoothApiService {
 
     public PhotoBoothFilterFormResponse getFilterData() {
         List<TagDTO> tagDTOList = tagMapper.toDtoList(tagService.getTagListByTagTypeList(TagType.PHOTO_BOOTH_FILTER_TAG_LIST, true));
-        List<TagDTO> brandTagDTOList = tagDTOList.stream().filter(tag -> TagType.BRAND.equals(tag.getTagType())).collect(Collectors.toList());
+        List<TagDTO> brandTagDTOList = tagDTOList.stream().filter(tag -> TagType.BRAND.equals(tag.getTagType())).sorted(Comparator.comparingLong(TagDTO::getId)).collect(Collectors.toList());
         tagDTOList.removeAll(brandTagDTOList);
         return PhotoBoothFilterFormResponse.of(brandTagDTOList, tagDTOList);
     }
