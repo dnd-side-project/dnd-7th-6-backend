@@ -19,13 +19,11 @@ spring:
         registration:
           google:
             client-id: 469809305775-ksbip6mp90st3ob5t2ddk50edth3j4md.apps.googleusercontent.com
-            client-secret: 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
             scope:
               - profile
               - email
           naver:
             client-id: we5O8JJCsiLuKFAEQkHi
-            client-secret: wxhEiwc5mJ
             scope:
               - profile
               - email
@@ -52,7 +50,6 @@ spring:
             user-info-uri: https://kapi.kakao.com/v2/user/me
             user_name_attribute: id
   jwt:
-    secret: A11867C8D49A60EF09E35827FACAEE2B55401798D080227000E29E2D1B268B8392D0CC53A7364A9BAA80DB7660F6AAA505842AF1993791FDD5D2989672611BCD
   datasource:
     url: jdbc:mysql://localhost:3306/hot6
     username: root
@@ -65,13 +62,6 @@ spring:
     generate-ddl: true
     database: mysql
     database-platform: org.hibernate.spatial.dialect.mysql.MySQL56InnoDBSpatialDialect
-#  jpa:
-#
-#    hibernate:
-#      ddl-auto: update
-#    properties:
-#      hibernate:
-#        format_sql=true:
   redis:
     host: 127.0.0.1
     port: 6379
@@ -93,8 +83,6 @@ cloud:
     region:
       static: ap-northeast-2
     credentials:
-      access-key: AKIATERC7HEQPDZWSRUR
-      secret-key: 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
     s3:
       bucket: hot6
       upload:
@@ -106,6 +94,5 @@ cloud:
 ## KAKAO MAP Setting
 kakao:
   map:
-    api-key: KakaoAK 6ca56bb0bca430acc20c5155bc2befe5
     host: https://dapi.kakao.com
     path.keyword-search: /v2/local/search/keyword.json
