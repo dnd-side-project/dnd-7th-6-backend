@@ -94,7 +94,6 @@ cloud:
       static: ap-northeast-2
     credentials:
       access-key: AKIATERC7HEQPDZWSRUR
-      secret-key: 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
     s3:
       bucket: hot6
       upload:
@@ -106,6 +105,5 @@ cloud:
 ## KAKAO MAP Setting
 kakao:
   map:
-    api-key: KakaoAK 6ca56bb0bca430acc20c5155bc2befe5
     host: https://dapi.kakao.com
     path.keyword-search: /v2/local/search/keyword.json
