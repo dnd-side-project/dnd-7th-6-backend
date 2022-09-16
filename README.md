@@ -1,5 +1,8 @@
 # dnd-side-project-dnd-7th-6-backend
 
+앱 베타 버전 배포
+
+(신고하기 기능 추가 후 앱 배포 예정)
 ## 1. Used Tools
 - Spring Boot 2.6.6.RELEASE
 - Gradle 7+
