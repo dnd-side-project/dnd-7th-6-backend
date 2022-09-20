@@ -12,6 +12,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.util.Optional;
 
 @Slf4j
@@ -21,8 +22,15 @@ import java.util.Optional;
 @Order(1)
 public class UserService {
     private final UserRepository userRepository;
+    private final EntityManager em;
 
     public UserEntity createUser(UserEntity userEntity) {
+        userEntity = saveUser(userEntity);
+        em.persist(userEntity);
+        return userEntity;
+    }
+
+    public UserEntity saveUser(UserEntity userEntity) {
         return userRepository.save(userEntity);
     }
 
@@ -34,7 +42,11 @@ public class UserService {
         return userRepository.findByEmailAndStatus(email, UserStatus.ACTIVE);
     }
 
-    public UserEntity findById(Long id) { return userRepository.findById(id).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));}
+    public UserEntity findById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.COULDNT_FIND_ANY_DATA));
+    }
 
-    public UserEntity getByName(String name) { return userRepository.findByName(name);}
+    public UserEntity getByName(String name) {
+        return userRepository.findByName(name);
+    }
 }

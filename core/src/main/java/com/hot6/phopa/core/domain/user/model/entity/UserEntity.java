@@ -48,7 +48,10 @@ public class UserEntity extends BaseTimeEntity implements Serializable {
     @Column(name = "provider_id", columnDefinition = "provider 고유 id")
     private String providerId;
 
-    public void updateName(String name){
+    @Column(name = "is_agreement_term", columnDefinition = "약관 동의 여부")
+    private Boolean isAgreementTerm;
+
+    public void updateName(String name) {
         this.name = name;
     }
 
@@ -56,5 +59,11 @@ public class UserEntity extends BaseTimeEntity implements Serializable {
         this.status = status;
     }
 
-    public void updateUserRole(UserRole userRole) {this.userRole = userRole;}
+    public void updateUserRole(UserRole userRole) {
+        this.userRole = userRole;
+    }
+
+    public void updateAgreementTerm(boolean isAgreementTerm) {
+        this.isAgreementTerm = isAgreementTerm;
+    }
 }

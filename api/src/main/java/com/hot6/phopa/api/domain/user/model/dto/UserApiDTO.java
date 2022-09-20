@@ -88,4 +88,13 @@ public class UserApiDTO {
         @NotNull
         private String providerId;
     }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor(staticName = "of")
+    @NoArgsConstructor
+    public static class AgreementTermRequest {
+        @NotNull
+        private String email;
+    }
 }
