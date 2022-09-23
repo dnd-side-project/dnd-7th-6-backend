@@ -58,7 +58,7 @@ public class UserController {
     }
 
     @GetMapping("/name-valid")
-    public ResponseEntity vaildeName(
+    public ResponseEntity vaildName(
             @RequestParam String name
     ) {
         userApiService.vaildName(name);
@@ -81,6 +81,13 @@ public class UserController {
             return "HAPPY NEW TOKEN";
         }
         throw new SilentApplicationErrorException(ApplicationErrorType.EXPIRED_REFRESH_TOKEN);
+    }
+
+    @PatchMapping("/agree-term")
+    public void agreeTerm(
+            @RequestBody AgreementTermRequest agreementTermRequest
+            ){
+        userApiService.agreeTerm(agreementTermRequest);
     }
 
     @DeleteMapping

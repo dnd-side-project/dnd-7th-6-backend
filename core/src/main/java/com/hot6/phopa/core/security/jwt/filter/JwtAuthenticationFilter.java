@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component
@@ -42,11 +41,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null && jwtTokenProvider.verifyToken(token)) {
             String email = jwtTokenProvider.getUid(token);
-            Optional<UserEntity> userEntity = userService.getUserByStatus(email);
-            if(userEntity.isEmpty()) {
-                throw new SilentApplicationErrorException(ApplicationErrorType.UNAUTHORIZED_USER);
-            }
-            Authentication auth = getAuthentication(userMapper.toDto(userEntity.get()));
+            UserEntity userEntity = userService.getUserByStatus(email).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.UNAUTHORIZED_USER));
+            Authentication auth = getAuthentication(userMapper.toDto(userEntity));
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
         filterChain.doFilter(request, response);

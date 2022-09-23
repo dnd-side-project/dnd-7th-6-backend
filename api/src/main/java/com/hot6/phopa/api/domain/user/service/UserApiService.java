@@ -15,7 +15,6 @@ import com.hot6.phopa.core.domain.community.model.entity.PostLikeEntity;
 import com.hot6.phopa.core.domain.community.service.PostService;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothEntity;
 import com.hot6.phopa.core.domain.photobooth.model.entity.PhotoBoothLikeEntity;
-import com.hot6.phopa.core.domain.photobooth.model.mapper.PhotoBoothMapper;
 import com.hot6.phopa.core.domain.photobooth.service.PhotoBoothService;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewEntity;
 import com.hot6.phopa.core.domain.review.model.entity.ReviewImageEntity;
@@ -46,7 +45,6 @@ import java.util.stream.Collectors;
 public class UserApiService {
     private final PhotoBoothService photoBoothService;
     private final PostService postService;
-    private final PhotoBoothMapper photoBoothMapper;
     private final ReviewService reviewService;
     private final PostApiMapper postApiMapper;
     private final ReviewApiMapper reviewApiMapper;
@@ -124,7 +122,9 @@ public class UserApiService {
             userEntity = userService.createUser(convertToUserEntity(userLoginRequest));
             userEntity.setName("photalks_user_" + userEntity.getId());
         }
-        if(UserRole.USER.equals(userEntity.getUserRole()) == false || UserStatus.INACTIVE.equals(userEntity.getStatus())){
+        if (userEntity.getIsAgreementTerm() == false) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.DEAGREEMENT_USER);
+        } else if (UserRole.USER.equals(userEntity.getUserRole()) == false || UserStatus.INACTIVE.equals(userEntity.getStatus())) {
             throw new SilentApplicationErrorException(ApplicationErrorType.INACTIVE_USER);
         }
         return (jwtTokenProvider.generateToken(userEntity.getEmail()));
@@ -140,6 +140,7 @@ public class UserApiService {
                 .upwd(bCryptPasswordEncoder.encode(userLoginRequest.getEmail()))
                 .provider(userLoginRequest.getProvider())
                 .providerId(userLoginRequest.getProviderId())
+                .isAgreementTerm(false)
                 .build();
     }
 
@@ -176,5 +177,10 @@ public class UserApiService {
             userLikePhotoBoothResponse.setImageUrl(S3UrlUtil.convertToS3Url(reviewImageEntity.getImageUrl()));
         }
         return userLikePhotoBoothResponse;
+    }
+
+    public void agreeTerm(AgreementTermRequest agreementTermRequest) {
+        UserEntity userEntity = userService.getUserByStatus(agreementTermRequest.getEmail()).orElseThrow(() -> new SilentApplicationErrorException(ApplicationErrorType.UNAUTHORIZED_USER));
+        userEntity.updateAgreementTerm(true);
     }
 }
