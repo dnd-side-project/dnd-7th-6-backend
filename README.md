@@ -1,5 +1,6 @@
 # dnd-side-project-dnd-7th-6-backend
 photalks 발표 자료 : https://docs.google.com/presentation/d/1yAEmEFSCZ0iIHhLGO61lS0GpmhWkrTDL/edit?usp=sharing&ouid=112953165871692061444&rtpof=true&sd=true
+<br>
 photalks 소개글 : https://velog.io/@jynam821/%EC%9D%B8%EC%83%9D%EB%84%A4%EC%BB%B7%EC%97%90%EC%84%9C-%EC%82%AC%EC%A7%84-%EC%B0%8D%EC%96%B4%EB%B3%B8-%EC%82%AC%EB%9E%8C-%EC%97%AC%EA%B8%B0%EC%97%AC%EA%B8%B0-%EB%AA%A8%EC%97%AC%EB%9D%BC-qf6y3cfb
 앱 베타 버전 배포
 
