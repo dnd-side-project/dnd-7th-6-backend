@@ -14,7 +14,9 @@ import com.hot6.phopa.core.domain.community.enumeration.OrderType;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostImageEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostLikeEntity;
+import com.hot6.phopa.core.domain.community.model.entity.PostReportCountEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostTagEntity;
+import com.hot6.phopa.core.domain.community.model.entity.UserReportPostEntity;
 import com.hot6.phopa.core.domain.community.service.PostService;
 import com.hot6.phopa.core.domain.tag.enumeration.TagType;
 import com.hot6.phopa.core.domain.tag.model.dto.TagDTO;
@@ -315,5 +317,36 @@ public class PostApiService {
 
         postApiResponseList.forEach(post -> post.setLike(userLikePostIdList.contains(post.getId())));
         return postApiResponseList;
+    }
+
+    public void reportPost(Long postId) {
+        UserDTO userDTO = PrincipleDetail.get();
+        UserEntity userEntity = userService.findById(userDTO.getId());
+        PostEntity postEntity = postService.getPostById(postId);
+        if(userEntity.getId().equals(postEntity.getUser().getId())) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.CANNOT_BE_CREATED_USER);
+        }
+        if(postService.isExistReportUser(postId, userEntity.getId())) {
+            throw new SilentApplicationErrorException(ApplicationErrorType.ALREADY_REPORT_POST);
+        }
+        postService.createUserReportPostEntity(UserReportPostEntity.builder()
+                .post(postEntity)
+                .user(userEntity)
+                .build());
+
+        PostReportCountEntity postReportCountEntity = postService.getReportCountByPostId(postId);
+        if(postReportCountEntity != null) {
+            postReportCountEntity.updateCount(1);
+        } else {
+            postReportCountEntity = PostReportCountEntity.builder()
+                    .post(postEntity)
+                    .count(1L)
+                    .build();
+            postService.createPostReportCountEntity(postReportCountEntity);
+        }
+
+        if(postReportCountEntity.getCount() >= 3) {
+            postEntity.updateStatus(Status.REPORT);
+        }
     }
 }

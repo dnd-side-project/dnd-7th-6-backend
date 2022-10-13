@@ -90,4 +90,12 @@ public class PostController {
     ) {
         return postService.modifyPost(postId, postUpdateRequest, postImageList);
     }
+
+    @PostMapping("/{postId}/report")
+    public ResponseEntity<String> reportPost(
+            @PathVariable @Positive Long postId
+    ) {
+        postService.reportPost(postId);
+        return ResponseEntity.ok("게시글이 신고되었습니다");
+    }
 }
