@@ -38,7 +38,9 @@ public enum ApplicationErrorType {
     ALREADY_NAME(HttpStatus.BAD_REQUEST, -100012, "동일한 닉네임이 있어요"),
     DIFF_USER(HttpStatus.BAD_REQUEST, -100013, "작성자가 아닙니다."),
     CANNOT_BE_CREATED_USER(HttpStatus.BAD_REQUEST, -100014, "자신의 글에는 좋아요를 누를 수 없습니다."),
-    DEAGREEMENT_USER(HttpStatus.FORBIDDEN, -100015, "약관 동의를 하지 않은 유저입니다. 약관 동의를 해주세요.");
+    DEAGREEMENT_USER(HttpStatus.FORBIDDEN, -100015, "약관 동의를 하지 않은 유저입니다. 약관 동의를 해주세요."),
+    ALREADY_REPORT_POST(HttpStatus.BAD_REQUEST, -100016, "이미 신고한 게시글입니다."),
+    ;
 
 
     @Getter

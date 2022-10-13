@@ -8,9 +8,13 @@ import com.hot6.phopa.core.domain.community.enumeration.OrderType;
 import com.hot6.phopa.core.domain.community.model.entity.PostEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostImageEntity;
 import com.hot6.phopa.core.domain.community.model.entity.PostLikeEntity;
+import com.hot6.phopa.core.domain.community.model.entity.PostReportCountEntity;
+import com.hot6.phopa.core.domain.community.model.entity.UserReportPostEntity;
 import com.hot6.phopa.core.domain.community.repository.PostImageRepository;
 import com.hot6.phopa.core.domain.community.repository.PostLikeRepository;
+import com.hot6.phopa.core.domain.community.repository.PostReportCountRepository;
 import com.hot6.phopa.core.domain.community.repository.PostRepository;
+import com.hot6.phopa.core.domain.community.repository.UserReportPostRepository;
 import com.hot6.phopa.core.domain.tag.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -27,8 +31,9 @@ import java.util.Set;
 public class PostService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
-
     private final PostImageRepository postImageRepository;
+    private final PostReportCountRepository postReportCountRepository;
+    private final UserReportPostRepository userReportPostRepository;
 
     @Transactional(readOnly = true)
     public Page<PostEntity> getPosts(Long userId, Long photoBoothId, PageableParam pageable) {
@@ -79,5 +84,28 @@ public class PostService {
 
     public List<PostImageEntity> getPostImageByUserLike(Long userId) {
         return postImageRepository.findPostImageByUserLike(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public PostReportCountEntity getReportCountByPostId(Long postId) {
+        return postReportCountRepository.findOneByPostId(postId);
+    }
+
+    @Transactional(readOnly = true)
+    public UserReportPostEntity getReportUserByPostIdAndUserId(Long postId, Long userId) {
+        return userReportPostRepository.findOneByPostIdAndUserId(postId, userId);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isExistReportUser(Long postId, Long userId) {
+        return userReportPostRepository.existsByPostIdAndUserId(postId, userId);
+    }
+
+    public PostReportCountEntity createPostReportCountEntity(PostReportCountEntity postReportCountEntity) {
+        return postReportCountRepository.save(postReportCountEntity);
+    }
+
+    public UserReportPostEntity createUserReportPostEntity(UserReportPostEntity userReportPostEntity) {
+        return userReportPostRepository.save(userReportPostEntity);
     }
 }
